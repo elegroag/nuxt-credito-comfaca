@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+/*
+  Nota Tailwind v4:
+  Evitamos @apply dentro del proyecto para no depender de @reference en distintos contextos (SFC/scoped).
+*/
+.input {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(212 212 216); /* zinc-300 */
+  background: #fff;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: rgb(24 24 27); /* zinc-900 */
+  outline: none;
+}
+
+.input:focus {
+  border-color: rgb(24 24 27); /* zinc-900 */
+}
