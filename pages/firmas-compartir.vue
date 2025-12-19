@@ -107,8 +107,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from '#imports'
+import { computed, onMounted, ref, useSession } from '#imports'
 import QRCode from 'qrcode'
+
+definePageMeta({
+  layout: 'dashboard',
+  middleware: ['auth']
+})
+
+const { authHeader } = useSession()
 
 const query = ref('')
 const files = ref<string[]>([])
@@ -127,7 +134,11 @@ const qrDataUrl = ref('')
 
 const fetchFiles = async (q: string) => {
   const url = q ? `/api/activos/xml?q=${encodeURIComponent(q)}` : '/api/activos/xml'
-  const res = await fetch(url)
+  const res = await fetch(url, {
+    headers: {
+      ...(authHeader.value as any)
+    }
+  })
   if (!res.ok) {
     const data = await res.json().catch(() => null)
     throw new Error(data?.error || `Error HTTP ${res.status}`)
@@ -167,7 +178,7 @@ const generarLink = async () => {
 
     const res = await fetch('/api/solicitud-credito/firmas/share', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', ...(authHeader.value as any) },
       body: JSON.stringify(body)
     })
 

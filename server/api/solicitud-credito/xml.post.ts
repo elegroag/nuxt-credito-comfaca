@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import { defineEventHandler, readBody, setHeader, setResponseStatus } from 'h3'
+import { defineEventHandler, getHeader, readBody, setHeader, setResponseStatus } from 'h3'
 import { useRuntimeConfig } from '#imports'
 import { $fetch } from 'ofetch'
 
@@ -7,11 +7,14 @@ export default defineEventHandler(async (event: H3Event) => {
     const config = useRuntimeConfig()
     const payload = await readBody(event)
 
+    const authorization = getHeader(event, 'authorization')
+
     try {
         const resp = await $fetch.raw<string>(`${config.backendBaseUrl}/api/solicitud-credito/xml`, {
             method: 'POST',
             body: payload,
-            responseType: 'text'
+            responseType: 'text' as any,
+            headers: authorization ? { Authorization: authorization } : undefined
         })
 
         const savedFilename = resp.headers.get('x-saved-filename') || resp.headers.get('X-Saved-Filename')

@@ -12,7 +12,7 @@ export default defineEventHandler(async (event: H3Event) => {
         const resp = await $fetch.raw<string>(`${config.backendBaseUrl}/api/solicitud-credito/firmas/share/${encodeURIComponent(token)}/firmar`, {
             method: 'POST',
             body: payload,
-            responseType: 'text'
+            responseType: 'text' as any
         })
 
         const savedFilename = resp.headers.get('x-saved-filename') || resp.headers.get('X-Saved-Filename')

@@ -57,7 +57,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from '#imports'
+import { computed, ref, useSession } from '#imports'
+
+definePageMeta({
+  layout: 'dashboard',
+  middleware: ['auth']
+})
 
 const filename = ref('solicitud-credito.xml')
 const validate = ref(true)
@@ -65,6 +70,8 @@ const validate = ref(true)
 const loading = ref(false)
 const errorMsg = ref('')
 const data = ref<any | null>(null)
+
+const { authHeader } = useSession()
 
 const pretty = computed(() => {
   if (!data.value) return ''
@@ -80,7 +87,8 @@ const extraer = async () => {
     const res = await fetch('/api/solicitud-credito/xml-extract', {
       method: 'POST',
       headers: {
-        'content-type': 'application/json'
+        'content-type': 'application/json',
+        ...(authHeader.value as any)
       },
       body: JSON.stringify({
         filename: filename.value,

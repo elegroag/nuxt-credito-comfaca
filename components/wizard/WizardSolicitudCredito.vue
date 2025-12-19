@@ -601,9 +601,11 @@
 <script setup lang="ts">
 import { computed, defineComponent, h, ref } from 'vue'
 
+import { useSession } from '#imports'
 import { useSolicitudCreditoForm } from '~/composables/useSolicitudCreditoForm'
 
 const { form } = useSolicitudCreditoForm()
+const { authHeader } = useSession()
 
 const steps = [
   { key: 'encabezado', title: 'Encabezado', short: 'Encabezado' },
@@ -729,7 +731,8 @@ const generarXml = async (saveXml: boolean) => {
     const res = await fetch('/api/solicitud-credito/xml', {
       method: 'POST',
       headers: {
-        'content-type': 'application/json'
+        'content-type': 'application/json',
+        ...(authHeader.value as any)
       },
       body: JSON.stringify({
         ...form.value,

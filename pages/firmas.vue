@@ -136,7 +136,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from '#imports'
+import { ref, useSession } from '#imports'
+
+definePageMeta({
+  layout: 'dashboard',
+  middleware: ['auth']
+})
+
+const { authHeader } = useSession()
 
 const solicitudFilename = ref('solicitud-credito.xml')
 const firmasFilename = ref('')
@@ -200,7 +207,8 @@ const firmar = async () => {
     const res = await fetch('/api/solicitud-credito/firmas', {
       method: 'POST',
       headers: {
-        'content-type': 'application/json'
+        'content-type': 'application/json',
+        ...(authHeader.value as any)
       },
       body: JSON.stringify(body)
     })
