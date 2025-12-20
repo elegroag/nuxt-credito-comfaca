@@ -216,7 +216,9 @@ const _abbr = (label: string) => {
 
 const navItems = [
   { label: 'Inicio', to: '/', abbr: _abbr('Inicio') },
+  { label: 'Simulador', to: '/simulador', abbr: _abbr('Simulador') },
   { label: 'Solicitud', to: '/solicitud', abbr: _abbr('Solicitud') },
+  { label: 'Documentos', to: '/documentos', abbr: _abbr('Documentos') },
   { label: 'Extraer XML', to: '/xml-extract', abbr: _abbr('Extraer XML') },
   { label: 'Firmas', to: '/firmas', abbr: _abbr('Firmas') },
   { label: 'Compartir firmas', to: '/firmas-compartir', abbr: _abbr('Compartir firmas') },

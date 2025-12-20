@@ -755,6 +755,29 @@ const generarXml = async (saveXml: boolean) => {
       savedFilename.value = header
     }
     xmlText.value = await res.text()
+
+    if (saveXml) {
+      const payload = {
+        payload: form.value,
+        xml_filename: savedFilename.value || ''
+      }
+
+      const created = await fetch('/api/solicitudes-credito', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          ...(authHeader.value as any)
+        },
+        body: JSON.stringify(payload)
+      })
+
+      if (!created.ok) {
+        const data = await created.json().catch(() => null)
+        throw new Error(data?.error || `Error HTTP ${created.status}`)
+      }
+
+      await created.json().catch(() => null)
+    }
   } catch (e: any) {
     xmlText.value = ''
     savedFilename.value = ''
