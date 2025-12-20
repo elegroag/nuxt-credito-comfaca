@@ -1,5 +1,20 @@
 @import "tailwindcss";
 
+@plugin "daisyui" { themes: light --default, dark; }
+
+:root {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light;
+  color: #4a4a4a;
+  background-color: #ffffff;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 /*
   Nota Tailwind v4:
   Evitamos @apply dentro del proyecto para no depender de @reference en distintos contextos (SFC/scoped).

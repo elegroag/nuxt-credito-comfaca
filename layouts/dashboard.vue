@@ -21,12 +21,12 @@
             :title="item.label"
             class="flex items-center rounded-md px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-100"
             :class="[
-              isActive(item.to) ? 'bg-zinc-900 text-white hover:bg-zinc-900' : '',
-              sidebarCollapsed ? 'justify-center' : 'justify-between'
+              isActive(item.to) ? 'bg-zinc-900 !text-white hover:bg-zinc-900' : '',
+              sidebarCollapsed ? 'justify-center' : 'gap-2'
             ]"
           >
-            <span v-if="!sidebarCollapsed">{{ item.label }}</span>
-            <span v-else class="text-xs font-semibold tracking-wide">{{ item.abbr }}</span>
+            <component :is="item.icon" class="h-5 w-5 shrink-0" :class="isActive(item.to) ? '!text-white' : ''" />
+            <span v-if="!sidebarCollapsed" class="truncate" :class="isActive(item.to) ? '!text-white' : ''">{{ item.label }}</span>
           </NuxtLink>
         </nav>
 
@@ -63,7 +63,8 @@
               :aria-label="sidebarCollapsed ? 'Expandir menú' : 'Colapsar menú'"
               @click="sidebarCollapsed = !sidebarCollapsed"
             >
-              <span class="text-lg leading-none">{{ sidebarCollapsed ? '»' : '«' }}</span>
+              <ChevronRightIcon v-if="sidebarCollapsed" class="h-5 w-5" />
+              <ChevronLeftIcon v-else class="h-5 w-5" />
             </button>
 
             <button
@@ -72,7 +73,7 @@
               aria-label="Abrir menú"
               @click="sidebarOpen = true"
             >
-              <span class="text-lg leading-none">≡</span>
+              <Bars3Icon class="h-5 w-5" />
             </button>
 
             <NuxtLink to="/" class="flex items-center gap-2 font-semibold lg:hidden">
@@ -106,7 +107,7 @@
                     {{ (session.user?.roles || []).join(', ') || 'sin roles' }}
                   </div>
                 </div>
-                <div class="hidden text-xs text-zinc-500 md:block">▾</div>
+                <ChevronDownIcon class="hidden h-4 w-4 text-zinc-500 md:block" />
               </button>
 
               <div
@@ -122,9 +123,10 @@
 
             <button
               type="button"
-              class="rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-300"
+              class="inline-flex items-center gap-2 rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-300"
               @click="logout"
             >
+              <ArrowRightOnRectangleIcon class="h-5 w-5" />
               <span class="hidden sm:inline">Cerrar sesión</span>
               <span class="sm:hidden">Salir</span>
             </button>
@@ -165,7 +167,7 @@
               aria-label="Cerrar menú"
               @click="sidebarOpen = false"
             >
-              <span class="text-lg leading-none">×</span>
+              <XMarkIcon class="h-5 w-5" />
             </button>
           </div>
 
@@ -175,11 +177,12 @@
                 v-for="item in navItems"
                 :key="item.to"
                 :to="item.to"
-                class="flex items-center justify-between rounded-md px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-100"
+                class="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-100"
                 :class="isActive(item.to) ? 'bg-zinc-900 text-white hover:bg-zinc-900' : ''"
                 @click="sidebarOpen = false"
               >
-                <span>{{ item.label }}</span>
+                <component :is="item.icon" class="h-5 w-5 shrink-0" :class="isActive(item.to) ? '!text-white' : ''" />
+                <span :class="isActive(item.to) ? '!text-white' : ''">{{ item.label }}</span>
               </NuxtLink>
             </nav>
           </div>
@@ -191,6 +194,23 @@
 
 <script setup lang="ts">
 import { computed, navigateTo, ref, useRoute, useSession } from '#imports'
+
+import {
+  ArrowRightOnRectangleIcon,
+  Bars3Icon,
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  CodeBracketSquareIcon,
+  DocumentPlusIcon,
+  HomeIcon,
+  KeyIcon,
+  PencilSquareIcon,
+  CalculatorIcon,
+  DocumentTextIcon,
+  ShareIcon,
+  XMarkIcon
+} from '@heroicons/vue/24/outline'
 
 const { session, clearSession } = useSession()
 const route = useRoute()
@@ -215,14 +235,14 @@ const _abbr = (label: string) => {
 }
 
 const navItems = [
-  { label: 'Inicio', to: '/', abbr: _abbr('Inicio') },
-  { label: 'Simulador', to: '/simulador', abbr: _abbr('Simulador') },
-  { label: 'Solicitud', to: '/solicitud', abbr: _abbr('Solicitud') },
-  { label: 'Documentos', to: '/documentos', abbr: _abbr('Documentos') },
-  { label: 'Extraer XML', to: '/xml-extract', abbr: _abbr('Extraer XML') },
-  { label: 'Firmas', to: '/firmas', abbr: _abbr('Firmas') },
-  { label: 'Compartir firmas', to: '/firmas-compartir', abbr: _abbr('Compartir firmas') },
-  { label: 'Entidad digital', to: '/entidad-digital', abbr: _abbr('Entidad digital') }
+  { label: 'Inicio', to: '/', abbr: _abbr('Inicio'), icon: HomeIcon },
+  { label: 'Simulador', to: '/simulador', abbr: _abbr('Simulador'), icon: CalculatorIcon },
+  { label: 'Solicitud', to: '/solicitud', abbr: _abbr('Solicitud'), icon: DocumentPlusIcon },
+  { label: 'Documentos', to: '/documentos', abbr: _abbr('Documentos'), icon: DocumentTextIcon },
+  { label: 'Extraer XML', to: '/xml-extract', abbr: _abbr('Extraer XML'), icon: CodeBracketSquareIcon },
+  { label: 'Firmas', to: '/firmas', abbr: _abbr('Firmas'), icon: PencilSquareIcon },
+  { label: 'Compartir firmas', to: '/firmas-compartir', abbr: _abbr('Compartir firmas'), icon: ShareIcon },
+  { label: 'Entidad digital', to: '/entidad-digital', abbr: _abbr('Entidad digital'), icon: KeyIcon }
 ]
 
 const isActive = (to: string) => {
