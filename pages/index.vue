@@ -51,6 +51,50 @@
           <div>
             <div class="text-base font-semibold text-zinc-900">Mis solicitudes</div>
             <div class="mt-1 text-sm text-zinc-600">Listado de tus solicitudes y estado actual.</div>
+            <div class="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-zinc-500">
+              <span class="font-semibold text-zinc-600">Flujo:</span>
+              <template v-for="(e, i) in flujoAprobacion" :key="e">
+                <span>{{ e }}</span>
+                <ChevronRightIcon v-if="i < flujoAprobacion.length - 1" class="h-3.5 w-3.5 text-zinc-300" />
+              </template>
+            </div>
+
+            <div v-if="ultimaSolicitud" class="mt-4 rounded-md border border-zinc-200 bg-zinc-50 p-4">
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div class="min-w-0">
+                  <div class="text-sm font-semibold text-zinc-800">Estado de tu última solicitud</div>
+                  <div class="mt-1 truncate text-sm text-zinc-600">
+                    <span class="font-medium text-zinc-800">{{ ultimaSolicitud.numero_solicitud || '-' }}</span>
+                    <span class="text-zinc-400">·</span>
+                    <span>{{ fmtMoney(ultimaSolicitud.monto_solicitado) }}</span>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                  <span
+                    class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium"
+                    :class="estadoBadgeClass(String(ultimaSolicitud.estado || ''))"
+                  >
+                    {{ ultimaSolicitud.estado || '-' }}
+                  </span>
+                  <div class="h-2 w-40 overflow-hidden rounded-full bg-zinc-200">
+                    <div
+                      class="h-full"
+                      :class="estadoProgressClass(String(ultimaSolicitud.estado || ''))"
+                      :style="{ width: `${estadoProgressPercent(String(ultimaSolicitud.estado || ''))}%` }"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 flex flex-wrap items-center gap-1.5 text-xs text-zinc-500">
+                <span class="font-semibold text-zinc-600">Paso actual:</span>
+                <template v-for="(e, i) in flujoAprobacion" :key="e">
+                  <span :class="i === estadoIndexUltima ? 'font-semibold text-zinc-800' : ''">{{ e }}</span>
+                  <ChevronRightIcon v-if="i < flujoAprobacion.length - 1" class="h-3.5 w-3.5 text-zinc-300" />
+                </template>
+              </div>
+            </div>
           </div>
         </div>
         <button
@@ -100,6 +144,13 @@
                   >
                     {{ s.estado || '-' }}
                   </span>
+                  <div class="mt-2 h-2 w-32 overflow-hidden rounded-full bg-zinc-200">
+                    <div
+                      class="h-full"
+                      :class="estadoProgressClass(String(s.estado || ''))"
+                      :style="{ width: `${estadoProgressPercent(String(s.estado || ''))}%` }"
+                    />
+                  </div>
                 </td>
                 <td class="px-4 py-3 text-zinc-700">{{ fmtDate(s.created_at) }}</td>
               </tr>
@@ -204,7 +255,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from '#imports'
+import { computed, onMounted, ref } from '#imports'
 
 import {
   ArrowPathIcon,
@@ -237,14 +288,52 @@ const fmtDate = (value: unknown) => {
   return new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeStyle: 'short' }).format(d)
 }
 
+const flujoAprobacion = ['Postulado', 'En validación', 'Aprobado', 'Desembolsado', 'Activo', 'Finalizado'] as const
+
+const _normalizeEstado = (estado: string) => {
+  return (estado || '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+}
+
+const _estadoIndex = (estado: string) => {
+  const s = _normalizeEstado(estado)
+  return flujoAprobacion.findIndex((e) => _normalizeEstado(e) === s)
+}
+
+const estadoProgressPercent = (estado: string) => {
+  const idx = _estadoIndex(estado)
+  if (idx < 0) return 0
+  if (flujoAprobacion.length <= 1) return 0
+  return Math.round((idx / (flujoAprobacion.length - 1)) * 100)
+}
+
+const estadoProgressClass = (estado: string) => {
+  const idx = _estadoIndex(estado)
+  if (idx < 0) return 'bg-zinc-300'
+  if (idx <= 1) return 'bg-amber-500'
+  if (idx === flujoAprobacion.length - 1) return 'bg-zinc-500'
+  return 'bg-emerald-500'
+}
+
 const estadoBadgeClass = (estado: string) => {
-  const s = (estado || '').toLowerCase()
+  const s = _normalizeEstado(estado)
   if (s === 'aprobado' || s === 'activo' || s === 'desembolsado') return 'bg-emerald-50 text-emerald-800'
-  if (s === 'en validación' || s === 'postulado') return 'bg-amber-50 text-amber-800'
+  if (s === 'en validacion' || s === 'postulado') return 'bg-amber-50 text-amber-800'
   if (s === 'finalizado') return 'bg-zinc-100 text-zinc-800'
   if (s === 'desiste') return 'bg-red-50 text-red-800'
   return 'bg-zinc-100 text-zinc-800'
 }
+
+const ultimaSolicitud = computed(() => (solicitudes.value.length ? solicitudes.value[0] : null))
+
+const estadoIndexUltima = computed(() => {
+  const s = ultimaSolicitud.value
+  if (!s) return -1
+  return _estadoIndex(String(s.estado || ''))
+})
 
 const cargarSolicitudes = async () => {
   if (!process.client) return

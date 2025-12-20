@@ -22,6 +22,11 @@ export default defineEventHandler(async (event: H3Event) => {
             setHeader(event, 'x-saved-filename', savedFilename)
         }
 
+        const solicitudId = resp.headers.get('x-solicitud-id') || resp.headers.get('X-Solicitud-Id')
+        if (solicitudId) {
+            setHeader(event, 'x-solicitud-id', solicitudId)
+        }
+
         setHeader(event, 'content-type', 'application/xml; charset=utf-8')
         return resp._data
     } catch (e: any) {

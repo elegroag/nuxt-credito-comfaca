@@ -595,17 +595,55 @@
         </template>
       </form>
     </div>
+
+    <Teleport to="body">
+      <div v-if="successModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <button class="absolute inset-0 bg-black/40" type="button" @click="closeSuccessModal" />
+        <div class="relative w-full max-w-md rounded-xl bg-white p-6 shadow-xl" @click.stop>
+          <div class="text-lg font-semibold text-zinc-900">Solicitud creada con éxito</div>
+          <div class="mt-2 text-sm text-zinc-600">
+            Tu solicitud fue enviada y quedó en estado
+            <span class="font-medium text-zinc-900">Postulado</span>.
+          </div>
+          <div v-if="createdSolicitudId" class="mt-3 text-sm text-zinc-700">
+            <span class="font-medium">ID:</span>
+            <span class="ml-1 font-mono text-xs">{{ createdSolicitudId }}</span>
+          </div>
+          <div v-if="savedFilename" class="mt-2 text-sm text-zinc-700">
+            <span class="font-medium">XML:</span>
+            <span class="ml-1">{{ savedFilename }}</span>
+          </div>
+          <div class="mt-6 flex items-center justify-end gap-2">
+            <button
+              class="rounded-lg border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-800 hover:bg-zinc-50"
+              type="button"
+              @click="goToHome"
+            >
+              Ver mis solicitudes
+            </button>
+            <button
+              class="rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-800"
+              type="button"
+              @click="closeSuccessModal"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, defineComponent, h, ref } from 'vue'
+import { Teleport, computed, defineComponent, h, ref } from 'vue'
 
-import { useSession } from '#imports'
+import { useRouter, useSession } from '#imports'
 import { useSolicitudCreditoForm } from '~/composables/useSolicitudCreditoForm'
 
 const { form } = useSolicitudCreditoForm()
 const { authHeader } = useSession()
+const router = useRouter()
 
 const steps = [
   { key: 'encabezado', title: 'Encabezado', short: 'Encabezado' },
@@ -626,7 +664,9 @@ const step = ref(0)
 const loadingXml = ref(false)
 const xmlText = ref('')
 const savedFilename = ref('')
+const createdSolicitudId = ref('')
 const errorMsg = ref('')
+const successModalOpen = ref(false)
 
 const prettyPayload = computed(() => JSON.stringify(form.value, null, 2))
 
@@ -723,10 +763,21 @@ const removeReferencia = (kind: 'familiares' | 'personales', idx: number) => {
   form.value.referencias[kind].splice(idx, 1)
 }
 
+const closeSuccessModal = () => {
+  successModalOpen.value = false
+}
+
+const goToHome = async () => {
+  successModalOpen.value = false
+  await router.push('/')
+}
+
 const generarXml = async (saveXml: boolean) => {
   loadingXml.value = true
   errorMsg.value = ''
   savedFilename.value = ''
+  createdSolicitudId.value = ''
+  successModalOpen.value = false
   try {
     const res = await fetch('/api/solicitud-credito/xml', {
       method: 'POST',
@@ -754,33 +805,21 @@ const generarXml = async (saveXml: boolean) => {
     if (header) {
       savedFilename.value = header
     }
+
+    const solicitudHeader = res.headers.get('x-solicitud-id')
+    if (solicitudHeader) {
+      createdSolicitudId.value = solicitudHeader
+    }
+
     xmlText.value = await res.text()
 
     if (saveXml) {
-      const payload = {
-        payload: form.value,
-        xml_filename: savedFilename.value || ''
-      }
-
-      const created = await fetch('/api/solicitudes-credito', {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          ...(authHeader.value as any)
-        },
-        body: JSON.stringify(payload)
-      })
-
-      if (!created.ok) {
-        const data = await created.json().catch(() => null)
-        throw new Error(data?.error || `Error HTTP ${created.status}`)
-      }
-
-      await created.json().catch(() => null)
+      successModalOpen.value = true
     }
   } catch (e: any) {
     xmlText.value = ''
     savedFilename.value = ''
+    createdSolicitudId.value = ''
     errorMsg.value = e?.data?.error || e?.message || 'Error generando XML'
   } finally {
     loadingXml.value = false
