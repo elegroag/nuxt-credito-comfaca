@@ -15,7 +15,13 @@ export default defineEventHandler(async (event: H3Event) => {
 
         return data
     } catch (e: any) {
-        setResponseStatus(event, 502)
+        const status = Number(e?.statusCode || e?.response?.status || 502)
+        setResponseStatus(event, Number.isFinite(status) ? status : 502)
+
+        if (e?.data && typeof e.data === 'object') {
+            return e.data
+        }
+
         return {
             error: e?.data?.error || e?.message || 'Error conectando con backend'
         }

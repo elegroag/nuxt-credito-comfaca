@@ -10,6 +10,9 @@ export default defineNuxtConfig({
     }
   },
   runtimeConfig: {
-    backendBaseUrl: process.env.NUXT_BACKEND_BASE_URL || 'http://127.0.0.1:5000'
+    backendBaseUrl: process.env.NUXT_BACKEND_BASE_URL || 'http://127.0.0.1:5000',
+    public: {
+      backendBaseUrl: process.env.NUXT_BACKEND_BASE_URL || 'http://127.0.0.1:5000'
+    }
   }
 })

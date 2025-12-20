@@ -41,17 +41,21 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, navigateTo } from '#imports'
+import { onMounted, ref, useRoute, navigateTo } from '#imports'
 
 definePageMeta({
   layout: 'auth'
 })
 
 const { isAuthenticated, setSession } = useSession()
+const { postJson } = useApi()
 
 const username = ref('')
 const password = ref('')
 const password2 = ref('')
+
+const route = useRoute()
+const redirectTo = ref('')
 
 const loading = ref(false)
 const errorMsg = ref('')
@@ -59,6 +63,15 @@ const errorMsg = ref('')
 onMounted(async () => {
   if (isAuthenticated.value) {
     await navigateTo('/')
+  }
+
+  const u = route.query.username
+  const r = route.query.redirect
+  if (typeof u === 'string' && u.trim()) {
+    username.value = u.trim()
+  }
+  if (typeof r === 'string' && r.startsWith('/')) {
+    redirectTo.value = r
   }
 })
 
@@ -70,8 +83,8 @@ const registrar = async () => {
     return
   }
 
-  if (password.value.length < 6) {
-    errorMsg.value = 'La contraseña debe tener al menos 6 caracteres.'
+  if (password.value.length < 8) {
+    errorMsg.value = 'La contraseña debe tener al menos 8 caracteres.'
     return
   }
 
@@ -82,21 +95,10 @@ const registrar = async () => {
 
   loading.value = true
   try {
-    const res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        username: username.value,
-        password: password.value
-      })
+    const data = await postJson<any>('/api/auth/register', {
+      username: username.value,
+      password: password.value
     })
-
-    if (!res.ok) {
-      const data = await res.json().catch(() => null)
-      throw new Error(data?.error || `Error HTTP ${res.status}`)
-    }
-
-    const data = await res.json()
     const accessToken = String(data?.access_token || '')
     const tokenType = String(data?.token_type || 'bearer')
     const user = data?.user
@@ -114,9 +116,13 @@ const registrar = async () => {
       }
     })
 
-    await navigateTo('/')
+    if (redirectTo.value) {
+      await navigateTo(redirectTo.value)
+    } else {
+      await navigateTo('/')
+    }
   } catch (e: any) {
-    errorMsg.value = e?.message || 'No fue posible registrar'
+    errorMsg.value = e?.data?.error || e?.message || 'No fue posible registrar'
   } finally {
     loading.value = false
   }

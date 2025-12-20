@@ -44,9 +44,10 @@ definePageMeta({
 
 const route = useRoute()
 const { isAuthenticated, setSession } = useSession()
+const { postJson } = useApi()
 
-const username = ref('admin')
-const password = ref('admin')
+const username = ref('')
+const password = ref('')
 
 const loading = ref(false)
 const errorMsg = ref('')
@@ -62,21 +63,11 @@ const login = async () => {
   errorMsg.value = ''
 
   try {
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        username: username.value,
-        password: password.value
-      })
+    const data = await postJson<any>('/api/auth/login', {
+      username: username.value,
+      password: password.value
     })
 
-    if (!res.ok) {
-      const data = await res.json().catch(() => null)
-      throw new Error(data?.error || `Error HTTP ${res.status}`)
-    }
-
-    const data = await res.json()
     const accessToken = String(data?.access_token || '')
     const tokenType = String(data?.token_type || 'bearer')
     const user = data?.user
@@ -97,7 +88,18 @@ const login = async () => {
     const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
     await navigateTo(redirect.startsWith('/') ? redirect : '/')
   } catch (e: any) {
-    errorMsg.value = e?.message || 'No fue posible iniciar sesión'
+    const status = Number(e?.statusCode || e?.response?.status || 0)
+    const code = e?.data?.code
+    if (status === 404 && code === 'USER_NOT_FOUND') {
+      const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
+      const q = new URLSearchParams()
+      if (username.value.trim()) q.set('username', username.value.trim())
+      if (redirect) q.set('redirect', redirect)
+      await navigateTo(`/registro?${q.toString()}`)
+      return
+    }
+
+    errorMsg.value = e?.data?.error || e?.message || 'No fue posible iniciar sesión'
   } finally {
     loading.value = false
   }

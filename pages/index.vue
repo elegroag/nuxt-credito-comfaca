@@ -41,9 +41,17 @@
 
     <div class="mt-6 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
       <div class="flex items-center justify-between gap-3">
-        <div>
-          <div class="text-base font-semibold text-zinc-900">Mis solicitudes</div>
-          <div class="mt-1 text-sm text-zinc-600">Listado de tus solicitudes y estado actual.</div>
+        <div class="flex items-start gap-3">
+          <img
+            :src="iconListadoSolicitudes"
+            alt="Mis solicitudes"
+            class="h-12 w-12 shrink-0 rounded-md border border-zinc-200 bg-white object-contain p-1"
+            loading="lazy"
+          />
+          <div>
+            <div class="text-base font-semibold text-zinc-900">Mis solicitudes</div>
+            <div class="mt-1 text-sm text-zinc-600">Listado de tus solicitudes y estado actual.</div>
+          </div>
         </div>
         <button
           type="button"
@@ -106,9 +114,17 @@
         class="group rounded-xl border border-zinc-200 bg-white p-5 shadow-sm hover:border-zinc-300"
       >
         <div class="flex items-start justify-between gap-3">
-          <div class="min-w-0">
-            <div class="text-base font-semibold text-zinc-900 group-hover:text-zinc-950">Simulador de crédito</div>
-            <div class="mt-1 text-sm text-zinc-600">Cuota mensual, tasa efectiva y capacidad de endeudamiento</div>
+          <div class="flex min-w-0 items-start gap-3">
+            <img
+              :src="iconSimulador"
+              alt="Simulador de crédito"
+              class="h-16 w-14 shrink-0 rounded-md border border-zinc-200 bg-white object-contain p-1"
+              loading="lazy"
+            />
+            <div class="min-w-0">
+              <div class="text-base font-semibold text-zinc-900 group-hover:text-zinc-950">Simulador de crédito</div>
+              <div class="mt-1 text-sm text-zinc-600">Cuota mensual, tasa efectiva y capacidad de endeudamiento</div>
+            </div>
           </div>
           <div class="shrink-0 text-zinc-400">→</div>
         </div>
@@ -119,9 +135,17 @@
         class="group rounded-xl border border-zinc-200 bg-white p-5 shadow-sm hover:border-zinc-300"
       >
         <div class="flex items-start justify-between gap-3">
-          <div class="min-w-0">
-            <div class="text-base font-semibold text-zinc-900 group-hover:text-zinc-950">Solicitud de crédito</div>
-            <div class="mt-1 text-sm text-zinc-600">Captura secuencial por bloques y generación de XML</div>
+          <div class="flex min-w-0 items-start gap-3">
+            <img
+              :src="iconSolicitud"
+              alt="Solicitud de crédito"
+              class="h-16 w-14 shrink-0 rounded-md border border-zinc-200 bg-white object-contain p-1"
+              loading="lazy"
+            />
+            <div class="min-w-0">
+              <div class="text-base font-semibold text-zinc-900 group-hover:text-zinc-950">Solicitud de crédito</div>
+              <div class="mt-1 text-sm text-zinc-600">Captura secuencial por bloques y generación de XML</div>
+            </div>
           </div>
           <div class="shrink-0 text-zinc-400">→</div>
         </div>
@@ -132,9 +156,17 @@
         class="group rounded-xl border border-zinc-200 bg-white p-5 shadow-sm hover:border-zinc-300"
       >
         <div class="flex items-start justify-between gap-3">
-          <div class="min-w-0">
-            <div class="text-base font-semibold text-zinc-900 group-hover:text-zinc-950">Firmas</div>
-            <div class="mt-1 text-sm text-zinc-600">Firmar y visualizar solicitudes</div>
+          <div class="flex min-w-0 items-start gap-3">
+            <img
+              :src="iconFirmas"
+              alt="Firmas"
+              class="h-16 w-14 shrink-0 rounded-md border border-zinc-200 bg-white object-contain p-1"
+              loading="lazy"
+            />
+            <div class="min-w-0">
+              <div class="text-base font-semibold text-zinc-900 group-hover:text-zinc-950">Firmas</div>
+              <div class="mt-1 text-sm text-zinc-600">Firmar y visualizar solicitudes</div>
+            </div>
           </div>
           <div class="shrink-0 text-zinc-400">→</div>
         </div>
@@ -145,9 +177,17 @@
         class="group rounded-xl border border-zinc-200 bg-white p-5 shadow-sm hover:border-zinc-300"
       >
         <div class="flex items-start justify-between gap-3">
-          <div class="min-w-0">
-            <div class="text-base font-semibold text-zinc-900 group-hover:text-zinc-950">Compartir firmas</div>
-            <div class="mt-1 text-sm text-zinc-600">Generar enlaces y QR para firma digital</div>
+          <div class="flex min-w-0 items-start gap-3">
+            <img
+              :src="iconCompartirFirmas"
+              alt="Compartir firmas"
+              class="h-16 w-14 shrink-0 rounded-md border border-zinc-200 bg-white object-contain p-1"
+              loading="lazy"
+            />
+            <div class="min-w-0">
+              <div class="text-base font-semibold text-zinc-900 group-hover:text-zinc-950">Compartir firmas</div>
+              <div class="mt-1 text-sm text-zinc-600">Generar enlaces y QR para firma digital</div>
+            </div>
           </div>
           <div class="shrink-0 text-zinc-400">→</div>
         </div>
@@ -158,9 +198,17 @@
         class="group rounded-xl border border-zinc-200 bg-white p-5 shadow-sm hover:border-zinc-300"
       >
         <div class="flex items-start justify-between gap-3">
-          <div class="min-w-0">
-            <div class="text-base font-semibold text-zinc-900 group-hover:text-zinc-950">Entidad digital</div>
-            <div class="mt-1 text-sm text-zinc-600">Gestión y consulta de datos</div>
+          <div class="flex min-w-0 items-start gap-3">
+            <img
+              :src="iconEntidadDigital"
+              alt="Entidad digital"
+              class="h-16 w-14 shrink-0 rounded-md border border-zinc-200 bg-white object-contain p-1"
+              loading="lazy"
+            />
+            <div class="min-w-0">
+              <div class="text-base font-semibold text-zinc-900 group-hover:text-zinc-950">Entidad digital</div>
+              <div class="mt-1 text-sm text-zinc-600">Gestión y consulta de datos</div>
+            </div>
           </div>
           <div class="shrink-0 text-zinc-400">→</div>
         </div>
@@ -171,6 +219,13 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from '#imports'
+
+import iconSimulador from '~/assets/img/simulador-credito.png'
+import iconSolicitud from '~/assets/img/solicitud-de-credito.png'
+import iconFirmas from '~/assets/img/firmas.png'
+import iconCompartirFirmas from '~/assets/img/compartir-firmas.png'
+import iconEntidadDigital from '~/assets/img/entidad-digital.png'
+import iconListadoSolicitudes from '~/assets/img/listado-de-tus-solicitudes.png'
 
 const { session, authHeader } = useSession()
 
