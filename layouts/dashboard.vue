@@ -209,7 +209,8 @@ import {
   CalculatorIcon,
   DocumentTextIcon,
   ShareIcon,
-  XMarkIcon
+  XMarkIcon,
+  UserIcon
 } from '@heroicons/vue/24/outline'
 
 const { session, clearSession } = useSession()
@@ -242,7 +243,8 @@ const navItems = [
   { label: 'Extraer XML', to: '/xml-extract', abbr: _abbr('Extraer XML'), icon: CodeBracketSquareIcon },
   { label: 'Firmas', to: '/firmas', abbr: _abbr('Firmas'), icon: PencilSquareIcon },
   { label: 'Compartir firmas', to: '/firmas-compartir', abbr: _abbr('Compartir firmas'), icon: ShareIcon },
-  { label: 'Entidad digital', to: '/entidad-digital', abbr: _abbr('Entidad digital'), icon: KeyIcon }
+  { label: 'Entidad digital', to: '/entidad-digital', abbr: _abbr('Entidad digital'), icon: KeyIcon },
+  { label: 'Perfil', to: '/perfil', abbr: _abbr('Perfil'), icon: UserIcon }
 ]
 
 const isActive = (to: string) => {
