@@ -25,9 +25,17 @@ export default defineEventHandler(async (event: H3Event) => {
         setHeader(event, 'content-type', 'application/xml; charset=utf-8')
         return resp._data
     } catch (e: any) {
-        setResponseStatus(event, 502)
+        // Propagar el status code del backend cuando exista.
+        const status = Number(e?.response?.status || e?.statusCode || 502)
+        setResponseStatus(event, Number.isFinite(status) ? status : 502)
+
+        // ofetch puede exponer el body como e.data (ya parseado) o e.message.
+        // Aquí normalizamos para que el frontend reciba el detalle real.
+        if (e?.data && typeof e.data === 'object') {
+            return e.data
+        }
         return {
-            error: e?.data?.error || e?.message || 'Error conectando con backend'
+            error: (e?.data?.error as any) || e?.message || 'Error conectando con backend'
         }
     }
 })

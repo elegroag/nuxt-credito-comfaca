@@ -622,6 +622,14 @@
               Ver mis solicitudes
             </button>
             <button
+              v-if="savedFilename"
+              class="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-500"
+              type="button"
+              @click="goToFirmas"
+            >
+              Firmar ahora
+            </button>
+            <button
               class="rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-800"
               type="button"
               @click="closeSuccessModal"
@@ -640,6 +648,8 @@ import { Teleport, computed, defineComponent, h, ref } from 'vue'
 
 import { useRouter, useSession } from '#imports'
 import { useSolicitudCreditoForm } from '~/composables/useSolicitudCreditoForm'
+
+const FIRMA_DEFAULTS_STORAGE_KEY = 'comfaca_credito_firma_defaults'
 
 const { form } = useSolicitudCreditoForm()
 const { authHeader } = useSession()
@@ -772,6 +782,13 @@ const goToHome = async () => {
   await router.push('/')
 }
 
+const goToFirmas = async () => {
+  const filename = savedFilename.value
+  if (!filename) return
+  successModalOpen.value = false
+  await router.push({ path: '/firmas', query: { solicitud_filename: filename } })
+}
+
 const generarXml = async (saveXml: boolean) => {
   loadingXml.value = true
   errorMsg.value = ''
@@ -814,6 +831,22 @@ const generarXml = async (saveXml: boolean) => {
     xmlText.value = await res.text()
 
     if (saveXml) {
+      // Persistimos datos del firmante en localStorage (si el usuario ya los ingresó).
+      // La página /firmas puede reutilizarlos y evitar recaptura.
+      if (process.client) {
+        try {
+          localStorage.setItem(
+            FIRMA_DEFAULTS_STORAGE_KEY,
+            JSON.stringify({
+              nombre_apellidos: String(form.value.solicitante?.nombres_apellidos || ''),
+              tipo_identificacion: String(form.value.solicitante?.tipo_identificacion || ''),
+              numero_identificacion: String(form.value.solicitante?.numero_identificacion || '')
+            })
+          )
+        } catch {
+          // noop
+        }
+      }
       successModalOpen.value = true
     }
   } catch (e: any) {

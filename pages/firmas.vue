@@ -136,7 +136,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, useSession } from '#imports'
+import { onMounted, ref, useRoute, useSession } from '#imports'
+
+const FIRMA_DEFAULTS_STORAGE_KEY = 'comfaca_credito_firma_defaults'
 
 definePageMeta({
   layout: 'dashboard',
@@ -144,6 +146,7 @@ definePageMeta({
 })
 
 const { authHeader } = useSession()
+const route = useRoute()
 
 const solicitudFilename = ref('solicitud-credito.xml')
 const firmasFilename = ref('')
@@ -165,6 +168,40 @@ const loading = ref(false)
 const errorMsg = ref('')
 const xmlText = ref('')
 const savedFilename = ref('')
+
+onMounted(() => {
+  // 1) Prefill el nombre del XML a firmar desde querystring.
+  // Ejemplo: /firmas?solicitud_filename=SC-2025-000123-20251220-212641.xml
+  const q = route.query || {}
+  const qFilename = (q.solicitud_filename || q.filename || q.xml) as any
+  if (typeof qFilename === 'string' && qFilename.trim()) {
+    solicitudFilename.value = qFilename.trim()
+  }
+
+  // 2) Prefill datos de firmante desde localStorage (si existen) y solo si los campos están vacíos.
+  if (!process.client) return
+  try {
+    const raw = localStorage.getItem(FIRMA_DEFAULTS_STORAGE_KEY)
+    if (!raw) return
+    const parsed = JSON.parse(raw)
+    if (!parsed || typeof parsed !== 'object') return
+
+    if (!nombreApellidos.value.trim() && typeof parsed.nombre_apellidos === 'string') {
+      nombreApellidos.value = parsed.nombre_apellidos
+    }
+    if (!numeroIdentificacion.value.trim() && typeof parsed.numero_identificacion === 'string') {
+      numeroIdentificacion.value = parsed.numero_identificacion
+    }
+    if (typeof parsed.tipo_identificacion === 'string') {
+      const t = parsed.tipo_identificacion.trim().toUpperCase()
+      if (t === 'CC' || t === 'CE' || t === 'NIT' || t === 'PAS') {
+        tipoIdentificacion.value = t as any
+      }
+    }
+  } catch {
+    // noop
+  }
+})
 
 const firmar = async () => {
   loading.value = true
