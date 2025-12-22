@@ -57,60 +57,21 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useSession } from '#imports'
+import { useXmlExtract } from '~/composables/xml/useXmlExtract'
 
 definePageMeta({
   layout: 'dashboard',
   middleware: ['auth']
 })
 
-const filename = ref('solicitud-credito.xml')
-const validate = ref(true)
-
-const loading = ref(false)
-const errorMsg = ref('')
-const data = ref<any | null>(null)
-
-const { authHeader } = useSession()
-
-const pretty = computed(() => {
-  if (!data.value) return ''
-  return JSON.stringify(data.value, null, 2)
-})
-
-const extraer = async () => {
-  loading.value = true
-  errorMsg.value = ''
-  data.value = null
-
-  try {
-    const res = await fetch('/api/solicitud-credito/xml-extract', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        ...(authHeader.value as any)
-      },
-      body: JSON.stringify({
-        filename: filename.value,
-        validate: validate.value
-      })
-    })
-
-    if (!res.ok) {
-      const contentType = res.headers.get('content-type') || ''
-      if (contentType.includes('application/json')) {
-        const body = await res.json().catch(() => null)
-        throw new Error(body?.error || `Error HTTP ${res.status}`)
-      }
-      const text = await res.text().catch(() => '')
-      throw new Error(text || `Error HTTP ${res.status}`)
-    }
-
-    data.value = await res.json()
-  } catch (e: any) {
-    errorMsg.value = e?.data?.error || e?.message || 'Error extrayendo XML'
-  } finally {
-    loading.value = false
-  }
-}
+const {
+  filename,
+  validate,
+  loading,
+  errorMsg,
+  data,
+  pretty,
+  extraer,
+  resetForm
+} = useXmlExtract()
 </script>

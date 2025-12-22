@@ -184,25 +184,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import { CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/vue/24/outline';
-import { usePerfil } from './usePerfil';
+import { usePerfil } from '../../composables/perfil/usePerfil';
 
 const {
   perfil,
+  passwordData,
   loading,
   guardando,
   error,
   success,
-  guardarPerfil
+  guardarPerfil,
+  resetPasswordForm
 } = usePerfil();
-
-// Datos para el cambio de contraseña
-const passwordData = ref({
-  password_actual: '',
-  nueva_password: '',
-  confirmar_password: ''
-});
 
 definePageMeta({
   layout: 'dashboard',

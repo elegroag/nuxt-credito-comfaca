@@ -17,7 +17,6 @@ interface RegistroData {
 
 export function useRegistro() {
     const router = useRouter();
-    const { login } = useSession();
     const { postJson } = useApi();
 
     const formData = ref<RegistroData>({
@@ -42,6 +41,11 @@ export function useRegistro() {
         { value: 'NIT', label: 'NIT' }
     ];
 
+    interface ResponseRegister {
+        success: boolean;
+        message: string;
+    }
+
     const registrar = async () => {
         if (formData.value.password !== formData.value.confirmar_password) {
             error.value = 'Las contraseñas no coinciden';
@@ -55,17 +59,15 @@ export function useRegistro() {
             // Eliminar confirmar_password antes de enviar
             const { confirmar_password, ...datosRegistro } = formData.value;
 
-            const data = await postJson('/api/auth/registro', datosRegistro);
+            const response = await postJson<ResponseRegister>('/api/auth/registro', datosRegistro);
 
-            // Iniciar sesión automáticamente después del registro
-            await login({
-                email: formData.value.email,
-                password: formData.value.password
-            });
-
-            success.value = true;
-            return true;
-
+            if (response && response.success) {
+                success.value = true;
+                return true;
+            } else {
+                error.value = 'Error en el registro. Por favor, inténtalo de nuevo.';
+                return false;
+            }
         } catch (err: any) {
             console.error('Error en el registro:', err);
             error.value = err.response?.data?.message || 'Error en el registro. Por favor, inténtalo de nuevo.';

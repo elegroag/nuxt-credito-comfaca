@@ -36,72 +36,16 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, useRoute, navigateTo } from '#imports'
+import { onMounted } from '#imports'
+import { useLogin } from '~/composables/auth/useLogin'
 
 definePageMeta({
   layout: 'auth'
 })
 
-const route = useRoute()
-const { isAuthenticated, setSession } = useSession()
-const { postJson } = useApi()
-
-const username = ref('')
-const password = ref('')
-
-const loading = ref(false)
-const errorMsg = ref('')
+const { username, password, loading, errorMsg, login, checkAuthAndRedirect } = useLogin()
 
 onMounted(async () => {
-  if (isAuthenticated.value) {
-    await navigateTo('/')
-  }
+  await checkAuthAndRedirect()
 })
-
-const login = async () => {
-  loading.value = true
-  errorMsg.value = ''
-
-  try {
-    const data = await postJson<any>('/api/auth/login', {
-      username: username.value,
-      password: password.value
-    })
-
-    const accessToken = String(data?.access_token || '')
-    const tokenType = String(data?.token_type || 'bearer')
-    const user = data?.user
-
-    if (!accessToken) {
-      throw new Error('Respuesta inválida de autenticación')
-    }
-
-    setSession({
-      accessToken,
-      tokenType,
-      user: {
-        username: typeof user?.username === 'string' ? user.username : username.value,
-        roles: Array.isArray(user?.roles) ? user.roles : []
-      }
-    })
-
-    const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
-    await navigateTo(redirect.startsWith('/') ? redirect : '/')
-  } catch (e: any) {
-    const status = Number(e?.statusCode || e?.response?.status || 0)
-    const code = e?.data?.code
-    if (status === 404 && code === 'USER_NOT_FOUND') {
-      const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
-      const q = new URLSearchParams()
-      if (username.value.trim()) q.set('username', username.value.trim())
-      if (redirect) q.set('redirect', redirect)
-      await navigateTo(`/registro?${q.toString()}`)
-      return
-    }
-
-    errorMsg.value = e?.data?.error || e?.message || 'No fue posible iniciar sesión'
-  } finally {
-    loading.value = false
-  }
-}
 </script>

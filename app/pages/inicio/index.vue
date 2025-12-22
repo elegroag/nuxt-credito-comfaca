@@ -255,7 +255,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from '#imports'
+import { useSession } from '~/composables/useSession'
+import { useInicio } from '~/composables/inicio/useInicio'
 
 import {
   ArrowPathIcon,
@@ -269,102 +270,23 @@ import {
   ShareIcon
 } from '@heroicons/vue/24/outline'
 
-const { session, authHeader } = useSession()
+const { session } = useSession()
 
-const solicitudes = ref<any[]>([])
-const loadingSolicitudes = ref(false)
-const solicitudesError = ref('')
-
-const fmtMoney = (value: unknown) => {
-  const n = typeof value === 'number' ? value : Number(value)
-  const v = Number.isFinite(n) ? n : 0
-  return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v)
-}
-
-const fmtDate = (value: unknown) => {
-  if (typeof value !== 'string' || !value) return '-'
-  const d = new Date(value)
-  if (Number.isNaN(d.getTime())) return '-'
-  return new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeStyle: 'short' }).format(d)
-}
-
-const flujoAprobacion = ['Postulado', 'En validación', 'Aprobado', 'Desembolsado', 'Activo', 'Finalizado'] as const
-
-const _normalizeEstado = (estado: string) => {
-  return (estado || '')
-    .trim()
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-}
-
-const _estadoIndex = (estado: string) => {
-  const s = _normalizeEstado(estado)
-  return flujoAprobacion.findIndex((e) => _normalizeEstado(e) === s)
-}
-
-const estadoProgressPercent = (estado: string) => {
-  const idx = _estadoIndex(estado)
-  if (idx < 0) return 0
-  if (flujoAprobacion.length <= 1) return 0
-  return Math.round((idx / (flujoAprobacion.length - 1)) * 100)
-}
-
-const estadoProgressClass = (estado: string) => {
-  const idx = _estadoIndex(estado)
-  if (idx < 0) return 'bg-zinc-300'
-  if (idx <= 1) return 'bg-amber-500'
-  if (idx === flujoAprobacion.length - 1) return 'bg-zinc-500'
-  return 'bg-emerald-500'
-}
-
-const estadoBadgeClass = (estado: string) => {
-  const s = _normalizeEstado(estado)
-  if (s === 'aprobado' || s === 'activo' || s === 'desembolsado') return 'bg-emerald-50 text-emerald-800'
-  if (s === 'en validacion' || s === 'postulado') return 'bg-amber-50 text-amber-800'
-  if (s === 'finalizado') return 'bg-zinc-100 text-zinc-800'
-  if (s === 'desiste') return 'bg-red-50 text-red-800'
-  return 'bg-zinc-100 text-zinc-800'
-}
-
-const ultimaSolicitud = computed(() => (solicitudes.value.length ? solicitudes.value[0] : null))
-
-const estadoIndexUltima = computed(() => {
-  const s = ultimaSolicitud.value
-  if (!s) return -1
-  return _estadoIndex(String(s.estado || ''))
-})
-
-const cargarSolicitudes = async () => {
-  if (!process.client) return
-  loadingSolicitudes.value = true
-  solicitudesError.value = ''
-  try {
-    const res = await fetch('/api/solicitudes-credito', {
-      method: 'GET',
-      headers: {
-        ...(authHeader.value as any)
-      }
-    })
-
-    if (!res.ok) {
-      const data = await res.json().catch(() => null)
-      throw new Error(data?.error || `Error HTTP ${res.status}`)
-    }
-
-    const data = await res.json().catch(() => null)
-    solicitudes.value = Array.isArray(data?.items) ? data.items : []
-  } catch (e: any) {
-    solicitudes.value = []
-    solicitudesError.value = e?.message || 'No fue posible cargar las solicitudes'
-  } finally {
-    loadingSolicitudes.value = false
-  }
-}
-
-onMounted(async () => {
-  await cargarSolicitudes()
-})
+const {
+  solicitudes,
+  loadingSolicitudes,
+  solicitudesError,
+  flujoAprobacion,
+  fmtMoney,
+  fmtDate,
+  estadoProgressPercent,
+  estadoProgressClass,
+  estadoBadgeClass,
+  ultimaSolicitud,
+  estadoIndexUltima,
+  cargarSolicitudes,
+  resetSolicitudes
+} = useInicio()
 
 definePageMeta({
   layout: 'dashboard',

@@ -170,85 +170,35 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from '#imports'
+import { useSimulador } from '~/composables/simulador/useSimulador'
 
 definePageMeta({
   layout: 'dashboard',
   middleware: ['auth']
 })
 
-const monto = ref(5_000_000)
-const plazoMeses = ref(36)
-const tasaEfectivaAnual = ref(24)
-
-const ingresosMensuales = ref(2_500_000)
-const descuentosMensuales = ref(500_000)
-const maxEndeudamientoPct = ref(30)
-
-const _num = (v: unknown) => {
-  const n = typeof v === 'number' ? v : Number(v)
-  return Number.isFinite(n) ? n : 0
-}
-
-const montoSan = computed(() => Math.max(0, _num(monto.value)))
-const plazoMesesSan = computed(() => Math.max(1, Math.floor(_num(plazoMeses.value) || 1)))
-const tasaEASan = computed(() => Math.max(0, _num(tasaEfectivaAnual.value)))
-
-const ingresosSan = computed(() => Math.max(0, _num(ingresosMensuales.value)))
-const descuentosSan = computed(() => Math.max(0, _num(descuentosMensuales.value)))
-const maxEndeudamientoSan = computed(() => {
-  const v = _num(maxEndeudamientoPct.value)
-  return Math.min(100, Math.max(0, v))
-})
-
-const tasaMensual = computed(() => {
-  const ea = tasaEASan.value / 100
-  if (ea <= 0) return 0
-  return Math.pow(1 + ea, 1 / 12) - 1
-})
-
-const cuotaMensual = computed(() => {
-  const P = montoSan.value
-  const n = plazoMesesSan.value
-  const r = tasaMensual.value
-
-  if (P <= 0 || n <= 0) return 0
-  if (r <= 0) return P / n
-
-  const denom = 1 - Math.pow(1 + r, -n)
-  if (denom <= 0) return 0
-
-  return (P * r) / denom
-})
-
-const totalPagar = computed(() => cuotaMensual.value * plazoMesesSan.value)
-const intereses = computed(() => Math.max(0, totalPagar.value - montoSan.value))
-
-const capacidadDisponible = computed(() => Math.max(0, ingresosSan.value - descuentosSan.value))
-const maxCuotaPermitida = computed(() => (capacidadDisponible.value * maxEndeudamientoSan.value) / 100)
-const margen = computed(() => maxCuotaPermitida.value - cuotaMensual.value)
-const apto = computed(() => cuotaMensual.value <= maxCuotaPermitida.value)
-
-const fmt = (value: number) => {
-  const n = Number.isFinite(value) ? value : 0
-  return new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP',
-    maximumFractionDigits: 0
-  }).format(n)
-}
-
-const fmtPct = (value: number) => {
-  const n = Number.isFinite(value) ? value : 0
-  return `${n.toFixed(2)}%`
-}
-
-const reset = () => {
-  monto.value = 5_000_000
-  plazoMeses.value = 36
-  tasaEfectivaAnual.value = 24
-  ingresosMensuales.value = 2_500_000
-  descuentosMensuales.value = 500_000
-  maxEndeudamientoPct.value = 30
-}
+const {
+  monto,
+  plazoMeses,
+  tasaEfectivaAnual,
+  ingresosMensuales,
+  descuentosMensuales,
+  maxEndeudamientoPct,
+  montoSan,
+  plazoMesesSan,
+  tasaEASan,
+  ingresosSan,
+  descuentosSan,
+  tasaMensual,
+  cuotaMensual,
+  totalPagar,
+  intereses,
+  capacidadDisponible,
+  maxCuotaPermitida,
+  margen,
+  apto,
+  fmt,
+  fmtPct,
+  reset
+} = useSimulador()
 </script>

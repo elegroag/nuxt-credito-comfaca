@@ -2,7 +2,12 @@ import { computed, useState } from '#imports'
 
 export type SessionUser = {
     username: string
-    roles: string[]
+    roles: string[],
+    email: string,
+    tipo_documento: string,
+    numero_documento: string,
+    nombres: string,
+    apellidos: string,
 }
 
 export type SessionData = {
@@ -47,7 +52,12 @@ export const useSession = () => {
                     if (u && typeof u === 'object') {
                         const username = typeof u.username === 'string' ? u.username : ''
                         const roles = Array.isArray(u.roles) ? u.roles.filter((r: any) => typeof r === 'string') : []
-                        session.value.user = { username, roles }
+                        const email = typeof u.email === 'string' ? u.email : ''
+                        const tipo_documento = typeof u.tipo_documento === 'string' ? u.tipo_documento : ''
+                        const numero_documento = typeof u.numero_documento === 'string' ? u.numero_documento : ''
+                        const nombres = typeof u.nombres === 'string' ? u.nombres : ''
+                        const apellidos = typeof u.apellidos === 'string' ? u.apellidos : ''
+                        session.value.user = { username, roles, email, tipo_documento, numero_documento, nombres, apellidos }
                     }
                 }
                 return
@@ -64,7 +74,12 @@ export const useSession = () => {
             if (parsed.user && typeof parsed.user === 'object') {
                 const username = typeof parsed.user.username === 'string' ? parsed.user.username : ''
                 const roles = Array.isArray(parsed.user.roles) ? parsed.user.roles.filter((r: any) => typeof r === 'string') : []
-                user = { username, roles }
+                const email = typeof parsed.user.email === 'string' ? parsed.user.email : ''
+                const tipo_documento = typeof parsed.user.tipo_documento === 'string' ? parsed.user.tipo_documento : ''
+                const numero_documento = typeof parsed.user.numero_documento === 'string' ? parsed.user.numero_documento : ''
+                const nombres = typeof parsed.user.nombres === 'string' ? parsed.user.nombres : ''
+                const apellidos = typeof parsed.user.apellidos === 'string' ? parsed.user.apellidos : ''
+                user = { username, roles, email, tipo_documento, numero_documento, nombres, apellidos }
             }
 
             session.value.accessToken = accessToken
