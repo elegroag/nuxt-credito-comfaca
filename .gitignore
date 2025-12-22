@@ -28,4 +28,4 @@ pnpm-debug.log*
 
 # Tests / Coverage
 coverage/
-assets/img/
+app/assets/img/
