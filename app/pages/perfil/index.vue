@@ -185,7 +185,7 @@
 
 <script setup lang="ts">
 import { CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/vue/24/outline';
-import { usePerfil } from '../../composables/perfil/usePerfil';
+import { usePerfil } from '~/composables/perfil/usePerfil';
 
 const {
   perfil,

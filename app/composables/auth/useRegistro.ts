@@ -44,6 +44,12 @@ export function useRegistro() {
     interface ResponseRegister {
         success: boolean;
         message: string;
+        access_token?: string;
+        token_type?: string;
+        user?: {
+            username: string;
+            roles: string[];
+        };
     }
 
     const registrar = async () => {
@@ -63,6 +69,20 @@ export function useRegistro() {
 
             if (response && response.success) {
                 success.value = true;
+
+                // Guardar datos completos del usuario en localStorage
+                const userData = {
+                    username: response.user?.username || '',
+                    email: formData.value.email,
+                    tipo_documento: formData.value.tipo_documento,
+                    numero_documento: formData.value.numero_documento,
+                    nombres: formData.value.nombres,
+                    apellidos: formData.value.apellidos,
+                    roles: response.user?.roles || ['user']
+                };
+
+                localStorage.setItem('comfaca_credito_user', JSON.stringify(userData));
+
                 return true;
             } else {
                 error.value = 'Error en el registro. Por favor, inténtalo de nuevo.';

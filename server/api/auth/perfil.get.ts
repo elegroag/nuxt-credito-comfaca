@@ -1,3 +1,8 @@
+import type { H3Event } from 'h3'
+import { defineEventHandler, getHeader, setResponseStatus } from 'h3'
+import { useRuntimeConfig } from '#imports'
+import { $fetch } from 'ofetch'
+
 // frontend/server/api/auth/perfil.get.ts
 export default defineEventHandler(async (event) => {
     try {
@@ -14,7 +19,12 @@ export default defineEventHandler(async (event) => {
         // Reenviar la solicitud al backend de Python
         const config = useRuntimeConfig()
 
-        const response = await $fetch(`${config.backendBaseUrl}/api/auth/perfil`, {
+        const query = getQuery(event)
+
+        const tipo_identificacion = typeof query.tipo_identificacion === 'string' ? query.tipo_identificacion : ''
+        const numero_identificacion = typeof query.numero_identificacion === 'string' ? query.numero_identificacion : ''
+
+        const response = await $fetch(`${config.backendBaseUrl}/api/auth/perfil/${tipo_identificacion}/${numero_identificacion}`, {
             method: 'GET',
             headers: {
                 'Authorization': authorization,

@@ -1,16 +1,44 @@
 <template>
-  <div class="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
-    <div class="sm:mx-auto sm:w-full sm:max-w-4xl"> <!-- Aumentado el ancho máximo -->
-      <h2 class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
+  <div class="flex min-h-full flex-col justify-center py-3 sm:px-6 lg:px-2">
+    <div class="sm:mx-auto sm:w-full sm:max-w-4xl">
+      <h4 class="mt-0 text-center text-2xl font-bold tracking-tight text-gray-900">
         Crear una cuenta
-      </h2>
+      </h4>
+      
+      <!-- Indicadores de paso -->
+      <div class="mt-6 flex justify-center">
+        <div class="flex items-center space-x-4">
+          <div class="flex items-center">
+            <div :class="['w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium', 
+              pasoActual >= 1 ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600']">
+              1
+            </div>
+            <span class="ml-2 text-sm text-gray-600">Identificación</span>
+          </div>
+          <div class="w-8 h-0.5 bg-gray-300"></div>
+          <div class="flex items-center">
+            <div :class="['w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium', 
+              pasoActual >= 2 ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600']">
+              2
+            </div>
+            <span class="ml-2 text-sm text-gray-600">Contacto</span>
+          </div>
+          <div class="w-8 h-0.5 bg-gray-300"></div>
+          <div class="flex items-center">
+            <div :class="['w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium', 
+              pasoActual >= 3 ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600']">
+              3
+            </div>
+            <span class="ml-2 text-sm text-gray-600">Seguridad</span>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-4xl"> <!-- Aumentado el ancho máximo -->
-      <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-4xl">
         <form class="space-y-6" @submit.prevent="handleSubmit">
           <!-- Mensaje de error -->
-          <div v-if="error" class="md:col-span-2 rounded-md bg-red-50 p-4 mb-4">
+          <div v-if="error" class="rounded-md bg-red-50 p-4 mb-4">
             <div class="flex">
               <div class="flex-shrink-0">
                 <ExclamationCircleIcon class="h-5 w-5 text-red-400" />
@@ -21,10 +49,9 @@
             </div>
           </div>
 
-          <!-- Contenedor de columnas -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Columna Izquierda -->
-            <div class="space-y-6">
+          <!-- Paso 1: Identificación -->
+          <div v-if="pasoActual === 1" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Tipo de documento -->
               <div>
                 <label for="tipo_documento" class="block text-sm font-medium text-gray-700">
@@ -88,24 +115,11 @@
                 />
               </div>
             </div>
+          </div>
 
-            <!-- Columna Derecha -->
-            <div class="space-y-6">
-              <!-- Teléfono -->
-              <div>
-                <label for="telefono" class="block text-sm font-medium text-gray-700">
-                  Teléfono celular
-                </label>
-                <input
-                  id="telefono"
-                  v-model="formData.telefono"
-                  type="tel"
-                  required
-                  placeholder="Ej: 3001234567"
-                  class="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                />
-              </div>
-
+          <!-- Paso 2: Contacto -->
+          <div v-if="pasoActual === 2" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Email -->
               <div>
                 <label for="email" class="block text-sm font-medium text-gray-700">
@@ -121,6 +135,26 @@
                 />
               </div>
 
+              <!-- Teléfono -->
+              <div>
+                <label for="telefono" class="block text-sm font-medium text-gray-700">
+                  Teléfono celular
+                </label>
+                <input
+                  id="telefono"
+                  v-model="formData.telefono"
+                  type="tel"
+                  required
+                  placeholder="Ej: 3001234567"
+                  class="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Paso 3: Seguridad -->
+          <div v-if="pasoActual === 3" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Contraseña -->
               <div>
                 <label for="password" class="block text-sm font-medium text-gray-700">
@@ -155,22 +189,55 @@
             </div>
           </div>
 
-          <!-- Botón de registro -->
-          <div class="pt-4">
+          <!-- Botones de navegación -->
+          <div class="pt-4 flex justify-between">
             <button
-              type="submit"
-              :disabled="loading"
-              class="flex mx-auto justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-3 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+              v-if="pasoActual > 1"
+              type="button"
+              @click="pasoAnterior"
+              class="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
-              <span v-if="loading">
-                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Creando cuenta...
-              </span>
-              <span v-else>Crear cuenta</span>
+              Anterior
             </button>
+            
+            <div v-if="pasoActual === 1" class="ml-auto">
+              <button
+                type="button"
+                @click="pasoSiguiente"
+                :disabled="!validarPaso1"
+                class="rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+              >
+                Siguiente
+              </button>
+            </div>
+            
+            <div v-if="pasoActual === 2" class="ml-auto">
+              <button
+                type="button"
+                @click="pasoSiguiente"
+                :disabled="!validarPaso2"
+                class="rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+              >
+                Siguiente
+              </button>
+            </div>
+            
+            <div v-if="pasoActual === 3" class="ml-auto">
+              <button
+                type="submit"
+                :disabled="loading || !validarPaso3"
+                class="rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+              >
+                <span v-if="loading">
+                  <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Creando cuenta...
+                </span>
+                <span v-else>Crear cuenta</span>
+              </button>
+            </div>
           </div>
         </form>
 
@@ -187,15 +254,12 @@
           </div>
 
           <div class="mt-6 flex justify-center">
-            <NuxtLink
-              to="/login"
-              class="flex justify-center rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 max-w-sm"
-            >
-              Iniciar sesión
-            </NuxtLink>
+            <div class="mt-4 text-center text-xs text-zinc-500">
+              <NuxtLink to="/" class="underline">Ir al inicio</NuxtLink>
+            </div>
           </div>
         </div>
-      </div>
+      
     </div>
   </div>
 </template>
@@ -206,11 +270,53 @@ import { useRegistro } from '~/composables/auth/useRegistro';
 
 const { formData, loading, error, registrar, tiposDocumento } = useRegistro();
 
-const handleSubmit = async () => {
-  const success = await registrar();
-  if (success) {
-    // Redirigir al dashboard o página de bienvenida
-    navigateTo('/');
+// Estado para el paso actual del formulario
+const pasoActual = ref(1);
+
+// Validaciones para cada paso
+const validarPaso1 = computed(() => {
+  return formData.value.tipo_documento && 
+         formData.value.numero_documento && 
+         formData.value.nombres && 
+         formData.value.apellidos;
+});
+
+const validarPaso2 = computed(() => {
+  return formData.value.email && 
+         formData.value.telefono;
+});
+
+const validarPaso3 = computed(() => {
+  return formData.value.password && 
+         formData.value.confirmar_password &&
+         formData.value.password.length >= 8 &&
+         formData.value.password === formData.value.confirmar_password;
+});
+
+// Navegación entre pasos
+const pasoSiguiente = () => {
+  if (pasoActual.value < 3) {
+    pasoActual.value++;
   }
 };
+
+const pasoAnterior = () => {
+  if (pasoActual.value > 1) {
+    pasoActual.value--;
+  }
+};
+
+const handleSubmit = async () => {
+  if (pasoActual.value === 3) {
+    const success = await registrar();
+    if (success) {
+      navigateTo('/');
+    }
+  }
+};
+
+definePageMeta({
+  layout: 'auth'
+});
+
 </script>

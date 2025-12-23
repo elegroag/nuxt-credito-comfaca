@@ -102,4 +102,9 @@ const {
   resetForm,
   validateForm
 } = useEntidadDigital()
+
+definePageMeta({
+  layout: 'dashboard',
+  middleware: ['auth']
+})
 </script>

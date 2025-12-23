@@ -1,4 +1,4 @@
-import type { SolicitudCreditoPayload } from '~/types/solicitud-credito'
+import type { SolicitudCreditoPayload } from '~/shared/types/solicitud-credito'
 
 export const useSolicitudCreditoForm = () => {
     const form = useState<SolicitudCreditoPayload>('solicitudCreditoForm', () => ({

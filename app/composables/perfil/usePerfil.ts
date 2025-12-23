@@ -69,13 +69,62 @@ export function usePerfil() {
     const cargarPerfil = async () => {
         try {
             loading.value = true;
-            const data = await $fetch('/api/auth/perfil', {
+
+            // Obtener datos de identificación desde localStorage
+            const userData = localStorage.getItem('user');
+            let tipo_identificacion = '';
+            let numero_identificacion = '';
+
+            if (userData) {
+                const user = JSON.parse(userData);
+                tipo_identificacion = user.tipo_documento || '';
+                numero_identificacion = user.numero_documento || '';
+            }
+
+            // Construir URL con query params si hay datos de identificación
+            let url = '/api/auth/perfil';
+            if (tipo_identificacion && numero_identificacion) {
+                url += `?tipo_identificacion=${encodeURIComponent(tipo_identificacion)}&numero_identificacion=${encodeURIComponent(numero_identificacion)}`;
+            }
+
+            const data = await $fetch(url, {
                 headers: session.value.accessToken ? { Authorization: `Bearer ${session.value.accessToken}` } : {}
             });
-            perfil.value = { ...perfil.value, ...data };
+
+            // Actualizar perfil con los datos obtenidos
+            if (data.success && data.data) {
+                perfil.value = {
+                    nombre: data.data.full_name || '',
+                    email: data.data.email || '',
+                    telefono: data.data.phone || '',
+                    direccion: '' // No disponible en la respuesta actual
+                };
+            } else {
+                // Fallback a datos existentes si el endpoint no funciona
+                if (session.value.user) {
+                    const user = session.value.user;
+                    perfil.value = {
+                        nombre: `${user.nombres || ''} ${user.apellidos || ''}`.trim(),
+                        email: user.email || '',
+                        telefono: '',
+                        direccion: ''
+                    };
+                }
+            }
         } catch (err) {
             console.error('Error al cargar perfil:', err);
             error.value = 'No se pudo cargar el perfil. Intenta de nuevo.';
+
+            // Fallback a datos de sesión en caso de error
+            if (session.value.user) {
+                const user = session.value.user;
+                perfil.value = {
+                    nombre: `${user.nombres || ''} ${user.apellidos || ''}`.trim(),
+                    email: user.email || '',
+                    telefono: '',
+                    direccion: ''
+                };
+            }
         } finally {
             loading.value = false;
         }
