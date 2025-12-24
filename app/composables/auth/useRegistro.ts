@@ -11,6 +11,7 @@ interface RegistroData {
     apellidos: string;
     telefono: string;
     email: string;
+    username: string;
     password: string;
     confirmar_password: string;
 }
@@ -26,6 +27,7 @@ export function useRegistro() {
         apellidos: '',
         telefono: '',
         email: '',
+        username: '',
         password: '',
         confirmar_password: ''
     });
@@ -65,9 +67,9 @@ export function useRegistro() {
             // Eliminar confirmar_password antes de enviar
             const { confirmar_password, ...datosRegistro } = formData.value;
 
-            const response = await postJson<ResponseRegister>('/api/auth/registro', datosRegistro);
+            const response = await postJson<ResponseRegister>('/api/auth/register', datosRegistro);
 
-            if (response && response.success) {
+            if (response) {
                 success.value = true;
 
                 // Guardar datos completos del usuario en localStorage
@@ -90,7 +92,16 @@ export function useRegistro() {
             }
         } catch (err: any) {
             console.error('Error en el registro:', err);
-            error.value = err.response?.data?.message || 'Error en el registro. Por favor, inténtalo de nuevo.';
+
+            // Manejar errores específicos del backend
+            if (err.response?.status === 409) {
+                error.value = 'El usuario ya existe. Por favor, usa otro nombre de usuario o inicia sesión.';
+            } else if (err.response?.data?.error) {
+                error.value = err.response.data.error;
+            } else {
+                error.value = 'Error en el registro. Por favor, inténtalo de nuevo.';
+            }
+
             return false;
         } finally {
             loading.value = false;

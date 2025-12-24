@@ -24,6 +24,14 @@ export default defineEventHandler(async (event) => {
         const tipo_identificacion = typeof query.tipo_identificacion === 'string' ? query.tipo_identificacion : ''
         const numero_identificacion = typeof query.numero_identificacion === 'string' ? query.numero_identificacion : ''
 
+        // Validar que los parámetros requeridos estén presentes
+        if (!tipo_identificacion || !numero_identificacion) {
+            throw createError({
+                statusCode: 400,
+                statusMessage: 'Tipo y número de identificación son requeridos'
+            })
+        }
+
         const response = await $fetch(`${config.backendBaseUrl}/api/auth/perfil/${tipo_identificacion}/${numero_identificacion}`, {
             method: 'GET',
             headers: {

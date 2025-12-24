@@ -71,7 +71,7 @@ export function usePerfil() {
             loading.value = true;
 
             // Obtener datos de identificación desde localStorage
-            const userData = localStorage.getItem('user');
+            const userData = localStorage.getItem('comfaca_credito_user');
             let tipo_identificacion = '';
             let numero_identificacion = '';
 

@@ -154,6 +154,26 @@
 
           <!-- Paso 3: Seguridad -->
           <div v-if="pasoActual === 3" class="space-y-6">
+            <!-- Username -->
+            <div class="space-y-2">
+              <label for="username" class="block text-sm font-medium text-gray-700">
+                Nombre de usuario
+              </label>
+              <div class="flex items-center space-x-4">
+                <input
+                  id="username"
+                  v-model="formData.username"
+                  type="text"
+                  required
+                  placeholder="Ej: pepe123"
+                  class="block w-1/3 rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                />
+                <p class="text-sm text-gray-500">
+                  Este será tu nombre de usuario para iniciar sesión
+                </p>
+              </div>
+            </div>
+            
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Contraseña -->
               <div>
@@ -265,6 +285,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, watch } from 'vue';
 import { ExclamationCircleIcon } from '@heroicons/vue/24/outline';
 import { useRegistro } from '~/composables/auth/useRegistro';
 
@@ -287,10 +308,21 @@ const validarPaso2 = computed(() => {
 });
 
 const validarPaso3 = computed(() => {
-  return formData.value.password && 
+  return formData.value.username &&
+         formData.value.password && 
          formData.value.confirmar_password &&
          formData.value.password.length >= 8 &&
          formData.value.password === formData.value.confirmar_password;
+});
+
+// Generar username por defecto cuando se tienen nombres y apellidos
+watch([() => formData.value.nombres, () => formData.value.apellidos], ([nombres, apellidos]) => {
+  if (nombres && apellidos && !formData.value.username) {
+    // Tomar primeros 3 caracteres de nombres y apellidos, convertir a minúsculas y quitar espacios
+    const nombrePart = nombres.trim().replace(/\s/g, '').substring(0, 4).toLowerCase();
+    const apellidoPart = apellidos.trim().replace(/\s/g, '').substring(0, 3).toLowerCase();
+    formData.value.username = `${nombrePart}${apellidoPart}`;
+  }
 });
 
 // Navegación entre pasos
