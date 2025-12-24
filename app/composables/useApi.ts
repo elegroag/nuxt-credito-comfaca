@@ -6,10 +6,8 @@ export const useApi = () => {
     const { authHeader } = useSession()
 
     const baseUrl = computed(() => {
-        const raw =
-            String((config.public as any)?.backendBaseUrl || '') ||
-            String((config as any)?.backendBaseUrl || '') ||
-            ''
+        // Usar directamente el backendBaseUrl del runtimeConfig
+        const raw = String(config.public.backendBaseUrl || '')
         return raw.replace(/\/+$/, '')
     })
 
@@ -42,8 +40,79 @@ export const useApi = () => {
         })
     }
 
+    // Agregar métodos GET, PUT, DELETE para completar la API
+    const getJson = async <T>(
+        path: string,
+        opts?: {
+            auth?: boolean
+            headers?: Record<string, string>
+        }
+    ) => {
+        const headers: Record<string, string> = {
+            ...(opts?.headers || {})
+        }
+
+        if (opts?.auth) {
+            Object.assign(headers, authHeader.value as any)
+        }
+
+        return await $fetch<T>(urlFor(path), {
+            method: 'GET',
+            headers
+        })
+    }
+
+    const putJson = async <T>(
+        path: string,
+        body: Record<string, any>,
+        opts?: {
+            auth?: boolean
+            headers?: Record<string, string>
+        }
+    ) => {
+        const headers: Record<string, string> = {
+            'content-type': 'application/json',
+            ...(opts?.headers || {})
+        }
+
+        if (opts?.auth) {
+            Object.assign(headers, authHeader.value as any)
+        }
+
+        return await $fetch<T>(urlFor(path), {
+            method: 'PUT',
+            body: body as any,
+            headers
+        })
+    }
+
+    const deleteJson = async <T>(
+        path: string,
+        opts?: {
+            auth?: boolean
+            headers?: Record<string, string>
+        }
+    ) => {
+        const headers: Record<string, string> = {
+            ...(opts?.headers || {})
+        }
+
+        if (opts?.auth) {
+            Object.assign(headers, authHeader.value as any)
+        }
+
+        return await $fetch<T>(urlFor(path), {
+            method: 'DELETE',
+            headers
+        })
+    }
+
     return {
         baseUrl,
-        postJson
+        urlFor,
+        postJson,
+        getJson,
+        putJson,
+        deleteJson
     }
 }

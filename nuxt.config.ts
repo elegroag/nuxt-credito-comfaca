@@ -1,4 +1,14 @@
 export default defineNuxtConfig({
+  // Deshabilitar SSR completamente
+  ssr: false,
+
+  // Configuración para modo SPA/móvil
+  nitro: {
+    prerender: {
+      routes: ['/']
+    }
+  },
+
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
   postcss: {

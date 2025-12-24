@@ -1,9 +1,11 @@
 // frontend/composables/xml/useXmlExtract.ts
 import { ref, computed } from 'vue';
 import { useSession } from '~/composables/useSession';
+import { useApi } from '~/composables/useApi';
 
 export function useXmlExtract() {
     const { authHeader } = useSession();
+    const { postJson } = useApi();
 
     // Form state
     const filename = ref('solicitud-credito.xml');
@@ -35,29 +37,10 @@ export function useXmlExtract() {
         data.value = null;
 
         try {
-            const res = await fetch('/api/solicitud-credito/xml-extract', {
-                method: 'POST',
-                headers: {
-                    'content-type': 'application/json',
-                    ...(authHeader.value as any)
-                },
-                body: JSON.stringify({
-                    filename: filename.value,
-                    validate: validate.value
-                })
-            });
-
-            if (!res.ok) {
-                const contentType = res.headers.get('content-type') || '';
-                if (contentType.includes('application/json')) {
-                    const body = await res.json().catch(() => null);
-                    throw new Error(body?.error || `Error HTTP ${res.status}`);
-                }
-                const text = await res.text().catch(() => '');
-                throw new Error(text || `Error HTTP ${res.status}`);
-            }
-
-            data.value = await res.json();
+            data.value = await postJson<any>('/api/solicitud-credito/xml-extract', {
+                filename: filename.value,
+                validate: validate.value
+            }, { auth: true });
         } catch (e: any) {
             errorMsg.value = e?.data?.error || e?.message || 'Error extrayendo XML';
         } finally {

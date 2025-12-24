@@ -1,9 +1,11 @@
 // frontend/composables/firmas/useFirmaShareToken.ts
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import { useApi } from '~/composables/useApi';
 
 export function useFirmaShareToken() {
     const route = useRoute();
+    const { getJson, postJson } = useApi();
     const token = computed(() => String(route.params.token || ''));
 
     // Token state
@@ -51,12 +53,7 @@ export function useFirmaShareToken() {
         tokenError.value = '';
         tokenInfo.value = null;
 
-        const res = await fetch(`/api/solicitud-credito/firmas/share/${encodeURIComponent(token.value)}`);
-        if (!res.ok) {
-            const data = await res.json().catch(() => null);
-            throw new Error(data?.error || `Error HTTP ${res.status}`);
-        }
-        tokenInfo.value = await res.json();
+        tokenInfo.value = await getJson<any>(`/api/solicitud-credito/firmas/share/${encodeURIComponent(token.value)}`);
     };
 
     // Verify digital identity
@@ -72,12 +69,7 @@ export function useFirmaShareToken() {
 
         try {
             const url = `/api/entidad-digital/exists?tipo_identificacion=${encodeURIComponent(t)}&numero_identificacion=${encodeURIComponent(n)}`;
-            const res = await fetch(url);
-            if (!res.ok) {
-                const data = await res.json().catch(() => null);
-                throw new Error(data?.error || `Error HTTP ${res.status}`);
-            }
-            const data = await res.json();
+            const data = await getJson<any>(url);
             identityExists.value = Boolean(data?.exists);
             identityChecked.value = true;
         } catch {
@@ -113,28 +105,7 @@ export function useFirmaShareToken() {
                 save_xml: true
             };
 
-            const res = await fetch(`/api/solicitud-credito/firmas/share/${encodeURIComponent(token.value)}/firmar`, {
-                method: 'POST',
-                headers: { 'content-type': 'application/json' },
-                body: JSON.stringify(body)
-            });
-
-            if (!res.ok) {
-                const contentType = res.headers.get('content-type') || '';
-                if (contentType.includes('application/json')) {
-                    const data = await res.json().catch(() => null);
-                    throw new Error(data?.error || `Error HTTP ${res.status}`);
-                }
-                const text = await res.text().catch(() => '');
-                throw new Error(text || `Error HTTP ${res.status}`);
-            }
-
-            const header = res.headers.get('x-saved-filename');
-            if (header) {
-                savedFilename.value = header;
-            }
-
-            xmlText.value = await res.text();
+            xmlText.value = await postJson<string>(`/api/solicitud-credito/firmas/share/${encodeURIComponent(token.value)}/firmar`, body);
         } catch (e: any) {
             errorMsg.value = e?.message || 'Error firmando';
         } finally {

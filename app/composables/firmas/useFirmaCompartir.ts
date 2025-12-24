@@ -1,10 +1,12 @@
 // frontend/composables/firmas/useFirmaShare.ts
 import { ref, computed, onMounted } from 'vue';
 import { useSession } from '~/composables/useSession';
+import { useApi } from '~/composables/useApi';
 import QRCode from 'qrcode';
 
 export function useFirmaCompartir() {
     const { authHeader } = useSession();
+    const { getJson, postJson } = useApi();
 
     // File search state
     const query = ref('');
@@ -30,16 +32,7 @@ export function useFirmaCompartir() {
     // File operations
     const fetchFiles = async (q: string) => {
         const url = q ? `/api/activos/xml?q=${encodeURIComponent(q)}` : '/api/activos/xml';
-        const res = await fetch(url, {
-            headers: {
-                ...(authHeader.value as any)
-            }
-        });
-        if (!res.ok) {
-            const data = await res.json().catch(() => null);
-            throw new Error(data?.error || `Error HTTP ${res.status}`);
-        }
-        const data = await res.json();
+        const data = await getJson<any>(url, { auth: true });
         const arr = Array.isArray(data?.files) ? data.files : [];
         files.value = arr;
     };
@@ -73,18 +66,8 @@ export function useFirmaCompartir() {
                 body.firmas_filename = firmasFilename.value;
             }
 
-            const res = await fetch('/api/solicitud-credito/firmas/share', {
-                method: 'POST',
-                headers: { 'content-type': 'application/json', ...(authHeader.value as any) },
-                body: JSON.stringify(body)
-            });
+            const data = await postJson<any>('/api/solicitud-credito/firmas/share', body, { auth: true });
 
-            if (!res.ok) {
-                const data = await res.json().catch(() => null);
-                throw new Error(data?.error || `Error HTTP ${res.status}`);
-            }
-
-            const data = await res.json();
             token.value = String(data?.token || '');
             expiresAt.value = String(data?.expires_at || '');
 

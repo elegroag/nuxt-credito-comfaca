@@ -1,9 +1,11 @@
 // frontend/composables/inicio/useInicio.ts
 import { ref, computed, onMounted } from 'vue';
 import { useSession } from '~/composables/useSession';
+import { useApi } from '~/composables/useApi';
 
 export function useInicio() {
     const { session, authHeader } = useSession();
+    const { getJson } = useApi();
 
     // Estado de solicitudes
     const solicitudes = ref<any[]>([]);
@@ -81,19 +83,7 @@ export function useInicio() {
         loadingSolicitudes.value = true;
         solicitudesError.value = '';
         try {
-            const res = await fetch('/api/solicitudes-credito', {
-                method: 'GET',
-                headers: {
-                    ...(authHeader.value as any)
-                }
-            });
-
-            if (!res.ok) {
-                const data = await res.json().catch(() => null);
-                throw new Error(data?.error || `Error HTTP ${res.status}`);
-            }
-
-            const data = await res.json().catch(() => null);
+            const data = await getJson<any>('/api/solicitudes-credito', { auth: true });
             solicitudes.value = Array.isArray(data?.items) ? data.items : [];
         } catch (e: any) {
             solicitudes.value = [];

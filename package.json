@@ -6,7 +6,13 @@
     "scripts": {
         "dev": "nuxt dev",
         "build": "nuxt build",
-        "preview": "nuxt preview"
+        "preview": "nuxt preview",
+        "cap:init": "cap init",
+        "cap:add:android": "cap add android",
+        "cap:add:ios": "cap add ios",
+        "cap:build": "npm run build && cap sync",
+        "cap:run:android": "cap run android",
+        "cap:run:ios": "cap run ios"
     },
     "dependencies": {
         "@heroicons/vue": "^2.2.0",
@@ -16,6 +22,10 @@
         "vue-router": "^4.6.4"
     },
     "devDependencies": {
+        "@capacitor/android": "^8.0.0",
+        "@capacitor/cli": "^8.0.0",
+        "@capacitor/core": "^8.0.0",
+        "@capacitor/ios": "^8.0.0",
         "@tailwindcss/postcss": "^4.0.0",
         "@types/node": "^22.10.2",
         "autoprefixer": "^10.4.21",

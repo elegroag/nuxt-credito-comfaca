@@ -2,9 +2,11 @@
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { navigateTo } from '#app';
+import { useApi } from '~/composables/useApi';
 
 export function useEntidadDigital() {
     const route = useRoute();
+    const { postJson } = useApi();
 
     // Form state
     const tipoIdentificacion = ref<'CC' | 'CE' | 'NIT' | 'PAS'>('CC');
@@ -80,30 +82,12 @@ export function useEntidadDigital() {
 
         loading.value = true;
         try {
-            const res = await fetch('/api/entidad-digital', {
-                method: 'POST',
-                headers: {
-                    'content-type': 'application/json'
-                },
-                body: JSON.stringify({
-                    tipo_identificacion: tipoIdentificacion.value,
-                    numero_identificacion: numeroIdentificacion.value,
-                    clave: clave.value,
-                    overwrite: overwrite.value
-                })
+            result.value = await postJson<any>('/api/entidad-digital', {
+                tipo_identificacion: tipoIdentificacion.value,
+                numero_identificacion: numeroIdentificacion.value,
+                clave: clave.value,
+                overwrite: overwrite.value
             });
-
-            if (!res.ok) {
-                const contentType = res.headers.get('content-type') || '';
-                if (contentType.includes('application/json')) {
-                    const data = await res.json().catch(() => null);
-                    throw new Error(data?.error || `Error HTTP ${res.status}`);
-                }
-                const text = await res.text().catch(() => '');
-                throw new Error(text || `Error HTTP ${res.status}`);
-            }
-
-            result.value = await res.json();
 
             if (redirectTo.value) {
                 await navigateTo(redirectTo.value);

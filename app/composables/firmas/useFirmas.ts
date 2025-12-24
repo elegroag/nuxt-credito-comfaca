@@ -2,12 +2,14 @@
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useSession } from '~/composables/useSession';
+import { useApi } from '~/composables/useApi';
 
 const FIRMA_DEFAULTS_STORAGE_KEY = 'comfaca_credito_firma_defaults';
 
 export function useFirmas() {
     const { authHeader } = useSession();
     const route = useRoute();
+    const { postJson } = useApi();
 
     // Form state
     const solicitudFilename = ref('solicitud-credito.xml');
@@ -127,31 +129,7 @@ export function useFirmas() {
                 body.firmas_filename = firmasFilename.value;
             }
 
-            const res = await fetch('/api/solicitud-credito/firmas', {
-                method: 'POST',
-                headers: {
-                    'content-type': 'application/json',
-                    ...(authHeader.value as any)
-                },
-                body: JSON.stringify(body)
-            });
-
-            if (!res.ok) {
-                const contentType = res.headers.get('content-type') || '';
-                if (contentType.includes('application/json')) {
-                    const data = await res.json().catch(() => null);
-                    throw new Error(data?.error || `Error HTTP ${res.status}`);
-                }
-                const text = await res.text().catch(() => '');
-                throw new Error(text || `Error HTTP ${res.status}`);
-            }
-
-            const header = res.headers.get('x-saved-filename');
-            if (header) {
-                savedFilename.value = header;
-            }
-
-            xmlText.value = await res.text();
+            xmlText.value = await postJson<string>('/api/solicitud-credito/firmas', body, { auth: true });
         } catch (e: any) {
             errorMsg.value = e?.data?.error || e?.message || 'Error firmando';
         } finally {

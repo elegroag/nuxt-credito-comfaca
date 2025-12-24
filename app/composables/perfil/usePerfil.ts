@@ -3,7 +3,6 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useSession } from '~/composables/useSession';
 import { useApi } from '~/composables/useApi';
-import { $fetch } from 'ofetch';
 
 interface Perfil {
     nombre: string;
@@ -21,7 +20,7 @@ interface PasswordData {
 export function usePerfil() {
     const router = useRouter();
     const { session, setSession } = useSession();
-    const { baseUrl, postJson } = useApi();
+    const { getJson, putJson, postJson } = useApi();
 
     const perfil = ref<Perfil>({
         nombre: '',
@@ -81,15 +80,11 @@ export function usePerfil() {
                 numero_identificacion = user.numero_documento || '';
             }
 
-            // Construir URL con query params si hay datos de identificación
-            let url = '/api/auth/perfil';
-            if (tipo_identificacion && numero_identificacion) {
-                url += `?tipo_identificacion=${encodeURIComponent(tipo_identificacion)}&numero_identificacion=${encodeURIComponent(numero_identificacion)}`;
-            }
-
-            const data = await $fetch(url, {
-                headers: session.value.accessToken ? { Authorization: `Bearer ${session.value.accessToken}` } : {}
-            });
+            // Usar POST con body en lugar de GET con query params
+            const data = await postJson<any>('/api/perfil', {
+                tipo_identificacion,
+                numero_identificacion
+            }, { auth: true });
 
             // Actualizar perfil con los datos obtenidos
             if (data.success && data.data) {
@@ -151,14 +146,7 @@ export function usePerfil() {
                 payload.nueva_password = passwordData.value.nueva_password;
             }
 
-            const data = await $fetch('/api/auth/perfil', {
-                method: 'PUT',
-                headers: session.value.accessToken ? {
-                    'content-type': 'application/json',
-                    Authorization: `Bearer ${session.value.accessToken}`
-                } : { 'content-type': 'application/json' },
-                body: payload
-            });
+            const data = await putJson<any>('/api/perfil', payload, { auth: true });
 
             // Actualizar sesión si se devuelven datos de usuario
             if (data.usuario) {

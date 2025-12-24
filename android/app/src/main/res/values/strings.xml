@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">comfaca-credito</string>
+    <string name="title_activity_main">comfaca-credito</string>
+    <string name="package_name">com.comfaca_credito.com.co</string>
+    <string name="custom_url_scheme">com.comfaca_credito.com.co</string>
+</resources>
