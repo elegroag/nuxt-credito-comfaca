@@ -15,8 +15,9 @@
         "cap:run:ios": "cap run ios",
         "cap:sync": "npx cap sync",
         "cap:open:android": "npx cap open android",
-        "cap:android:usb": "adb reverse tcp:3000 tcp:3000 && pnpm dev & npx cap run android -l --host 0.0.0.0 --port 3000",
-        "cap:android:emulator": "pnpm dev & npx cap sync android && npx cap run android -l --host 0.0.0.0 --port 3000"
+        "cap:android:usb": "pnpm dev & npx cap run android --target ZY32DD9HMT",
+        "cap:android:emulator": "pnpm dev & npx cap sync android && npx cap run android --target ZY32DD9HMT",
+        "dev:tools": "node ./dev-tools.js"
     },
     "dependencies": {
         "@capacitor/camera": "^8.0.0",

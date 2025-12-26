@@ -96,7 +96,7 @@ jspm_packages/
 .vscode-test
 
 # Capacitor
-android/
+android/*
 ios/
 *.keystore
 *.jks
