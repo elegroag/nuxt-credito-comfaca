@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useApi } from '~/composables/useApi';
 import { useSession } from '~/composables/useSession';
+import { storage } from '~/composables/useStorage';
 
 interface RegistroData {
     tipo_documento: string;
@@ -83,7 +84,7 @@ export function useRegistro() {
                     roles: response.user?.roles || ['user']
                 };
 
-                localStorage.setItem('comfaca_credito_user', JSON.stringify(userData));
+                await storage.setItem('comfaca_credito_user', JSON.stringify(userData));
 
                 return true;
             } else {

@@ -6,7 +6,8 @@ export default defineNuxtConfig({
   nitro: {
     prerender: {
       routes: ['/']
-    }
+    },
+    compatibilityDate: '2025-12-25'
   },
 
   devtools: { enabled: true },

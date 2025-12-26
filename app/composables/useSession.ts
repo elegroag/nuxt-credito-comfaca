@@ -1,4 +1,5 @@
 import { computed, useState } from '#imports'
+import { storage } from '~/composables/useStorage'
 
 export type SessionUser = {
     username: string
@@ -31,15 +32,15 @@ export const useSession = () => {
     const session = useState<SessionData>('session', () => emptySession())
     const hydrated = useState<boolean>('session_hydrated', () => false)
 
-    const hydrate = () => {
+    const hydrate = async () => {
         if (!process.client) return
         if (hydrated.value) return
         hydrated.value = true
 
         try {
-            const token = localStorage.getItem(STORAGE_TOKEN_KEY)
-            const tokenType = localStorage.getItem(STORAGE_TOKEN_TYPE_KEY)
-            const userRaw = localStorage.getItem(STORAGE_USER_KEY)
+            const token = await storage.getItem(STORAGE_TOKEN_KEY)
+            const tokenType = await storage.getItem(STORAGE_TOKEN_TYPE_KEY)
+            const userRaw = await storage.getItem(STORAGE_USER_KEY)
 
             if (typeof token === 'string' && token) {
                 session.value.accessToken = token
@@ -63,7 +64,7 @@ export const useSession = () => {
                 return
             }
 
-            const raw = localStorage.getItem(STORAGE_KEY_V1)
+            const raw = await storage.getItem(STORAGE_KEY_V1)
             if (!raw) return
             const parsed = JSON.parse(raw)
             if (!parsed || typeof parsed !== 'object') return
@@ -87,14 +88,14 @@ export const useSession = () => {
             session.value.user = user
 
             if (accessToken) {
-                localStorage.setItem(STORAGE_TOKEN_KEY, accessToken)
-                localStorage.setItem(STORAGE_TOKEN_TYPE_KEY, ttype)
+                await storage.setItem(STORAGE_TOKEN_KEY, accessToken)
+                await storage.setItem(STORAGE_TOKEN_TYPE_KEY, ttype)
                 if (user) {
-                    localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(user))
+                    await storage.setItem(STORAGE_USER_KEY, JSON.stringify(user))
                 } else {
-                    localStorage.removeItem(STORAGE_USER_KEY)
+                    await storage.removeItem(STORAGE_USER_KEY)
                 }
-                localStorage.removeItem(STORAGE_KEY_V1)
+                await storage.removeItem(STORAGE_KEY_V1)
             }
         } catch {
             // noop
@@ -105,32 +106,32 @@ export const useSession = () => {
 
     const isAuthenticated = computed(() => Boolean(session.value.accessToken))
 
-    const setSession = (data: SessionData) => {
+    const setSession = async (data: SessionData) => {
         session.value = data
         if (!process.client) return
 
         if (data.accessToken) {
-            localStorage.setItem(STORAGE_TOKEN_KEY, data.accessToken)
-            localStorage.setItem(STORAGE_TOKEN_TYPE_KEY, data.tokenType || 'bearer')
+            await storage.setItem(STORAGE_TOKEN_KEY, data.accessToken)
+            await storage.setItem(STORAGE_TOKEN_TYPE_KEY, data.tokenType || 'bearer')
         } else {
-            localStorage.removeItem(STORAGE_TOKEN_KEY)
-            localStorage.removeItem(STORAGE_TOKEN_TYPE_KEY)
+            await storage.removeItem(STORAGE_TOKEN_KEY)
+            await storage.removeItem(STORAGE_TOKEN_TYPE_KEY)
         }
 
         if (data.user) {
-            localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(data.user))
+            await storage.setItem(STORAGE_USER_KEY, JSON.stringify(data.user))
         } else {
-            localStorage.removeItem(STORAGE_USER_KEY)
+            await storage.removeItem(STORAGE_USER_KEY)
         }
     }
 
-    const clearSession = () => {
+    const clearSession = async () => {
         session.value = emptySession()
         if (!process.client) return
-        localStorage.removeItem(STORAGE_TOKEN_KEY)
-        localStorage.removeItem(STORAGE_TOKEN_TYPE_KEY)
-        localStorage.removeItem(STORAGE_USER_KEY)
-        localStorage.removeItem(STORAGE_KEY_V1)
+        await storage.removeItem(STORAGE_TOKEN_KEY)
+        await storage.removeItem(STORAGE_TOKEN_TYPE_KEY)
+        await storage.removeItem(STORAGE_USER_KEY)
+        await storage.removeItem(STORAGE_KEY_V1)
     }
 
     const authHeader = computed(() => {

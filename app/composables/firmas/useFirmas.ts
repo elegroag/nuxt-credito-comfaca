@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useSession } from '~/composables/useSession';
 import { useApi } from '~/composables/useApi';
+import { storage } from '~/composables/useStorage';
 
 const FIRMA_DEFAULTS_STORAGE_KEY = 'comfaca_credito_firma_defaults';
 
@@ -31,7 +32,7 @@ export function useFirmas() {
     const savedFilename = ref('');
 
     // Initialize form data from query params and localStorage
-    onMounted(() => {
+    onMounted(async () => {
         // 1) Prefill el nombre del XML a firmar desde querystring.
         // Ejemplo: /firmas?solicitud_filename=SC-2025-000123-20251220-212641.xml
         const q = route.query || {};
@@ -40,10 +41,10 @@ export function useFirmas() {
             solicitudFilename.value = qFilename.trim();
         }
 
-        // 2) Prefill datos de firmante desde localStorage (si existen) y solo si los campos están vacíos.
+        // 2) Prefill datos de firmante desde storage (si existen) y solo si los campos están vacíos.
         if (!process.client) return;
         try {
-            const raw = localStorage.getItem(FIRMA_DEFAULTS_STORAGE_KEY);
+            const raw = await storage.getItem(FIRMA_DEFAULTS_STORAGE_KEY);
             if (!raw) return;
             const parsed = JSON.parse(raw);
             if (!parsed || typeof parsed !== 'object') return;
