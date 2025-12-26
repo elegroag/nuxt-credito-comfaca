@@ -10,3 +10,6 @@ project(':capacitor-filesystem').projectDir = new File('../node_modules/.pnpm/@c
 
 include ':capgo-capacitor-data-storage-sqlite'
 project(':capgo-capacitor-data-storage-sqlite').projectDir = new File('../node_modules/.pnpm/@capgo+capacitor-data-storage-sqlite@8.0.4_@capacitor+core@8.0.0_localforage@1.10.0/node_modules/@capgo/capacitor-data-storage-sqlite/android')
+
+include ':capacitor-share'
+project(':capacitor-share').projectDir = new File('../node_modules/.pnpm/@capacitor+share@6.0.4_@capacitor+core@8.0.0/node_modules/@capacitor/share/android')

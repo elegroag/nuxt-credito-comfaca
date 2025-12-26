@@ -383,4 +383,4 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped src="@/assets/css/document-camera-component.css"></style>
+<style scoped src="@/assets/css/document-component.css"></style>

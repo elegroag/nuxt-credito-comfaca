@@ -1,4 +1,4 @@
-import { storage } from '~/composables/useStorage'
+import { storage } from '@/composables/useStorage'
 
 export default defineNuxtPlugin(async () => {
     // Inicializar el storage cuando la aplicación se carga

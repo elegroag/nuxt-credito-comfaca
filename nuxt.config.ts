@@ -1,3 +1,6 @@
+
+import { fileURLToPath } from 'node:url'
+
 export default defineNuxtConfig({
   // Deshabilitar SSR completamente
   ssr: false,
@@ -8,6 +11,20 @@ export default defineNuxtConfig({
       routes: ['/']
     },
     compatibilityDate: '2025-12-25'
+  },
+
+  // Configuración de alias
+  alias: {
+    '@': fileURLToPath(new URL('./app', import.meta.url)),
+  },
+
+  // Configuración de Vite para alias
+  vite: {
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./app', import.meta.url)),
+      }
+    }
   },
 
   devtools: { enabled: true },

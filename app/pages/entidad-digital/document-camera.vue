@@ -139,4 +139,4 @@ const goBack = () => {
 }
 </script>
 
-<style scoped src="../assets/css/document-camera.css"></style>
+<style scoped src="@/assets/css/document-camera.css"></style>
