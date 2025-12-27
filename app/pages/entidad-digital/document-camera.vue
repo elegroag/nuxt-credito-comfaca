@@ -26,6 +26,23 @@
       </div>
     </div>
 
+    <!-- Resumen de datos básicos -->
+    <div class="p-3 mb-3 ">
+      <div class="summary-card">
+        <h3 class="summary-title">Datos de identificación</h3>
+        <div class="summary-content">
+          <div class="data-item">
+            <span class="data-label">Tipo:</span>
+            <span class="data-value">{{ basicData?.tipoIdentificacion || 'CC' }}</span>
+          </div>
+          <div class="data-item">
+            <span class="data-label">Número:</span>
+            <span class="data-value">{{ basicData?.numeroIdentificacion || 'No disponible' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Contenido principal -->
     <main class="main-content">
       <div class="camera-wrapper">
@@ -65,17 +82,33 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed } from 'vue'
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import DocumentCamera from '@/components/DocumentCamera.vue'
+import { useDocumentosPostulante } from '~/composables/entidad/useDocumentosPostulante'
 
 const router = useRouter()
+
+// Composable para documentos
+const { guardarDocumentos, loading: savingDocuments, errorMsg: saveError } = useDocumentosPostulante()
 
 // Estado del proceso
 const currentStepIndex = ref(0)
 const processing = ref(false)
-const documents = ref({ front: null, back: null })
+const documents = ref<{ front: string | null; back: string | null }>({ front: null, back: null })
+const basicData = ref<{ tipoIdentificacion: string; numeroIdentificacion: string } | null>(null)
+
+// Cargar datos básicos al montar
+onMounted(() => {
+  const savedData = localStorage.getItem('basicFormData')
+  if (savedData) {
+    basicData.value = JSON.parse(savedData)
+  } else {
+    // Si no hay datos básicos, redirigir al inicio
+    router.push('/entidad-digital')
+  }
+})
 
 // Definición de pasos del proceso
 const steps = [
@@ -99,17 +132,27 @@ const currentStepDescription = computed(() => {
 })
 
 // Métodos
-const handleStepChange = ({ stepIndex }) => {
+const handleStepChange = ({ stepIndex }: { stepIndex: number }) => {
   currentStepIndex.value = stepIndex
 }
 
-const handleDocumentComplete = async (documentData) => {
+const handleDocumentComplete = async (documentData: { front: string; back: string }) => {
   try {
     processing.value = true
     documents.value = documentData
     
     // Guardar documentos en localStorage
     localStorage.setItem('capturedDocuments', JSON.stringify(documentData))
+    
+    // Enviar documentos al servidor
+    if (basicData.value) {
+      await guardarDocumentos(documentData, basicData.value)
+      
+      if (saveError.value) {
+        alert('Error al guardar documentos en el servidor: ' + saveError.value)
+        return
+      }
+    }
     
     // Simular procesamiento
     await new Promise(resolve => setTimeout(resolve, 2000))

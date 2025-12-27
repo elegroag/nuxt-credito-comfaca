@@ -9,17 +9,19 @@
 
       <!-- Vista de cámara para navegador -->
       <div v-if="!isNative && !selfiePhoto" class="browser-camera">
-        <video 
-          ref="videoRef" 
-          autoplay 
-          playsinline
-          class="camera-video selfie-video"
-        ></video>
-        <canvas ref="canvasRef" class="hidden-canvas"></canvas>
-        
-        <!-- Guía de rostro -->
-        <div class="face-guide">
-          <div class="face-oval"></div>
+        <div class="video-container selfie-container">
+          <video 
+            ref="videoRef" 
+            autoplay 
+            playsinline
+            class="camera-video selfie-video"
+          ></video>
+          <canvas ref="canvasRef" class="hidden-canvas"></canvas>
+          
+          <!-- Guía de rostro -->
+          <div class="face-guide">
+            <div class="face-oval"></div>
+          </div>
         </div>
         
         <div class="camera-controls">

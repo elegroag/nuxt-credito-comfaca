@@ -17,20 +17,34 @@
     <div class="mb-6">
       <div class="flex items-center justify-between mb-2">
         <div class="flex items-center space-x-2">
-          <div class="w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center text-sm font-medium">1</div>
+          <div class="relative group">
+            <div class="w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center text-sm font-medium cursor-help">1</div>
+            <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              Datos básicos
+            </div>
+          </div>
           <div class="w-16 h-1 bg-emerald-500"></div>
-          <div class="w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center text-sm font-medium">2</div>
+          <div class="relative group">
+            <div class="w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center text-sm font-medium cursor-help">2</div>
+            <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              Documentos
+            </div>
+          </div>
           <div class="w-16 h-1 bg-emerald-500"></div>
-          <div class="w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center text-sm font-medium">3</div>
+          <div class="relative group">
+            <div class="w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center text-sm font-medium cursor-help">3</div>
+            <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              Selfie
+            </div>
+          </div>
           <div class="w-16 h-1 bg-emerald-500"></div>
-          <div class="w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center text-sm font-medium">4</div>
+          <div class="relative group">
+            <div class="w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center text-sm font-medium cursor-help">4</div>
+            <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              Confirmación
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="flex justify-between text-xs text-zinc-600">
-        <span>Datos básicos</span>
-        <span>Documentos</span>
-        <span>Selfie</span>
-        <span class="font-medium text-emerald-600">Confirmación</span>
       </div>
     </div>
 
@@ -56,74 +70,46 @@
         </div>
       </div>
 
-      <!-- Documentos capturados -->
+      <!-- Claves de seguridad -->
       <div class="rounded-lg border border-zinc-200 bg-white p-6">
         <h2 class="text-lg font-semibold mb-4 flex items-center">
           <svg class="w-5 h-5 mr-2 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
           </svg>
-          Documentos de identificación
+          Clave de seguridad
         </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div class="text-center">
-            <h3 class="text-sm font-medium mb-3 text-zinc-700">Frente del documento</h3>
-            <div class="relative group">
-              <img 
-                :src="verificationData?.documents?.front" 
-                alt="Frente del documento" 
-                class="w-full h-48 object-cover rounded-lg border-2 border-zinc-200 group-hover:border-emerald-400 transition-colors cursor-pointer"
-                @click="openImageModal(verificationData?.documents?.front, 'Frente del documento')"
-              />
-              <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-lg transition-all flex items-center justify-center">
-                <svg class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
-                </svg>
-              </div>
-            </div>
-          </div>
-          <div class="text-center">
-            <h3 class="text-sm font-medium mb-3 text-zinc-700">Reverso del documento</h3>
-            <div class="relative group">
-              <img 
-                :src="verificationData?.documents?.back" 
-                alt="Reverso del documento" 
-                class="w-full h-48 object-cover rounded-lg border-2 border-zinc-200 group-hover:border-emerald-400 transition-colors cursor-pointer"
-                @click="openImageModal(verificationData?.documents?.back, 'Reverso del documento')"
-              />
-              <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-lg transition-all flex items-center justify-center">
-                <svg class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Selfie -->
-      <div class="rounded-lg border border-zinc-200 bg-white p-6">
-        <h2 class="text-lg font-semibold mb-4 flex items-center">
-          <svg class="w-5 h-5 mr-2 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-          </svg>
-          Verificación facial
-        </h2>
-        <div class="text-center">
-          <div class="relative inline-block group">
-            <img 
-              :src="verificationData?.selfie" 
-              alt="Selfie de verificación" 
-              class="w-48 h-48 object-cover rounded-full border-4 border-zinc-200 group-hover:border-emerald-400 transition-colors cursor-pointer"
-              @click="openImageModal(verificationData?.selfie, 'Selfie de verificación')"
+        <div class="space-y-4">
+          <div>
+            <label class="mb-1 block text-sm font-medium text-zinc-900">Clave segura</label>
+            <input
+              v-model="claveLocal"
+              type="password"
+              class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm"
+              placeholder="Mínimo 10 caracteres"
             />
-            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-full transition-all flex items-center justify-center">
-              <svg class="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
-              </svg>
-            </div>
+            <p class="mt-1 text-xs text-zinc-600">
+              Esta clave se usa para cifrar la llave privada (PEM). No se almacena en el servidor.
+            </p>
           </div>
-          <p class="mt-3 text-sm text-zinc-600">Foto facial para verificación de identidad</p>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-zinc-900">Confirmar clave</label>
+            <input 
+              v-model="claveConfirmLocal" 
+              type="password" 
+              class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm" 
+              placeholder="Repite tu clave"
+            />
+          </div>
+          <div class="flex items-center">
+            <label class="flex items-center gap-2 text-sm text-zinc-900 cursor-pointer">
+              <input 
+                v-model="overwriteLocal" 
+                type="checkbox" 
+                class="h-4 w-4 text-emerald-600 border-zinc-300 rounded focus:ring-emerald-500" 
+              />
+              Reemplazar entidad digital si ya existe
+            </label>
+          </div>
         </div>
       </div>
 
@@ -212,26 +198,6 @@
         <span>{{ successMsg }}</span>
       </div>
     </div>
-
-    <!-- Modal para ver imágenes -->
-    <div v-if="imageModal.show" class="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4" @click="closeImageModal">
-      <div class="max-w-4xl max-h-full relative">
-        <button 
-          @click="closeImageModal" 
-          class="absolute -top-12 right-0 text-white hover:text-zinc-300 transition-colors"
-        >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-        <img 
-          :src="imageModal.src" 
-          :alt="imageModal.title" 
-          class="max-w-full max-h-full rounded-lg shadow-2xl"
-        />
-        <div class="text-center mt-4 text-white">{{ imageModal.title }}</div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -244,10 +210,10 @@ const router = useRouter()
 
 // Composable de entidad digital
 const {
-  tipoIdentificacion,
-  numeroIdentificacion,
-  clave,
-  claveConfirm,
+  tipoIdentificacion: tipoId,
+  numeroIdentificacion: numId,
+  clave: claveComp,
+  claveConfirm: claveConfirmComp,
   overwrite,
   loading,
   errorMsg,
@@ -257,20 +223,29 @@ const {
   validateForm
 } = useEntidadDigital()
 
+// Referencias locales para las claves
+const claveLocal = ref('')
+const claveConfirmLocal = ref('')
+const overwriteLocal = ref(false)
+
 // Estado local
-const verificationData = ref<any>(null)
+const verificationData = ref<{
+  tipoIdentificacion: string;
+  numeroIdentificacion: string;
+  documents: { front: string; back: string };
+  selfie: string;
+} | null>(null)
 const termsAccepted = ref(false)
 const privacyAccepted = ref(false)
 const successMsg = ref('')
-const imageModal = ref({
-  show: false,
-  src: '',
-  title: ''
-})
 
 // Computed para validar si se puede confirmar
 const canConfirm = computed(() => {
   return verificationData.value && 
+         claveLocal.value && 
+         claveConfirmLocal.value && 
+         claveLocal.value.length >= 10 && 
+         claveLocal.value === claveConfirmLocal.value &&
          termsAccepted.value && 
          privacyAccepted.value &&
          !loading.value
@@ -278,24 +253,26 @@ const canConfirm = computed(() => {
 
 // Cargar datos de verificación al montar
 onMounted(() => {
-  const savedData = localStorage.getItem('completeVerificationData')
-  if (savedData) {
-    verificationData.value = JSON.parse(savedData)
+  const completeData = localStorage.getItem('completeVerificationData')
+  const basicData = localStorage.getItem('basicFormData')
+  
+  if (completeData && basicData) {
+    verificationData.value = JSON.parse(completeData)
+    // Combinar con datos básicos
+    verificationData.value = {
+      ...verificationData.value,
+      ...JSON.parse(basicData)
+    }
+    
+    // No cargar overwrite ya que no se guarda en datos básicos
+    // El usuario lo seleccionará aquí en confirmación
   } else {
-    // Si no hay datos, redirigir al inicio
+    // Si no hay datos completos, redirigir al inicio
     router.push('/entidad-digital')
   }
 })
 
 // Métodos
-const openImageModal = (src: string, title: string) => {
-  imageModal.value = { show: true, src, title }
-}
-
-const closeImageModal = () => {
-  imageModal.value = { show: false, src: '', title: '' }
-}
-
 const goBack = () => {
   if (confirm('¿Estás seguro de que deseas regresar?')) {
     localStorage.removeItem('completeVerificationData')
@@ -307,6 +284,7 @@ const cancelProcess = () => {
   if (confirm('¿Estás seguro de que deseas cancelar el proceso? Se perderán todos los datos capturados.')) {
     localStorage.removeItem('capturedDocuments')
     localStorage.removeItem('completeVerificationData')
+    localStorage.removeItem('basicFormData')
     router.push('/entidad-digital')
   }
 }
@@ -320,11 +298,17 @@ const confirmAndCreate = async () => {
   try {
     // Establecer los datos del formulario desde los datos de verificación
     if (verificationData.value?.tipoIdentificacion) {
-      tipoIdentificacion.value = verificationData.value.tipoIdentificacion
+      const tipoIdEnum = verificationData.value.tipoIdentificacion as 'CC' | 'CE' | 'NIT' | 'PAS'
+      tipoId.value = tipoIdEnum
     }
     if (verificationData.value?.numeroIdentificacion) {
-      numeroIdentificacion.value = verificationData.value.numeroIdentificacion
+      numId.value = verificationData.value.numeroIdentificacion
     }
+    
+    // Establecer las claves desde el estado local al composable
+    claveComp.value = claveLocal.value
+    claveConfirmComp.value = claveConfirmLocal.value
+    overwrite.value = overwriteLocal.value
 
     // Validar y crear entidad
     const isValid = validateForm()
@@ -339,10 +323,11 @@ const confirmAndCreate = async () => {
       // Limpiar localStorage
       localStorage.removeItem('capturedDocuments')
       localStorage.removeItem('completeVerificationData')
+      localStorage.removeItem('basicFormData')
 
       // Redirigir después de un breve delay
       setTimeout(() => {
-        router.push('/dashboard')
+        router.push('/inicio')
       }, 3000)
     }
   } catch (error: any) {

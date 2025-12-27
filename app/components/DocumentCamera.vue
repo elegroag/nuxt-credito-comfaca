@@ -11,6 +11,7 @@
       <div v-if="!isNative && !frontPhoto" class="browser-camera">
         <video 
           ref="videoRef" 
+          key="camera-video"
           autoplay 
           playsinline
           class="camera-video"
@@ -62,6 +63,7 @@
       <div v-if="!isNative && !backPhoto" class="browser-camera">
         <video 
           ref="videoRef" 
+          key="camera-video"
           autoplay 
           playsinline
           class="camera-video"
@@ -102,11 +104,11 @@
       </div>
     </div>
 
-    <!-- Paso 3: Resumen y confirmación -->
-    <div v-if="currentStep === 'summary'" class="summary-step">
+    <!-- Paso 3: Completado -->
+    <div v-if="currentStep === 'complete'" class="summary-step">
       <div class="step-header">
-        <h3 class="text-lg font-semibold">Resumen de documentos capturados</h3>
-        <p class="text-sm text-zinc-600">Verifica que ambas imágenes sean claras y legibles</p>
+        <h3 class="text-lg font-semibold">Documentos capturados</h3>
+        <p class="text-sm text-zinc-600">Documentos listos para el siguiente paso</p>
       </div>
 
       <div class="documents-preview">
@@ -135,7 +137,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { Capacitor } from '@capacitor/core'
 import {
   Camera,
@@ -146,7 +148,7 @@ import {
 import { Directory, Filesystem } from '@capacitor/filesystem'
 
 // Estado del componente
-const currentStep = ref<'front' | 'back' | 'summary'>('front')
+const currentStep = ref<'front' | 'back' | 'complete'>('front')
 const frontPhoto = ref<any>(null)
 const backPhoto = ref<any>(null)
 const loading = ref(false)
@@ -155,6 +157,7 @@ const isNative = ref(Capacitor.isNativePlatform())
 const stream = ref<MediaStream | null>(null)
 const videoRef = ref<HTMLVideoElement | null>(null)
 const canvasRef = ref<HTMLCanvasElement | null>(null)
+const cameraDeviceId = ref<string | null>(null)
 
 // Emits
 const emit = defineEmits<{
@@ -197,15 +200,63 @@ const takePhotoNative = async (side: 'front' | 'back') => {
 
 const startCamera = async () => {
   try {
-    const constraints = {
-      video: {
-        facingMode: 'environment',
-        width: { ideal: 1920 },
-        height: { ideal: 1080 }
+    // Primero obtener los dispositivos disponibles
+    const devices = await navigator.mediaDevices.enumerateDevices()
+    const videoDevices = devices.filter(device => device.kind === 'videoinput')
+    
+    // Buscar cámara trasera preferida
+    let constraints: MediaStreamConstraints
+    
+    if (cameraDeviceId.value) {
+      // Usar el mismo dispositivo que se usó anteriormente
+      constraints = {
+        video: {
+          deviceId: { exact: cameraDeviceId.value },
+          width: { ideal: 1920 },
+          height: { ideal: 1080 }
+        }
+      }
+    } else {
+      // Primera vez, buscar cámara trasera
+      const rearCamera = videoDevices.find(device => 
+        device.label.toLowerCase().includes('back') || 
+        device.label.toLowerCase().includes('rear') ||
+        device.label.toLowerCase().includes('environment')
+      )
+      
+      if (rearCamera) {
+        cameraDeviceId.value = rearCamera.deviceId
+        constraints = {
+          video: {
+            deviceId: { exact: rearCamera.deviceId },
+            width: { ideal: 1920 },
+            height: { ideal: 1080 }
+          }
+        }
+      } else {
+        // Si no se encuentra cámara trasera, usar la primera disponible
+        constraints = {
+          video: {
+            facingMode: 'environment',
+            width: { ideal: 1920 },
+            height: { ideal: 1080 }
+          }
+        }
       }
     }
     
     stream.value = await navigator.mediaDevices.getUserMedia(constraints)
+    
+    // Guardar el ID del dispositivo realmente utilizado
+    if (stream.value) {
+      const videoTrack = stream.value.getVideoTracks()[0]
+      if (videoTrack) {
+        const settings = videoTrack.getSettings()
+        if (settings.deviceId) {
+          cameraDeviceId.value = settings.deviceId
+        }
+      }
+    }
     
     if (videoRef.value) {
       videoRef.value.srcObject = stream.value
@@ -278,9 +329,15 @@ const confirmPhoto = (side: 'front' | 'back') => {
   if (side === 'front') {
     currentStep.value = 'back'
     emit('stepChange', { step: 'back', stepIndex: 1 })
+    // No detener la cámara al pasar al reverso
+    // El watch se encargará de reconectar el video
   } else {
-    currentStep.value = 'summary'
-    emit('stepChange', { step: 'summary', stepIndex: 2 })
+    currentStep.value = 'complete'
+    emit('stepChange', { step: 'complete', stepIndex: 2 })
+    // Detener la cámara solo al finalizar
+    if (!isNative.value) {
+      stopCamera()
+    }
   }
   tempPhoto.value = null
 }
@@ -293,13 +350,12 @@ const retakePhoto = (side: 'front' | 'back') => {
   }
   tempPhoto.value = null
   
-  // Para navegador, reiniciar la cámara
-  if (!isNative.value) {
+  // No reiniciar la cámara para navegador, ya que debería seguir activa
+  // Solo reiniciar si el stream se detuvo por alguna razón
+  if (!isNative.value && !stream.value) {
     setTimeout(() => {
       startCamera()
     }, 100)
-  } else {
-    takePhoto(side)
   }
 }
 
@@ -319,8 +375,9 @@ const restart = () => {
 
 const complete = () => {
   if (frontPhoto.value && backPhoto.value) {
-    // Para navegador, detener la cámara antes de completar
-    if (!isNative.value) {
+    // La cámara ya se detuvo en confirmPhoto para el lado 'back'
+    // Solo asegurarse de detenerla si no se ha hecho
+    if (!isNative.value && stream.value) {
       stopCamera()
     }
     
@@ -363,6 +420,17 @@ const savePhotoToStorage = async (photo: any, filename: string) => {
     throw error
   }
 }
+
+// Watch para asegurar que el video se mantenga conectado al stream
+watch(currentStep, async () => {
+  if (!isNative.value && stream.value) {
+    await nextTick()
+    if (videoRef.value) {
+      videoRef.value.srcObject = stream.value
+      videoRef.value.play().catch(console.error)
+    }
+  }
+})
 
 // Ciclo de vida
 onMounted(async () => {
