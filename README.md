@@ -69,15 +69,6 @@ pnpm cap:run:ios
 - `pnpm cap:run:android` - Ejecutar en Android
 - `pnpm cap:run:ios` - Ejecutar en iOS
 
-## Estructura del Proyecto
-
-````
-frontend/
-
-# Comfaca Crédito - Frontend
-
-Aplicación móvil para el sistema de postulación a créditos de Comfaca.
-
 ## Características
 
 - Aplicación móvil híbrida con Nuxt 4 + Capacitor
@@ -118,7 +109,7 @@ pnpm install
 # Configurar variables de entorno
 cp .env-example .env
 # Editar .env con la URL del backend
-````
+```
 
 ## Desarrollo
 

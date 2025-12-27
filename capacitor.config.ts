@@ -4,8 +4,12 @@ const config: CapacitorConfig = {
   appId: 'com.comfaca.credito',
   appName: 'Comfaca Crédito',
   webDir: '.output/public',
+  loggingBehavior: 'debug',
+  zoomEnabled: false,
+  backgroundColor: '#fff',
   server: {
-    androidScheme: 'https'
+    androidScheme: 'http',
+    allowNavigation: ['*']
   },
   plugins: {
     Camera: {
@@ -18,7 +22,13 @@ const config: CapacitorConfig = {
       saveToGallery: false,
       direction: 'REAR',
     },
+    CapacitorHttp: {
+      enabled: true
+    },
   },
+  cordova: {
+    accessOrigins: ['http://172.168.0.15:5001'],
+  }
 };
 
 export default config;
