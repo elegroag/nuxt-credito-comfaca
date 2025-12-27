@@ -87,6 +87,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import DocumentCamera from '@/components/DocumentCamera.vue'
 import { useDocumentosPostulante } from '~/composables/entidad/useDocumentosPostulante'
+import { storage } from '~/composables/useStorage'
 
 const router = useRouter()
 
@@ -100,8 +101,8 @@ const documents = ref<{ front: string | null; back: string | null }>({ front: nu
 const basicData = ref<{ tipoIdentificacion: string; numeroIdentificacion: string } | null>(null)
 
 // Cargar datos básicos al montar
-onMounted(() => {
-  const savedData = localStorage.getItem('basicFormData')
+onMounted(async () => {
+  const savedData = await storage.getItem('basicFormData')
   if (savedData) {
     basicData.value = JSON.parse(savedData)
   } else {
@@ -141,8 +142,8 @@ const handleDocumentComplete = async (documentData: { front: string; back: strin
     processing.value = true
     documents.value = documentData
     
-    // Guardar documentos en localStorage
-    localStorage.setItem('capturedDocuments', JSON.stringify(documentData))
+    // Guardar documentos usando StorageAdapter
+    await storage.setItem('capturedDocuments', JSON.stringify(documentData))
     
     // Enviar documentos al servidor
     if (basicData.value) {
@@ -167,16 +168,16 @@ const handleDocumentComplete = async (documentData: { front: string; back: strin
   }
 }
 
-const handleCancel = () => {
+const handleCancel = async () => {
   if (confirm('¿Estás seguro de que deseas cancelar el proceso? Se perderán las imágenes capturadas.')) {
-    localStorage.removeItem('capturedDocuments')
+    await storage.removeItem('capturedDocuments')
     router.push('/entidad-digital')
   }
 }
 
-const goBack = () => {
+const goBack = async () => {
   if (confirm('¿Estás seguro de que deseas regresar? Se perderán las imágenes capturadas.')) {
-    localStorage.removeItem('capturedDocuments')
+    await storage.removeItem('capturedDocuments')
     router.push('/entidad-digital')
   }
 }

@@ -23,12 +23,14 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import SelfieCamera from '@/components/SelfieCamera.vue'
 import { useDocumentosPostulante } from '~/composables/entidad/useDocumentosPostulante'
+import { storage } from '~/composables/useStorage'
+import { useApi } from '~/composables/useApi'
 
 const router = useRouter()
 
 // Composable para documentos
 const { guardarSelfie, loading: savingSelfie, errorMsg: saveError } = useDocumentosPostulante()
-const { getJson } = useApi()
+const { getJson, postJson } = useApi()
 
 const currentStepIndex = ref(1)
 const processing = ref(false)
@@ -36,9 +38,9 @@ const documentsData = ref<{ front: string; back: string } | null>(null)
 const basicData = ref<any>(null)
 
 // Cargar documentos y datos básicos al montar
-onMounted(() => {
-  const savedDocuments = localStorage.getItem('capturedDocuments')
-  const savedBasicData = localStorage.getItem('basicFormData')
+onMounted(async () => {
+  const savedDocuments = await storage.getItem('capturedDocuments')
+  const savedBasicData = await storage.getItem('basicFormData')
   
   if (savedDocuments) {
     documentsData.value = JSON.parse(savedDocuments)
@@ -65,10 +67,19 @@ const progressPercentage = computed(() => {
 const handleSelfieComplete = async (args: { selfie: string }) => {
   try {
     processing.value = true
-    const documents = JSON.parse(localStorage.getItem('capturedDocuments') || '{}')
+    const documents = JSON.parse((await storage.getItem('capturedDocuments')) || '{}')
     
     // Enviar selfie al servidor
     if (basicData.value) {
+      console.log('basicData.value:', basicData.value)
+      console.log('basicData.value.numeroIdentificacion:', basicData.value.numeroIdentificacion)
+      
+      if (!basicData.value.numeroIdentificacion) {
+        alert('Error: No se encontró el número de identificación. Por favor regresa y completa el formulario.')
+        router.push('/entidad-digital')
+        return
+      }
+      
       await guardarSelfie(args.selfie, basicData.value)
       
       if (saveError.value) {
@@ -78,8 +89,10 @@ const handleSelfieComplete = async (args: { selfie: string }) => {
       
       // Obtener documentos completos del servidor
       try {
-        const response = await getJson('/api/entidad-digital/documentos') as any
-        
+        const tipo = encodeURIComponent(basicData.value.tipoIdentificacion)
+        const numero = encodeURIComponent(basicData.value.numeroIdentificacion)
+        const response = await getJson(`/api/entidad-digital/documentos/${tipo}/${numero}`) as any;
+        console.log('Response from server:', response);
         if (response.success) {
           const completeData = {
             ...basicData.value,
@@ -89,7 +102,7 @@ const handleSelfieComplete = async (args: { selfie: string }) => {
             },
             selfie: response.documentos.selfie || args.selfie
           }
-          localStorage.setItem('completeVerificationData', JSON.stringify(completeData))
+          await storage.setItem('completeVerificationData', JSON.stringify(completeData))
         } else {
           // Fallback: usar datos locales si falla el servidor
           const completeData = {
@@ -97,7 +110,7 @@ const handleSelfieComplete = async (args: { selfie: string }) => {
             documents: documents,
             selfie: args.selfie
           }
-          localStorage.setItem('completeVerificationData', JSON.stringify(completeData))
+          await storage.setItem('completeVerificationData', JSON.stringify(completeData))
         }
       } catch (error) {
         console.error('Error obteniendo documentos del servidor:', error)
@@ -107,7 +120,7 @@ const handleSelfieComplete = async (args: { selfie: string }) => {
           documents: documents,
           selfie: args.selfie
         }
-        localStorage.setItem('completeVerificationData', JSON.stringify(completeData))
+        await storage.setItem('completeVerificationData', JSON.stringify(completeData))
       }
     }
     await new Promise(resolve => setTimeout(resolve, 2000))
@@ -120,17 +133,17 @@ const handleSelfieComplete = async (args: { selfie: string }) => {
   }
 }
 
-const handleCancel = () => {
+const handleCancel = async () => {
   if (confirm('¿Estás seguro de que deseas cancelar el proceso?')) {
-    localStorage.removeItem('capturedDocuments')
-    localStorage.removeItem('completeVerificationData')
+    await storage.removeItem('capturedDocuments')
+    await storage.removeItem('completeVerificationData')
     router.push('/entidad-digital')
   }
 }
 
-const goBack = () => {
+const goBack = async () => {
   if (confirm('¿Estás seguro de que deseas regresar?')) {
-    localStorage.removeItem('completeVerificationData')
+    await storage.removeItem('completeVerificationData')
     router.push('/entidad-digital/document-camera')
   }
 }

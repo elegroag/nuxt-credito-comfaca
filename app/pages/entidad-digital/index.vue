@@ -64,23 +64,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { navigateTo } from '#app'
+import { ref, onMounted, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useEntidadDigital } from '~/composables/entidad/useEntidadDigital'
+import { storage } from '~/composables/useStorage'
 
 // Composable de entidad digital
 const {
   tipoIdentificacion,
   numeroIdentificacion,
-  clave,
-  claveConfirm,
-  loading,
   errorMsg,
-  result,
-  redirectTo,
-  crear,
-  resetForm,
-  validateForm
 } = useEntidadDigital()
 
 // Estado del flujo secuencial
@@ -93,18 +86,18 @@ const isBasicFormValid = computed(() => {
 })
 
 // Métodos del flujo
-const nextToCamera = () => {
+const nextToCamera = async () => {
   if (!isBasicFormValid.value) {
     errorMsg.value = 'Por favor completa todos los campos correctamente'
     return
   }
   
-  // Guardar datos básicos en localStorage
+  // Guardar datos básicos usando StorageAdapter
   const basicData = {
     tipoIdentificacion: tipoIdentificacion.value,
     numeroIdentificacion: numeroIdentificacion.value
   }
-  localStorage.setItem('basicFormData', JSON.stringify(basicData))
+  await storage.setItem('basicFormData', JSON.stringify(basicData))
   
   errorMsg.value = ''
   // Redirigir a página de captura de documentos
@@ -112,8 +105,8 @@ const nextToCamera = () => {
 }
 
 // Cargar datos básicos si existen
-onMounted(() => {
-  const savedData = localStorage.getItem('basicFormData')
+onMounted(async () => {
+  const savedData = await storage.getItem('basicFormData')
   if (savedData) {
     const data = JSON.parse(savedData)
     tipoIdentificacion.value = data.tipoIdentificacion || 'CC'

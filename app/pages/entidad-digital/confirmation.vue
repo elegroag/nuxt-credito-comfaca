@@ -205,6 +205,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useEntidadDigital } from '~/composables/entidad/useEntidadDigital'
+import { storage } from '~/composables/useStorage'
 
 const router = useRouter()
 
@@ -219,7 +220,6 @@ const {
   errorMsg,
   result,
   crear,
-  resetForm,
   validateForm
 } = useEntidadDigital()
 
@@ -252,9 +252,9 @@ const canConfirm = computed(() => {
 })
 
 // Cargar datos de verificación al montar
-onMounted(() => {
-  const completeData = localStorage.getItem('completeVerificationData')
-  const basicData = localStorage.getItem('basicFormData')
+onMounted(async () => {
+  const completeData = await storage.getItem('completeVerificationData')
+  const basicData = await storage.getItem('basicFormData')
   
   if (completeData && basicData) {
     verificationData.value = JSON.parse(completeData)
@@ -273,18 +273,18 @@ onMounted(() => {
 })
 
 // Métodos
-const goBack = () => {
+const goBack = async () => {
   if (confirm('¿Estás seguro de que deseas regresar?')) {
-    localStorage.removeItem('completeVerificationData')
+    await storage.removeItem('completeVerificationData')
     router.push('/entidad-digital/selfie-camera')
   }
 }
 
-const cancelProcess = () => {
+const cancelProcess = async () => {
   if (confirm('¿Estás seguro de que deseas cancelar el proceso? Se perderán todos los datos capturados.')) {
-    localStorage.removeItem('capturedDocuments')
-    localStorage.removeItem('completeVerificationData')
-    localStorage.removeItem('basicFormData')
+    await storage.removeItem('capturedDocuments')
+    await storage.removeItem('completeVerificationData')
+    await storage.removeItem('basicFormData')
     router.push('/entidad-digital')
   }
 }
@@ -296,6 +296,22 @@ const confirmAndCreate = async () => {
   successMsg.value = ''
 
   try {
+    // Validar formulario localmente antes de asignar al composable
+    if (!verificationData.value?.numeroIdentificacion?.trim()) {
+      errorMsg.value = 'El número de identificación es requerido.';
+      return;
+    }
+
+    if (claveLocal.value.length < 10) {
+      errorMsg.value = 'La clave debe tener al menos 10 caracteres.';
+      return;
+    }
+
+    if (claveLocal.value !== claveConfirmLocal.value) {
+      errorMsg.value = 'La confirmación de clave no coincide.';
+      return;
+    }
+
     // Establecer los datos del formulario desde los datos de verificación
     if (verificationData.value?.tipoIdentificacion) {
       const tipoIdEnum = verificationData.value.tipoIdentificacion as 'CC' | 'CE' | 'NIT' | 'PAS'
@@ -310,20 +326,16 @@ const confirmAndCreate = async () => {
     claveConfirmComp.value = claveConfirmLocal.value
     overwrite.value = overwriteLocal.value
 
-    // Validar y crear entidad
-    const isValid = validateForm()
-    if (!isValid) return
-
     // Crear entidad digital
     await crear()
 
     if (result.value) {
       successMsg.value = '¡Entidad digital creada exitosamente!'
       
-      // Limpiar localStorage
-      localStorage.removeItem('capturedDocuments')
-      localStorage.removeItem('completeVerificationData')
-      localStorage.removeItem('basicFormData')
+      // Limpiar storage
+      await storage.removeItem('capturedDocuments')
+      await storage.removeItem('completeVerificationData')
+      await storage.removeItem('basicFormData')
 
       // Redirigir después de un breve delay
       setTimeout(() => {

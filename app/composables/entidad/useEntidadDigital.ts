@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { navigateTo } from '#app';
 import { useApi } from '~/composables/useApi';
+import { storage } from '~/composables/useStorage';
 
 export function useEntidadDigital() {
     const route = useRoute();
@@ -82,11 +83,37 @@ export function useEntidadDigital() {
 
         loading.value = true;
         try {
-            result.value = await postJson<any>('/api/entidad-digital', {
+            // Obtener username de la sesión del usuario usando StorageAdapter
+            const userSession = await storage.getItem('comfaca_credito_user');
+            let username = '';
+
+            if (userSession) {
+                const userData = JSON.parse(userSession);
+                username = userData.username || '';
+            }
+
+            if (!username) {
+                throw new Error('No se encontró sesión de usuario activa');
+            }
+
+            // Obtener documentos y selfie usando StorageAdapter
+            const completeData = await storage.getItem('completeVerificationData');
+            let documentos = {};
+            let selfie = '';
+
+            if (completeData) {
+                const data = JSON.parse(completeData);
+                documentos = data.documents || {};
+                selfie = data.selfie || '';
+            }
+
+            result.value = await postJson<any>('/api/entidad-digital/completo', {
+                username: username,
                 tipo_identificacion: tipoIdentificacion.value,
                 numero_identificacion: numeroIdentificacion.value,
                 clave: clave.value,
-                overwrite: overwrite.value
+                documentos: documentos,
+                selfie: selfie
             });
 
             if (redirectTo.value) {
