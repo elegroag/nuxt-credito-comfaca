@@ -5,11 +5,12 @@ import { navigateTo, useRuntimeConfig } from '#app';
 import { useApi } from '~/composables/useApi';
 import { storage } from '~/composables/useStorage';
 import QRCode from 'qrcode';
+import { io, Socket } from 'socket.io-client';
 
 export function useEntidadDigital() {
     const route = useRoute();
     const config = useRuntimeConfig();
-    const { postJson } = useApi();
+    const { postJson, getJson } = useApi();
 
     // Form state
     const tipoIdentificacion = ref<'CC' | 'CE' | 'NIT' | 'PAS'>('CC');
@@ -30,6 +31,7 @@ export function useEntidadDigital() {
     const tokenExpired = ref(false);
     const timeRemaining = ref(1200); // 20 minutos en segundos
     let countdownInterval: any = null;
+    let socket: Socket | null = null;
 
     // Navigation state
     const redirectTo = ref('');
@@ -77,6 +79,9 @@ export function useEntidadDigital() {
             clearInterval(countdownInterval);
             countdownInterval = null;
         }
+        if (socket) {
+            socket.disconnect();
+        }
     });
 
     // Form validation
@@ -106,8 +111,8 @@ export function useEntidadDigital() {
         return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
     };
 
-    const startCountdown = () => {
-        timeRemaining.value = 1200;
+    const startCountdown = (initialSeconds: number = 1200) => {
+        timeRemaining.value = initialSeconds;
         if (countdownInterval) clearInterval(countdownInterval);
 
         countdownInterval = setInterval(() => {
@@ -122,21 +127,39 @@ export function useEntidadDigital() {
         }, 1000);
     };
 
+    const initSocket = (username: string) => {
+        const backendUrl = config.public.backendBaseUrl || 'http://localhost:5001';
+        socket = io(backendUrl);
+
+        socket.on('connect', () => {
+            console.log('Socket conectado para:', username);
+        });
+
+        socket.on(`auth_complete_${username}`, async (data: any) => {
+            console.log('Autorización recibida:', data);
+            // Cuando la app móvil autoriza, pasamos al siguiente estado o mostramos éxito
+            result.value = data;
+            // Aquí se podría redirigir o actualizar el estado para mostrar que ya se puede continuar
+        });
+    };
+
     const generateQR = async (canvasRef: HTMLCanvasElement | null) => {
         try {
             loadingQR.value = true;
             tokenExpired.value = false;
             errorMsg.value = '';
 
-            const tokenData = {
-                tipoIdentificacion: tipoIdentificacion.value,
-                numeroIdentificacion: numeroIdentificacion.value,
-                timestamp: Date.now(),
-                expiresAt: Date.now() + (20 * 60 * 1000)
-            };
+            // Obtener token real del backend con autenticación
+            const response = await getJson<any>('/api/auth/qr-token', { auth: true });
+            if (!response.success) {
+                throw new Error(response.error || 'Error al obtener token');
+            }
 
+            const qrToken = response.qr_token;
+            const username = response.user.username;
             const backendUrl = config.public.backendBaseUrl || 'http://localhost:5001';
-            const authUrl = `${backendUrl}/auth/qr-token?data=${btoa(JSON.stringify(tokenData))}`;
+            const authUrl = `${backendUrl}/api/auth/mobile/authorize/${qrToken}`;
+            console.log('URL del QR:', authUrl);
 
             await nextTick();
             if (canvasRef) {
@@ -148,10 +171,18 @@ export function useEntidadDigital() {
             }
 
             qrCodeUrl.value = authUrl;
-            startCountdown();
-        } catch (error) {
+
+            // Calcular tiempo restante basado en expires_at del backend
+            const now = Math.floor(Date.now() / 1000);
+            const remaining = response.expires_at - now;
+            startCountdown(remaining > 0 ? remaining : 0);
+
+            // Inicializar socket para escuchar autorización
+            initSocket(username);
+
+        } catch (error: any) {
             console.error('Error generando QR:', error);
-            errorMsg.value = 'Error al generar el código QR. Por favor intenta nuevamente.';
+            errorMsg.value = error.message || 'Error al generar el código QR. Por favor intenta nuevamente.';
         } finally {
             loadingQR.value = false;
         }
