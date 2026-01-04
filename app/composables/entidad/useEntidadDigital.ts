@@ -1,12 +1,14 @@
 // frontend/composables/entidad/useEntidadDigital.ts
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed, onUnmounted, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
-import { navigateTo } from '#app';
+import { navigateTo, useRuntimeConfig } from '#app';
 import { useApi } from '~/composables/useApi';
 import { storage } from '~/composables/useStorage';
+import QRCode from 'qrcode';
 
 export function useEntidadDigital() {
     const route = useRoute();
+    const config = useRuntimeConfig();
     const { postJson } = useApi();
 
     // Form state
@@ -21,11 +23,30 @@ export function useEntidadDigital() {
     const errorMsg = ref('');
     const result = ref<any | null>(null);
 
+    // Flow state
+    const currentStep = ref<'basic' | 'qr'>('basic');
+    const qrCodeUrl = ref<string>('');
+    const loadingQR = ref(false);
+    const tokenExpired = ref(false);
+    const timeRemaining = ref(1200); // 20 minutos en segundos
+    let countdownInterval: any = null;
+
     // Navigation state
     const redirectTo = ref('');
 
-    // Initialize from query params
-    onMounted(() => {
+    // Computed
+    const isBasicFormValid = computed(() => {
+        return tipoIdentificacion.value && numeroIdentificacion.value;
+    });
+
+    const timeRemainingClass = computed(() => {
+        if (timeRemaining.value <= 60) return 'text-red-600';
+        if (timeRemaining.value <= 300) return 'text-yellow-600';
+        return 'text-green-600';
+    });
+
+    // Initialize from query params or storage
+    onMounted(async () => {
         const t = route.query.tipo_identificacion;
         const n = route.query.numero_identificacion;
         const r = route.query.redirect;
@@ -38,6 +59,23 @@ export function useEntidadDigital() {
         }
         if (typeof r === 'string' && r.startsWith('/')) {
             redirectTo.value = r;
+        }
+
+        // Cargar datos guardados si no vienen por query
+        if (!numeroIdentificacion.value) {
+            const savedData = await storage.getItem('basicFormData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                tipoIdentificacion.value = data.tipoIdentificacion || 'CC';
+                numeroIdentificacion.value = data.numeroIdentificacion || '';
+            }
+        }
+    });
+
+    onUnmounted(() => {
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
         }
     });
 
@@ -61,7 +99,92 @@ export function useEntidadDigital() {
         return true;
     };
 
-    // Reset form
+    // Helper functions
+    const formatTimeRemaining = (seconds: number) => {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    };
+
+    const startCountdown = () => {
+        timeRemaining.value = 1200;
+        if (countdownInterval) clearInterval(countdownInterval);
+
+        countdownInterval = setInterval(() => {
+            timeRemaining.value--;
+            if (timeRemaining.value <= 0) {
+                tokenExpired.value = true;
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                    countdownInterval = null;
+                }
+            }
+        }, 1000);
+    };
+
+    const generateQR = async (canvasRef: HTMLCanvasElement | null) => {
+        try {
+            loadingQR.value = true;
+            tokenExpired.value = false;
+            errorMsg.value = '';
+
+            const tokenData = {
+                tipoIdentificacion: tipoIdentificacion.value,
+                numeroIdentificacion: numeroIdentificacion.value,
+                timestamp: Date.now(),
+                expiresAt: Date.now() + (20 * 60 * 1000)
+            };
+
+            const backendUrl = config.public.backendBaseUrl || 'http://localhost:5001';
+            const authUrl = `${backendUrl}/auth/qr-token?data=${btoa(JSON.stringify(tokenData))}`;
+
+            await nextTick();
+            if (canvasRef) {
+                await QRCode.toCanvas(canvasRef, authUrl, {
+                    width: 256,
+                    margin: 2,
+                    color: { dark: '#000000', light: '#FFFFFF' }
+                });
+            }
+
+            qrCodeUrl.value = authUrl;
+            startCountdown();
+        } catch (error) {
+            console.error('Error generando QR:', error);
+            errorMsg.value = 'Error al generar el código QR. Por favor intenta nuevamente.';
+        } finally {
+            loadingQR.value = false;
+        }
+    };
+
+    // Flow Actions
+    const nextToQR = async (canvasRef: HTMLCanvasElement | null) => {
+        if (!isBasicFormValid.value) {
+            errorMsg.value = 'Por favor completa todos los campos correctamente';
+            return;
+        }
+
+        const basicData = {
+            tipoIdentificacion: tipoIdentificacion.value,
+            numeroIdentificacion: numeroIdentificacion.value
+        };
+        await storage.setItem('basicFormData', JSON.stringify(basicData));
+
+        errorMsg.value = '';
+        currentStep.value = 'qr';
+        await generateQR(canvasRef);
+    };
+
+    const goBack = () => {
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+        }
+        currentStep.value = 'basic';
+        qrCodeUrl.value = '';
+        tokenExpired.value = false;
+    };
+
     const resetForm = () => {
         tipoIdentificacion.value = 'CC';
         numeroIdentificacion.value = '';
@@ -72,18 +195,14 @@ export function useEntidadDigital() {
         result.value = null;
     };
 
-    // Create digital entity
     const crear = async () => {
         errorMsg.value = '';
         result.value = null;
 
-        if (!validateForm()) {
-            return;
-        }
+        if (!validateForm()) return;
 
         loading.value = true;
         try {
-            // Obtener username de la sesión del usuario usando StorageAdapter
             const userSession = await storage.getItem('comfaca_credito_user');
             let username = '';
 
@@ -92,11 +211,8 @@ export function useEntidadDigital() {
                 username = userData.username || '';
             }
 
-            if (!username) {
-                throw new Error('No se encontró sesión de usuario activa');
-            }
+            if (!username) throw new Error('No se encontró sesión de usuario activa');
 
-            // Obtener documentos y selfie usando StorageAdapter
             const completeData = await storage.getItem('completeVerificationData');
             let documentos = {};
             let selfie = '';
@@ -127,24 +243,32 @@ export function useEntidadDigital() {
     };
 
     return {
-        // Form state
+        // State
         tipoIdentificacion,
         numeroIdentificacion,
         clave,
         claveConfirm,
         overwrite,
-
-        // UI state
         loading,
         errorMsg,
         result,
+        currentStep,
+        qrCodeUrl,
+        loadingQR,
+        tokenExpired,
+        timeRemaining,
 
-        // Navigation
-        redirectTo,
+        // Computed
+        isBasicFormValid,
+        timeRemainingClass,
 
         // Actions
         crear,
         resetForm,
-        validateForm
+        validateForm,
+        formatTimeRemaining,
+        generateQR,
+        nextToQR,
+        goBack
     };
 }
