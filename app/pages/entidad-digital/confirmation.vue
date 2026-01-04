@@ -276,7 +276,7 @@ onMounted(async () => {
 const goBack = async () => {
   if (confirm('¿Estás seguro de que deseas regresar?')) {
     await storage.removeItem('completeVerificationData')
-    router.push('/entidad-digital/selfie-camera')
+    router.push('/entidad-digital')
   }
 }
 

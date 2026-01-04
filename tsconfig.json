@@ -16,9 +16,6 @@
     }
   ],
   "compilerOptions": {
-    "types": [
-      "@capacitor/core"
-    ],
     "paths": {
       "@/*": [
         "./app/*"
