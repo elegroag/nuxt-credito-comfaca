@@ -220,7 +220,8 @@ const {
   errorMsg,
   result,
   crear,
-  validateForm
+  validateForm,
+  isCapturasConfirmadas
 } = useEntidadDigital()
 
 // Referencias locales para las claves
@@ -266,6 +267,9 @@ onMounted(async () => {
     
     // No cargar overwrite ya que no se guarda en datos básicos
     // El usuario lo seleccionará aquí en confirmación
+
+    // Si las capturas fueron confirmadas recientemente (viene de la redirección del socket)
+    // podemos mostrar un mensaje de éxito inicial o marcar visualmente el progreso.
   } else {
     // Si no hay datos completos, redirigir al inicio
     router.push('/entidad-digital')

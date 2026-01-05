@@ -33,6 +33,8 @@ export function useEntidadDigital() {
     let countdownInterval: any = null;
     let socket: Socket | null = null;
 
+    const isCapturasConfirmadas = ref(false);
+
     // Navigation state
     const redirectTo = ref('');
 
@@ -140,6 +142,24 @@ export function useEntidadDigital() {
             // Cuando la app móvil autoriza, pasamos al siguiente estado o mostramos éxito
             result.value = data;
             // Aquí se podría redirigir o actualizar el estado para mostrar que ya se puede continuar
+        });
+
+        socket.on(`confirma_capturas_${username}`, async (response: any) => {
+            console.log('Confirmación de capturas recibida:', response);
+            if (!response.success) {
+                errorMsg.value = response.error || 'Error al confirmar capturas';
+                return;
+            }
+
+            // Guardar los datos de captura en el storage para que confirmation.vue los use
+            await storage.setItem('completeVerificationData', JSON.stringify(response.data));
+
+            // Actualizar estado para que la UI reaccione
+            result.value = response.data;
+            isCapturasConfirmadas.value = true;
+
+            // Redirigir a la página de confirmación
+            await navigateTo('/entidad-digital/confirmation');
         });
     };
 
@@ -288,6 +308,7 @@ export function useEntidadDigital() {
         loadingQR,
         tokenExpired,
         timeRemaining,
+        isCapturasConfirmadas,
 
         // Computed
         isBasicFormValid,

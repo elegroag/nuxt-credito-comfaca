@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
-@plugin "daisyui" { themes: light --default, dark; }
+@plugin "daisyui" {
+  themes: light --default, dark;
+}
 
 :root {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -13,6 +15,25 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Colores principales */
+  --color-primary: #7CC5BB;
+  --color-secondary: #79BD5F;
+  --color-accent: #FEDEAE;
+  --color-background: #FAF4E8;
+
+  /* Variaciones para hover/estados */
+  --color-primary-hover: #6BB5AB;
+  --color-secondary-hover: #6AAD4F;
+
+  /* Textos */
+  --color-text-primary: #2D3748;
+  --color-text-secondary: #4A5568;
+  --color-text-light: #718096;
+
+  /* Bordes y sombras */
+  --color-border: rgba(124, 197, 187, 0.2);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 /*
@@ -22,15 +43,18 @@
 .input {
   width: 100%;
   border-radius: 0.5rem;
-  border: 1px solid rgb(212 212 216); /* zinc-300 */
+  border: 1px solid rgb(212 212 216);
+  /* zinc-300 */
   background: #fff;
   padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
   line-height: 1.25rem;
-  color: rgb(24 24 27); /* zinc-900 */
+  color: rgb(24 24 27);
+  /* zinc-900 */
   outline: none;
 }
 
 .input:focus {
-  border-color: rgb(24 24 27); /* zinc-900 */
+  border-color: rgb(24 24 27);
+  /* zinc-900 */
 }
