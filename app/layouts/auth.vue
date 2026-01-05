@@ -1,17 +1,13 @@
 <template>
-  <div class="min-h-dvh bg-zinc-50 text-zinc-900">
-    <div :class="['mx-auto flex min-h-dvh items-center px-4 py-10', 
-                 $route.path.includes('registro') ? 'max-w-4xl' : 'max-w-md']">
-      <div class="w-full">
-        <div class="mb-6 text-center">
-          <div class="text-xl font-semibold">Comfaca Crédito</div>
-          <div class="mt-1 text-sm text-zinc-600">Acceso y registro</div>
-        </div>
+  <div class="min-h-dvh bg-background text-foreground flex items-center justify-center p-4">
+    <div :class="['w-full max-w-md space-y-8', $route.path.includes('registro') ? 'max-w-4xl' : '']">
+      <div class="text-center">
+        <h2 class="text-3xl font-bold tracking-tight text-foreground">Comfaca Crédito</h2>
+        <p class="mt-2 text-sm text-muted-foreground">Acceso y registro al sistema</p>
+      </div>
 
-        <div class="rounded-lg border border-zinc-200 bg-white p-5 shadow-sm">
-          <slot />
-        </div>
-
+      <div class="bg-card text-card-foreground rounded-xl border border-border shadow-sm p-6 sm:p-8">
+        <slot />
       </div>
     </div>
   </div>

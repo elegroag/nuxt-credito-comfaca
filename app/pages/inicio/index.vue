@@ -1,253 +1,256 @@
 <template>
   <div class="mx-auto max-w-5xl p-4 sm:p-8">
-    <div class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
-      <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-        <div class="min-w-0">
-          <h1 class="truncate text-2xl font-semibold tracking-tight">Bienvenido</h1>
-          <p class="mt-1 text-sm text-zinc-600">
-            {{ session.user?.username || 'Usuario' }}
-            <span v-if="(session.user?.roles || []).length" class="text-zinc-400">·</span>
-            <span v-if="(session.user?.roles || []).length" class="text-zinc-500">
-              {{ (session.user?.roles || []).join(', ') }}
-            </span>
-          </p>
-          <p class="mt-3 text-sm text-zinc-600">
-            Selecciona una opción para comenzar.
-          </p>
-        </div>
-
-        <div class="flex shrink-0 items-center gap-2">
-          <NuxtLink
-            to="/solicitud"
-            class="inline-flex items-center gap-2 rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-800"
-          >
-            <DocumentPlusIcon class="h-5 w-5" />
-            Nueva solicitud
-          </NuxtLink>
-          <NuxtLink
-            to="/simulador"
-            class="inline-flex items-center gap-2 rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-50"
-          >
-            <CalculatorIcon class="h-5 w-5" />
-            Simular
-          </NuxtLink>
-          <NuxtLink
-            to="/xml-extract"
-            class="inline-flex items-center gap-2 rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-50"
-          >
-            <CodeBracketSquareIcon class="h-5 w-5" />
-            Extraer XML
-          </NuxtLink>
-        </div>
-      </div>
-    </div>
-
-    <div class="mt-6 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
-      <div class="flex items-center justify-between gap-3">
-        <div class="flex items-start gap-3">
-          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-zinc-200 bg-white p-2">
-            <ClipboardDocumentListIcon class="h-full w-full text-zinc-700" />
+    <!-- Header Card -->
+    <Card class="mb-6 border-border shadow-sm">
+      <CardContent class="p-6">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div class="min-w-0">
+            <h1 class="text-2xl font-semibold tracking-tight text-foreground">Bienvenido</h1>
+            <p class="mt-1 text-sm text-muted-foreground">
+              {{ session.user?.username || 'Usuario' }}
+              <span v-if="(session.user?.roles || []).length" class="text-muted-foreground/60">·</span>
+              <span v-if="(session.user?.roles || []).length" class="text-muted-foreground">
+                {{ (session.user?.roles || []).join(', ') }}
+              </span>
+            </p>
+            <p class="mt-3 text-sm text-muted-foreground">Selecciona una opción para comenzar.</p>
           </div>
-          <div>
-            <div class="text-base font-semibold text-zinc-900">Mis solicitudes</div>
-            <div class="mt-1 text-sm text-zinc-600">Listado de tus solicitudes y estado actual.</div>
-            <div class="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-zinc-500">
-              <span class="font-semibold text-zinc-600">Flujo:</span>
-              <template v-for="(e, i) in flujoAprobacion" :key="e">
-                <span>{{ e }}</span>
-                <ChevronRightIcon v-if="i < flujoAprobacion.length - 1" class="h-3.5 w-3.5 text-zinc-300" />
-              </template>
+
+          <div class="flex shrink-0 flex-wrap items-center gap-2">
+            <NuxtLink to="/solicitud">
+              <Button class="bg-primary text-primary-foreground hover:bg-primary/90">
+                <FilePlus class="h-5 w-5 mr-2" />
+                Nueva solicitud
+              </Button>
+            </NuxtLink>
+            <NuxtLink to="/simulador">
+              <Button variant="outline" class="border-border bg-transparent">
+                <Calculator class="h-5 w-5 mr-2" />
+                Simular
+              </Button>
+            </NuxtLink>
+            <NuxtLink to="/xml-extract">
+              <Button variant="outline" class="border-border bg-transparent">
+                <FileText class="h-5 w-5 mr-2" />
+                Extraer XML
+              </Button>
+            </NuxtLink>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+
+    <!-- Solicitudes Card -->
+    <Card class="mb-6 border-border shadow-sm">
+      <CardContent class="p-6">
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-start gap-3 flex-1">
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-border bg-card p-2">
+              <ClipboardList class="h-full w-full text-foreground" />
             </div>
+            <div class="flex-1">
+              <div class="text-base font-semibold text-foreground">Mis solicitudes</div>
+              <div class="mt-1 text-sm text-muted-foreground">Listado de tus solicitudes y estado actual.</div>
 
-            <div v-if="ultimaSolicitud" class="mt-4 rounded-md border border-zinc-200 bg-zinc-50 p-4">
-              <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div class="min-w-0">
-                  <div class="text-sm font-semibold text-zinc-800">Estado de tu última solicitud</div>
-                  <div class="mt-1 truncate text-sm text-zinc-600">
-                    <span class="font-medium text-zinc-800">{{ ultimaSolicitud.numero_solicitud || '-' }}</span>
-                    <span class="text-zinc-400">·</span>
-                    <span>{{ fmtMoney(ultimaSolicitud.monto_solicitado) }}</span>
+              <div class="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+                <span class="font-semibold text-foreground">Flujo:</span>
+                <template v-for="(estado, i) in flujoAprobacion" :key="estado">
+                  <div class="flex items-center gap-1.5">
+                    <span>{{ estado }}</span>
+                    <ChevronRight v-if="i < flujoAprobacion.length - 1" class="h-3.5 w-3.5 text-muted-foreground/40" />
                   </div>
-                </div>
-
-                <div class="flex items-center gap-3">
-                  <span
-                    class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium"
-                    :class="estadoBadgeClass(String(ultimaSolicitud.estado || ''))"
-                  >
-                    {{ ultimaSolicitud.estado || '-' }}
-                  </span>
-                  <div class="h-2 w-40 overflow-hidden rounded-full bg-zinc-200">
-                    <div
-                      class="h-full"
-                      :class="estadoProgressClass(String(ultimaSolicitud.estado || ''))"
-                      :style="{ width: `${estadoProgressPercent(String(ultimaSolicitud.estado || ''))}%` }"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div class="mt-3 flex flex-wrap items-center gap-1.5 text-xs text-zinc-500">
-                <span class="font-semibold text-zinc-600">Paso actual:</span>
-                <template v-for="(e, i) in flujoAprobacion" :key="e">
-                  <span :class="i === estadoIndexUltima ? 'font-semibold text-zinc-800' : ''">{{ e }}</span>
-                  <ChevronRightIcon v-if="i < flujoAprobacion.length - 1" class="h-3.5 w-3.5 text-zinc-300" />
                 </template>
               </div>
+
+              <div v-if="ultimaSolicitud" class="mt-4 rounded-md border border-border bg-muted/30 p-4">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div class="min-w-0">
+                    <div class="text-sm font-semibold text-foreground">Estado de tu última solicitud</div>
+                    <div class="mt-1 text-sm text-muted-foreground">
+                      <span class="font-medium text-foreground">{{ ultimaSolicitud.numero_solicitud || '-' }}</span>
+                      <span class="text-muted-foreground/60"> · </span>
+                      <span>{{ fmtMoney(ultimaSolicitud.monto_solicitado) }}</span>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-3">
+                    <Badge :class="estadoBadgeClass(String(ultimaSolicitud.estado || ''))">
+                      {{ ultimaSolicitud.estado || '-' }}
+                    </Badge>
+                    <div class="w-40">
+                        <Progress :model-value="estadoProgressPercent(String(ultimaSolicitud.estado || ''))" class="h-2" />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-3 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+                  <span class="font-semibold text-foreground">Paso actual:</span>
+                  <template v-for="(estado, i) in flujoAprobacion" :key="estado">
+                    <div class="flex items-center gap-1.5">
+                      <span :class="i === estadoIndexUltima ? 'font-semibold text-foreground' : ''">{{ estado }}</span>
+                      <ChevronRight v-if="i < flujoAprobacion.length - 1" class="h-3.5 w-3.5 text-muted-foreground/40" />
+                    </div>
+                  </template>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <button
-          type="button"
-          class="inline-flex items-center gap-2 rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-50"
-          :disabled="loadingSolicitudes"
-          @click="cargarSolicitudes"
-        >
-          <ArrowPathIcon class="h-5 w-5" />
-          Actualizar
-        </button>
-      </div>
 
-      <div v-if="solicitudesError" class="mt-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">
-        {{ solicitudesError }}
-      </div>
-
-      <div v-if="loadingSolicitudes" class="mt-4 text-sm text-zinc-600">Cargando solicitudes...</div>
-
-      <div v-else class="mt-4">
-        <div v-if="solicitudes.length === 0" class="rounded-md border border-zinc-200 bg-zinc-50 p-4 text-sm text-zinc-700">
-          Aún no tienes solicitudes registradas.
+          <Button
+            variant="outline"
+            @click="cargarSolicitudes"
+            :disabled="loadingSolicitudes"
+            class="shrink-0 bg-transparent"
+          >
+            <RefreshCw :class="['h-5 w-5 mr-2', loadingSolicitudes ? 'animate-spin' : '']" />
+            Actualizar
+          </Button>
         </div>
 
-        <div v-else class="overflow-hidden rounded-md border border-zinc-200">
-          <table class="w-full text-left text-sm">
-            <thead class="bg-zinc-50 text-xs font-semibold uppercase tracking-wide text-zinc-600">
-              <tr>
-                <th class="px-4 py-3">Número</th>
-                <th class="px-4 py-3">Monto</th>
-                <th class="px-4 py-3">Plazo</th>
-                <th class="px-4 py-3">Estado</th>
-                <th class="px-4 py-3">Creación</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="s in solicitudes" :key="s.id" class="border-t border-zinc-200">
-                <td class="px-4 py-3 font-medium text-zinc-900">
-                  {{ s.numero_solicitud || '-' }}
-                </td>
-                <td class="px-4 py-3 text-zinc-700">{{ fmtMoney(s.monto_solicitado) }}</td>
-                <td class="px-4 py-3 text-zinc-700">{{ (s.plazo_meses || 0) }} meses</td>
-                <td class="px-4 py-3">
-                  <span
-                    class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium"
-                    :class="estadoBadgeClass(String(s.estado || ''))"
-                  >
-                    {{ s.estado || '-' }}
-                  </span>
-                  <div class="mt-2 h-2 w-32 overflow-hidden rounded-full bg-zinc-200">
-                    <div
-                      class="h-full"
-                      :class="estadoProgressClass(String(s.estado || ''))"
-                      :style="{ width: `${estadoProgressPercent(String(s.estado || ''))}%` }"
-                    />
-                  </div>
-                </td>
-                <td class="px-4 py-3 text-zinc-700">{{ fmtDate(s.created_at) }}</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="mt-4">
+          <div v-if="loadingSolicitudes" class="text-sm text-muted-foreground">
+            Cargando solicitudes...
+          </div>
+          <div v-else-if="solicitudesError" class="text-sm text-destructive">
+            {{ solicitudesError }}
+          </div>
+          <div v-else-if="solicitudes.length === 0" class="rounded-md border border-border bg-muted/30 p-4 text-sm text-muted-foreground">
+            Aún no tienes solicitudes registradas.
+          </div>
+          <div v-else class="overflow-hidden rounded-md border border-border">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-muted/50 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <tr>
+                  <th class="px-4 py-3">Número</th>
+                  <th class="px-4 py-3">Monto</th>
+                  <th class="px-4 py-3">Plazo</th>
+                  <th class="px-4 py-3">Estado</th>
+                  <th class="px-4 py-3">Creación</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="s in solicitudes" :key="s.id" class="border-t border-border">
+                  <td class="px-4 py-3 font-medium text-foreground">{{ s.numero_solicitud || '-' }}</td>
+                  <td class="px-4 py-3 text-foreground">{{ fmtMoney(s.monto_solicitado) }}</td>
+                  <td class="px-4 py-3 text-foreground">{{ (s.plazo_meses || 0) }} meses</td>
+                  <td class="px-4 py-3">
+                    <div class="flex flex-col gap-2">
+                        <Badge :class="`w-fit ${estadoBadgeClass(String(s.estado || ''))}`">
+                            {{ s.estado || '-' }}
+                        </Badge>
+                        <Progress :model-value="estadoProgressPercent(String(s.estado || ''))" class="w-32 h-1.5" />
+                    </div>
+                  </td>
+                  <td class="px-4 py-3 text-foreground">{{ fmtDate(s.created_at) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
 
-    <div class="mt-6 grid gap-4 sm:grid-cols-2">
+    <!-- Action Cards Grid -->
+    <div class="grid gap-4 sm:grid-cols-2">
       <NuxtLink
         to="/simulador"
-        class="group rounded-xl border border-zinc-200 bg-white p-5 shadow-sm hover:border-zinc-300"
+        class="group block rounded-xl border border-border bg-card p-5 shadow-sm transition-colors hover:border-primary/50 hover:bg-card/80"
       >
         <div class="flex items-start justify-between gap-3">
           <div class="flex min-w-0 items-start gap-3">
-            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-zinc-200 bg-white p-2">
-              <CalculatorIcon class="h-full w-full text-zinc-700" />
+            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-border bg-card p-2">
+              <Calculator class="h-full w-full text-foreground" />
             </div>
             <div class="min-w-0">
-              <div class="text-base font-semibold text-zinc-900 group-hover:text-zinc-950">Simulador de crédito</div>
-              <div class="mt-1 text-sm text-zinc-600">Cuota mensual, tasa efectiva y capacidad de endeudamiento</div>
+              <div class="text-base font-semibold text-foreground group-hover:text-primary">
+                Simulador de crédito
+              </div>
+              <div class="mt-1 text-sm text-muted-foreground">
+                Cuota mensual, tasa efectiva y capacidad de endeudamiento
+              </div>
             </div>
           </div>
-          <ChevronRightIcon class="h-5 w-5 shrink-0 text-zinc-400" />
+          <ChevronRight class="h-5 w-5 shrink-0 text-muted-foreground group-hover:text-primary" />
         </div>
       </NuxtLink>
 
       <NuxtLink
         to="/solicitud"
-        class="group rounded-xl border border-zinc-200 bg-white p-5 shadow-sm hover:border-zinc-300"
+        class="group block rounded-xl border border-border bg-card p-5 shadow-sm transition-colors hover:border-primary/50 hover:bg-card/80"
       >
         <div class="flex items-start justify-between gap-3">
           <div class="flex min-w-0 items-start gap-3">
-            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-zinc-200 bg-white p-2">
-              <DocumentPlusIcon class="h-full w-full text-zinc-700" />
+            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-border bg-card p-2">
+              <FilePlus class="h-full w-full text-foreground" />
             </div>
             <div class="min-w-0">
-              <div class="text-base font-semibold text-zinc-900 group-hover:text-zinc-950">Solicitud de crédito</div>
-              <div class="mt-1 text-sm text-zinc-600">Captura secuencial por bloques y generación de XML</div>
+              <div class="text-base font-semibold text-foreground group-hover:text-primary">
+                Solicitud de crédito
+              </div>
+              <div class="mt-1 text-sm text-muted-foreground">
+                Captura secuencial por bloques y generación de XML
+              </div>
             </div>
           </div>
-          <ChevronRightIcon class="h-5 w-5 shrink-0 text-zinc-400" />
+          <ChevronRight class="h-5 w-5 shrink-0 text-muted-foreground group-hover:text-primary" />
         </div>
       </NuxtLink>
 
       <NuxtLink
         to="/firmas"
-        class="group rounded-xl border border-zinc-200 bg-white p-5 shadow-sm hover:border-zinc-300"
+        class="group block rounded-xl border border-border bg-card p-5 shadow-sm transition-colors hover:border-primary/50 hover:bg-card/80"
       >
         <div class="flex items-start justify-between gap-3">
           <div class="flex min-w-0 items-start gap-3">
-            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-zinc-200 bg-white p-2">
-              <PencilSquareIcon class="h-full w-full text-zinc-700" />
+            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-border bg-card p-2">
+              <PenTool class="h-full w-full text-foreground" />
             </div>
             <div class="min-w-0">
-              <div class="text-base font-semibold text-zinc-900 group-hover:text-zinc-950">Firmas</div>
-              <div class="mt-1 text-sm text-zinc-600">Firmar y visualizar solicitudes</div>
+              <div class="text-base font-semibold text-foreground group-hover:text-primary">Firmas</div>
+              <div class="mt-1 text-sm text-muted-foreground">Firmar y visualizar solicitudes</div>
             </div>
           </div>
-          <ChevronRightIcon class="h-5 w-5 shrink-0 text-zinc-400" />
+          <ChevronRight class="h-5 w-5 shrink-0 text-muted-foreground group-hover:text-primary" />
         </div>
       </NuxtLink>
 
       <NuxtLink
         to="/firmas-compartir"
-        class="group rounded-xl border border-zinc-200 bg-white p-5 shadow-sm hover:border-zinc-300"
+        class="group block rounded-xl border border-border bg-card p-5 shadow-sm transition-colors hover:border-primary/50 hover:bg-card/80"
       >
         <div class="flex items-start justify-between gap-3">
           <div class="flex min-w-0 items-start gap-3">
-            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-zinc-200 bg-white p-2">
-              <ShareIcon class="h-full w-full text-zinc-700" />
+            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-border bg-card p-2">
+              <Share2 class="h-full w-full text-foreground" />
             </div>
             <div class="min-w-0">
-              <div class="text-base font-semibold text-zinc-900 group-hover:text-zinc-950">Compartir firmas</div>
-              <div class="mt-1 text-sm text-zinc-600">Generar enlaces y QR para firma digital</div>
+              <div class="text-base font-semibold text-foreground group-hover:text-primary">
+                Compartir firmas
+              </div>
+              <div class="mt-1 text-sm text-muted-foreground">Generar enlaces y QR para firma digital</div>
             </div>
           </div>
-          <ChevronRightIcon class="h-5 w-5 shrink-0 text-zinc-400" />
+          <ChevronRight class="h-5 w-5 shrink-0 text-muted-foreground group-hover:text-primary" />
         </div>
       </NuxtLink>
 
       <NuxtLink
         to="/entidad-digital"
-        class="group rounded-xl border border-zinc-200 bg-white p-5 shadow-sm hover:border-zinc-300"
+        class="group block rounded-xl border border-border bg-card p-5 shadow-sm transition-colors hover:border-primary/50 hover:bg-card/80"
       >
         <div class="flex items-start justify-between gap-3">
           <div class="flex min-w-0 items-start gap-3">
-            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-zinc-200 bg-white p-2">
-              <KeyIcon class="h-full w-full text-zinc-700" />
+            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-border bg-card p-2">
+              <Key class="h-full w-full text-foreground" />
             </div>
             <div class="min-w-0">
-              <div class="text-base font-semibold text-zinc-900 group-hover:text-zinc-950">Entidad digital</div>
-              <div class="mt-1 text-sm text-zinc-600">Gestión y consulta de datos</div>
+              <div class="text-base font-semibold text-foreground group-hover:text-primary">
+                Entidad digital
+              </div>
+              <div class="mt-1 text-sm text-muted-foreground">Gestión y consulta de datos</div>
             </div>
           </div>
-          <ChevronRightIcon class="h-5 w-5 shrink-0 text-zinc-400" />
+          <ChevronRight class="h-5 w-5 shrink-0 text-muted-foreground group-hover:text-primary" />
         </div>
       </NuxtLink>
     </div>
@@ -257,18 +260,27 @@
 <script setup lang="ts">
 import { useSession } from '~/composables/useSession'
 import { useInicio } from '~/composables/inicio/useInicio'
-
 import {
-  ArrowPathIcon,
-  CalculatorIcon,
-  ChevronRightIcon,
-  ClipboardDocumentListIcon,
-  CodeBracketSquareIcon,
-  DocumentPlusIcon,
-  KeyIcon,
-  PencilSquareIcon,
-  ShareIcon
-} from '@heroicons/vue/24/outline'
+  Calculator,
+  FileText,
+  PenTool,
+  Share2,
+  Key,
+  ChevronRight,
+  RefreshCw,
+  ClipboardList,
+  FilePlus,
+} from 'lucide-vue-next'
+import Button from '@/components/ui/Button.vue'
+import Card from '@/components/ui/Card.vue'
+import CardContent from '@/components/ui/CardContent.vue'
+import Badge from '@/components/ui/Badge.vue'
+import Progress from '@/components/ui/Progress.vue'
+
+definePageMeta({
+  layout: 'dashboard',
+  middleware: ['auth']
+})
 
 const { session } = useSession()
 
@@ -280,16 +292,9 @@ const {
   fmtMoney,
   fmtDate,
   estadoProgressPercent,
-  estadoProgressClass,
   estadoBadgeClass,
   ultimaSolicitud,
   estadoIndexUltima,
-  cargarSolicitudes,
-  resetSolicitudes
+  cargarSolicitudes
 } = useInicio()
-
-definePageMeta({
-  layout: 'dashboard',
-  middleware: ['auth']
-})
 </script>

@@ -3,16 +3,16 @@ import { useRoute, useRouter } from 'vue-router'
 import { useSession } from '~/composables/useSession'
 import type { NavItem } from '~/shared/types/layout'
 import {
-    HomeIcon,
-    CalculatorIcon,
-    DocumentPlusIcon,
-    DocumentTextIcon,
-    CodeBracketSquareIcon,
-    PencilSquareIcon,
-    ShareIcon,
-    KeyIcon,
-    UserIcon
-} from '@heroicons/vue/24/outline'
+    Home,
+    Calculator,
+    FilePlus,
+    FileText,
+    FileCode,
+    PenTool,
+    Share2,
+    Key,
+    User
+} from 'lucide-vue-next'
 
 export function useDashboardLayout() {
     const { session, clearSession } = useSession()
@@ -39,15 +39,15 @@ export function useDashboardLayout() {
     }
 
     const navItems: NavItem[] = [
-        { label: 'Inicio', to: '/', abbr: _abbr('Inicio'), icon: HomeIcon },
-        { label: 'Simulador', to: '/simulador', abbr: _abbr('Simulador'), icon: CalculatorIcon },
-        { label: 'Solicitud', to: '/solicitud', abbr: _abbr('Solicitud'), icon: DocumentPlusIcon },
-        { label: 'Documentos', to: '/documentos', abbr: _abbr('Documentos'), icon: DocumentTextIcon },
-        { label: 'Extraer XML', to: '/xml-extract', abbr: _abbr('Extraer XML'), icon: CodeBracketSquareIcon },
-        { label: 'Firmas', to: '/firmas', abbr: _abbr('Firmas'), icon: PencilSquareIcon },
-        { label: 'Compartir firmas', to: '/firmas-compartir', abbr: _abbr('Compartir firmas'), icon: ShareIcon },
-        { label: 'Entidad digital', to: '/entidad-digital', abbr: _abbr('Entidad digital'), icon: KeyIcon },
-        { label: 'Perfil', to: '/perfil', abbr: _abbr('Perfil'), icon: UserIcon }
+        { label: 'Inicio', to: '/', abbr: _abbr('Inicio'), icon: Home },
+        { label: 'Simulador', to: '/simulador', abbr: _abbr('Simulador'), icon: Calculator },
+        { label: 'Solicitud', to: '/solicitud', abbr: _abbr('Solicitud'), icon: FilePlus },
+        { label: 'Documentos', to: '/documentos', abbr: _abbr('Documentos'), icon: FileText },
+        { label: 'Extraer XML', to: '/xml-extract', abbr: _abbr('Extraer XML'), icon: FileCode },
+        { label: 'Firmas', to: '/firmas', abbr: _abbr('Firmas'), icon: PenTool },
+        { label: 'Compartir firmas', to: '/firmas-compartir', abbr: _abbr('Compartir firmas'), icon: Share2 },
+        { label: 'Entidad digital', to: '/entidad-digital', abbr: _abbr('Entidad digital'), icon: Key },
+        { label: 'Perfil', to: '/perfil', abbr: _abbr('Perfil'), icon: User }
     ]
 
     const isActive = (to: string) => {

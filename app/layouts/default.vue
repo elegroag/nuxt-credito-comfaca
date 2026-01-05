@@ -1,18 +1,16 @@
 <template>
-  <div class="min-h-dvh bg-zinc-50 text-zinc-900">
-    <div class="mx-auto flex min-h-dvh max-w-md items-center px-4 py-10">
-      <div class="w-full">
-        <div class="mb-6 text-center">
-          <div class="text-xl font-semibold">Comfaca Crédito</div>
-        </div>
+  <div class="min-h-dvh bg-background text-foreground flex items-center justify-center p-4">
+    <div class="w-full max-w-md space-y-8">
+      <div class="text-center">
+        <h2 class="text-3xl font-bold tracking-tight text-foreground">Comfaca Crédito</h2>
+      </div>
 
-        <div class="rounded-lg border border-zinc-200 bg-white p-5 shadow-sm">
-          <slot />
-        </div>
+      <div class="bg-card text-card-foreground rounded-xl border border-border shadow-sm p-6 sm:p-8">
+        <slot />
+      </div>
 
-        <div class="mt-4 text-center text-xs text-zinc-500">
-          <NuxtLink to="/" class="underline">Ir al inicio</NuxtLink>
-        </div>
+      <div class="text-center text-sm text-muted-foreground">
+        <NuxtLink to="/" class="underline hover:text-primary transition-colors">Ir al inicio</NuxtLink>
       </div>
     </div>
   </div>

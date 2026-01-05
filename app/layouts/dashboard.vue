@@ -1,207 +1,164 @@
 <template>
-  <div class="min-h-dvh bg-zinc-50 text-zinc-900">
-    <aside
-      class="fixed left-0 top-0 z-50 hidden h-dvh shrink-0 border-r border-zinc-200 bg-white transition-[width] duration-200 lg:block"
-      :class="sidebarCollapsed ? 'w-20' : 'w-64'"
-    >
-      <div class="flex h-full flex-col px-3 py-4">
-        <div class="flex items-center px-2 pb-4">
-          <NuxtLink to="/" class="flex items-center gap-2 font-semibold">
-            <span class="inline-flex h-8 w-8 items-center justify-center rounded-md bg-zinc-900 text-sm font-semibold text-white">CC</span>
-            <span v-if="!sidebarCollapsed" class="truncate">Comfaca Crédito</span>
-          </NuxtLink>
+  <div class="flex h-screen overflow-hidden bg-background">
+    <!-- Sidebar Desktop -->
+    <aside :class="sidebarDesktopClasses">
+      <div class="flex h-16 items-center gap-3 border-b border-sidebar-border px-6">
+        <div class="flex h-8 w-8 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground font-bold text-sm">
+          CC
         </div>
+        <span v-if="!sidebarCollapsed" class="text-lg font-semibold text-sidebar-foreground">Comface Crédito</span>
+      </div>
 
-        <div v-if="!sidebarCollapsed" class="px-2 pb-3 text-xs font-semibold uppercase tracking-wide text-zinc-500">Menú</div>
-        <nav class="grid gap-1">
+      <nav class="flex-1 overflow-y-auto px-3 py-4">
+        <div v-show="!sidebarCollapsed" class="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/60">
+          MENÚ
+        </div>
+        <div class="space-y-1">
           <NuxtLink
             v-for="item in navItems"
             :key="item.to"
             :to="item.to"
-            :title="item.label"
-            class="flex items-center rounded-md px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-100"
-            :class="[
-              isActive(item.to) ? 'bg-zinc-900 !text-white hover:bg-zinc-900' : '',
-              sidebarCollapsed ? 'justify-center' : 'gap-2'
-            ]"
+            :class="getMenuItemClasses(item.to)"
+            :title="sidebarCollapsed ? item.label : undefined"
           >
-            <component :is="item.icon" class="h-5 w-5 shrink-0" :class="isActive(item.to) ? '!text-white' : ''" />
-            <span v-if="!sidebarCollapsed" class="truncate" :class="isActive(item.to) ? '!text-white' : ''">{{ item.label }}</span>
+            <component :is="item.icon" class="h-5 w-5 shrink-0" />
+            <span v-show="!sidebarCollapsed">{{ item.label }}</span>
           </NuxtLink>
-        </nav>
+        </div>
+      </nav>
 
-        <div class="mt-auto border-t border-zinc-200 pt-4">
-          <div v-if="!sidebarCollapsed" class="px-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">Sesión</div>
-
-          <div
-            class="mt-2 rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-700"
-            :class="sidebarCollapsed ? 'px-2' : ''"
-          >
-            <div v-if="!sidebarCollapsed" class="font-medium text-zinc-900">{{ session.user?.username || 'Usuario' }}</div>
-            <div v-if="!sidebarCollapsed" class="mt-1 text-xs text-zinc-500">{{ (session.user?.roles || []).join(', ') || 'sin roles' }}</div>
-
-            <div v-else class="flex items-center justify-center">
-              <div class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-zinc-900 text-xs font-semibold text-white">
-                {{ _abbr(session.user?.username || 'Usuario') }}
-              </div>
-            </div>
+      <div class="border-t border-sidebar-border p-4">
+        <div class="flex items-center gap-3 rounded-lg bg-sidebar-accent/50 px-3 py-2.5">
+          <div class="flex h-8 w-8 items-center justify-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground font-semibold text-sm">
+            {{ _abbr(session.user?.username || 'Usuario') }}
+          </div>
+          <div v-show="!sidebarCollapsed" class="min-w-0 flex-1">
+            <div class="truncate text-sm font-medium text-sidebar-foreground">{{ session.user?.username || 'Usuario' }}</div>
+            <div class="truncate text-xs text-sidebar-foreground/60">{{ (session.user?.roles || []).join(', ') || 'sin roles' }}</div>
           </div>
         </div>
       </div>
     </aside>
 
-    <header
-      class="sticky top-0 z-40 border-b border-zinc-200 bg-white/80 backdrop-blur shadow-sm"
-      :class="sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-64'"
-    >
-      <div class="w-full px-4">
-        <div class="flex h-14 items-center justify-between gap-3">
-          <div class="flex min-w-0 items-center gap-2">
-            <button
-              type="button"
-              class="hidden h-9 w-9 items-center justify-center rounded-md border border-zinc-200 bg-white text-zinc-900 hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-300 lg:inline-flex"
-              :aria-label="sidebarCollapsed ? 'Expandir menú' : 'Colapsar menú'"
-              @click="sidebarCollapsed = !sidebarCollapsed"
-            >
-              <ChevronRightIcon v-if="sidebarCollapsed" class="h-5 w-5" />
-              <ChevronLeftIcon v-else class="h-5 w-5" />
-            </button>
+    <!-- Mobile Sidebar Overlay -->
+    <div
+      v-if="sidebarOpen"
+      class="fixed inset-0 z-40 bg-black/50 lg:hidden"
+      @click="sidebarOpen = false"
+    />
 
-            <button
-              type="button"
-              class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-zinc-200 bg-white text-zinc-900 hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-300 lg:hidden"
-              aria-label="Abrir menú"
-              @click="sidebarOpen = true"
-            >
-              <Bars3Icon class="h-5 w-5" />
-            </button>
-
-            <NuxtLink to="/" class="flex items-center gap-2 font-semibold lg:hidden">
-              <span class="inline-flex h-8 w-8 items-center justify-center rounded-md bg-zinc-900 text-sm font-semibold text-white">CC</span>
-            </NuxtLink>
-
-            <div class="min-w-0 flex items-center gap-2">
-              <div class="hidden text-sm font-medium text-zinc-500 sm:block">Comfaca Crédito</div>
-              <div class="hidden text-sm text-zinc-300 sm:block">/</div>
-              <div class="truncate text-base font-semibold text-zinc-900">{{ sectionTitle }}</div>
-            </div>
+    <!-- Mobile Sidebar -->
+    <aside :class="sidebarMobileClasses">
+      <div class="flex h-16 items-center justify-between border-b border-sidebar-border px-6">
+        <div class="flex items-center gap-3">
+          <div class="flex h-8 w-8 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground font-bold text-sm">
+            CC
           </div>
+          <span class="text-lg font-semibold text-sidebar-foreground">Comface Crédito</span>
+        </div>
+        <Button variant="ghost" size="icon" @click="sidebarOpen = false" class="text-sidebar-foreground">
+          <X class="h-5 w-5" />
+        </Button>
+      </div>
 
-          <div class="flex items-center justify-end gap-2">
-            <div class="relative">
-              <button
-                type="button"
-                class="flex h-9 items-center gap-2 rounded-md border border-zinc-200 bg-white px-2.5 text-sm text-zinc-900 hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-300"
-                aria-label="Menú de usuario"
-                :aria-expanded="userMenuOpen ? 'true' : 'false'"
-                @click="userMenuOpen = !userMenuOpen"
-              >
-                <div class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-zinc-200 bg-white text-xs font-semibold text-zinc-900">
-                  {{ _abbr(session.user?.username || 'Usuario') }}
-                </div>
-                <div class="hidden min-w-0 flex-col items-start md:flex">
-                  <div class="max-w-[12rem] truncate text-sm font-medium text-zinc-800">
-                    {{ session.user?.username || 'Usuario' }}
-                  </div>
-                  <div class="max-w-[12rem] truncate text-xs text-zinc-500">
-                    {{ (session.user?.roles || []).join(', ') || 'sin roles' }}
-                  </div>
-                </div>
-                <ChevronDownIcon class="hidden h-4 w-4 text-zinc-500 md:block" />
-              </button>
+      <nav class="overflow-y-auto px-3 py-4">
+        <div class="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/60">
+          MENÚ
+        </div>
+        <div class="space-y-1">
+          <NuxtLink
+            v-for="item in navItems"
+            :key="item.to"
+            :to="item.to"
+            @click="sidebarOpen = false"
+            :class="getMobileMenuItemClasses(item.to)"
+          >
+            <component :is="item.icon" class="h-5 w-5" />
+            {{ item.label }}
+          </NuxtLink>
+        </div>
+      </nav>
+    </aside>
 
-              <div
-                v-if="userMenuOpen"
-                class="absolute right-0 mt-2 w-64 overflow-hidden rounded-md border border-zinc-200 bg-white shadow-lg z-50"
-              >
-                <div class="border-b border-zinc-200 px-4 py-3">
-                  <div class="text-sm font-semibold text-zinc-900">{{ session.user?.username || 'Usuario' }}</div>
-                  <div class="mt-1 text-xs text-zinc-600">{{ (session.user?.roles || []).join(', ') || 'sin roles' }}</div>
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              class="inline-flex items-center gap-2 rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-300"
-              @click="logout"
-            >
-              <ArrowRightStartOnRectangleIcon class="h-5 w-5" />
-              <span class="hidden sm:inline">Cerrar sesión</span>
-              <span class="sm:hidden">Salir</span>
-            </button>
+    <!-- Main Content -->
+    <div class="flex flex-1 flex-col overflow-hidden">
+      <header class="flex h-16 items-center justify-between border-b border-border bg-card px-4 sm:px-6">
+        <div class="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            @click="sidebarOpen = !sidebarOpen"
+            class="lg:hidden text-foreground hover:bg-accent"
+          >
+            <Menu class="h-5 w-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            @click="sidebarCollapsed = !sidebarCollapsed"
+            class="hidden lg:flex text-foreground hover:bg-accent"
+          >
+            <PanelLeft v-if="sidebarCollapsed" class="h-5 w-5" />
+            <PanelLeftClose v-else class="h-5 w-5" />
+          </Button>
+          <div class="flex items-center gap-2">
+            <NuxtLink to="/" class="text-sm font-medium text-muted-foreground hover:text-foreground">
+              Comface Crédito
+            </NuxtLink>
+            <span class="text-muted-foreground">/</span>
+            <span class="text-sm font-semibold text-foreground">{{ sectionTitle }}</span>
           </div>
         </div>
-      </div>
-    </header>
 
-    <div :class="sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-64'">
-      <main class="mx-auto w-full max-w-7xl">
+        <div class="flex items-center gap-3">
+          <span class="hidden text-sm text-muted-foreground sm:block">
+            {{ session.user?.username || 'Usuario' }} <span class="text-muted-foreground/60">·</span>
+            <span class="text-foreground">{{ (session.user?.roles || []).join(', ') || 'sin roles' }}</span>
+          </span>
+
+          <div class="relative">
+             <Button variant="ghost" class="relative h-8 w-8 rounded-full" @click="userMenuOpen = !userMenuOpen">
+                <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground font-semibold text-sm cursor-pointer">
+                    {{ _abbr(session.user?.username || 'Usuario') }}
+                </div>
+             </Button>
+             
+             <div v-if="userMenuOpen" class="absolute right-0 mt-2 w-56 rounded-md border border-border bg-popover text-popover-foreground shadow-md z-50">
+                <div class="p-2">
+                    <div class="px-2 py-1.5 text-sm font-semibold">{{ session.user?.username || 'Usuario' }}</div>
+                    <div class="h-px bg-border my-1"></div>
+                    <button class="relative flex w-full cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50" @click="logout">
+                        <LogOut class="mr-2 h-4 w-4" />
+                        <span>Cerrar sesión</span>
+                    </button>
+                </div>
+             </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="flex-1 overflow-y-auto bg-background p-4 sm:p-6">
         <slot />
       </main>
+      
+      <!-- Overlay para cerrar menú de usuario al hacer click fuera -->
+       <div v-if="userMenuOpen" class="fixed inset-0 z-40" @click="userMenuOpen = false"></div>
     </div>
-
-    <Teleport to="body">
-      <button
-        v-if="userMenuOpen"
-        type="button"
-        class="fixed inset-0 z-40"
-        aria-label="Cerrar menú de usuario"
-        @click="userMenuOpen = false"
-      />
-
-      <div v-if="sidebarOpen" class="fixed inset-0 z-50 lg:hidden">
-        <button
-          type="button"
-          class="absolute inset-0 bg-black/40"
-          aria-label="Cerrar menú"
-          @click="sidebarOpen = false"
-        />
-
-        <div class="absolute left-0 top-0 h-full w-80 max-w-[85vw] bg-white shadow-xl">
-          <div class="flex items-center justify-between border-b border-zinc-200 px-4 py-3">
-            <div class="text-sm font-semibold">Menú</div>
-            <button
-              type="button"
-              class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-zinc-200 bg-white text-zinc-900 hover:bg-zinc-50"
-              aria-label="Cerrar menú"
-              @click="sidebarOpen = false"
-            >
-              <XMarkIcon class="h-5 w-5" />
-            </button>
-          </div>
-
-          <div class="px-3 py-4">
-            <nav class="grid gap-1">
-              <NuxtLink
-                v-for="item in navItems"
-                :key="item.to"
-                :to="item.to"
-                class="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-100"
-                :class="isActive(item.to) ? 'bg-zinc-900 text-white hover:bg-zinc-900' : ''"
-                @click="sidebarOpen = false"
-              >
-                <component :is="item.icon" class="h-5 w-5 shrink-0" :class="isActive(item.to) ? '!text-white' : ''" />
-                <span :class="isActive(item.to) ? '!text-white' : ''">{{ item.label }}</span>
-              </NuxtLink>
-            </nav>
-          </div>
-        </div>
-      </div>
-    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useDashboardLayout } from '~/composables/layout/useDashboardLayout'
+import { computed } from 'vue'
 import {
-  ArrowRightOnRectangleIcon,
-  Bars3Icon,
-  ChevronDownIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  XMarkIcon
-} from '@heroicons/vue/24/outline'
+  Menu,
+  X,
+  PanelLeftClose,
+  PanelLeft,
+  LogOut
+} from 'lucide-vue-next'
+import { cn } from '@/lib/utils'
+import Button from '@/components/ui/Button.vue'
+import { useDashboardLayout } from '~/composables/layout/useDashboardLayout'
 
 const {
   session,
@@ -214,4 +171,35 @@ const {
   logout,
   _abbr
 } = useDashboardLayout()
+
+const sidebarDesktopClasses = computed(() => {
+  const baseClasses = 'hidden flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300 lg:flex'
+  const widthClass = sidebarCollapsed.value ? 'w-16' : 'w-64'
+  return cn(baseClasses, widthClass)
+})
+
+const sidebarMobileClasses = computed(() => {
+  const baseClasses = 'fixed inset-y-0 left-0 z-50 w-64 transform border-r border-sidebar-border bg-sidebar transition-transform duration-300 lg:hidden'
+  const transformClass = sidebarOpen.value ? 'translate-x-0' : '-translate-x-full'
+  return cn(baseClasses, transformClass)
+})
+
+const getMenuItemClasses = (href: string) => {
+  const baseClasses = 'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors'
+  const activeClasses = isActive(href)
+    ? 'bg-sidebar-primary text-sidebar-primary-foreground'
+    : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+  const collapsedClass = sidebarCollapsed.value ? 'justify-center' : ''
+  
+  return cn(baseClasses, activeClasses, collapsedClass)
+}
+
+const getMobileMenuItemClasses = (href: string) => {
+  const baseClasses = 'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors'
+  const activeClasses = isActive(href)
+    ? 'bg-sidebar-primary text-sidebar-primary-foreground'
+    : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+  
+  return cn(baseClasses, activeClasses)
+}
 </script>
