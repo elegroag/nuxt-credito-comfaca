@@ -73,8 +73,12 @@ export function useLogin() {
     };
 
     const checkAuthAndRedirect = async () => {
+        const { ready } = useSession()
+        await ready
+
         if (isAuthenticated.value) {
-            await navigateTo('/');
+            const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/';
+            await navigateTo(redirect.startsWith('/') ? redirect : '/');
         }
     };
 

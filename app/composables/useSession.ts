@@ -16,6 +16,7 @@ const emptySession = (): SessionData => ({
 export const useSession = () => {
     const session = useState<SessionData>('session', () => emptySession())
     const hydrated = useState<boolean>('session_hydrated', () => false)
+    const hydrationPromise = useState<Promise<void> | null>('session_hydration_promise', () => null)
 
     const hydrate = async () => {
         if (!process.client) return
@@ -87,7 +88,9 @@ export const useSession = () => {
         }
     }
 
-    hydrate()
+    if (process.client && !hydrated.value && !hydrationPromise.value) {
+        hydrationPromise.value = hydrate()
+    }
 
     const isAuthenticated = computed(() => Boolean(session.value.accessToken))
 
@@ -131,6 +134,7 @@ export const useSession = () => {
         isAuthenticated,
         setSession,
         clearSession,
-        authHeader
+        authHeader,
+        ready: hydrationPromise.value || Promise.resolve()
     }
 }

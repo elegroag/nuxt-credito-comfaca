@@ -6,7 +6,7 @@
         <div class="flex h-8 w-8 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground font-bold text-sm">
           CC
         </div>
-        <span v-if="!sidebarCollapsed" class="text-lg font-semibold text-sidebar-foreground">Comface Crédito</span>
+        <span v-if="!sidebarCollapsed" class="text-lg font-semibold text-sidebar-foreground">Comfaca Crédito</span>
       </div>
 
       <nav class="flex-1 overflow-y-auto px-3 py-4">
@@ -54,7 +54,7 @@
           <div class="flex h-8 w-8 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground font-bold text-sm">
             CC
           </div>
-          <span class="text-lg font-semibold text-sidebar-foreground">Comface Crédito</span>
+          <span class="text-lg font-semibold text-sidebar-foreground">Comfaca Crédito</span>
         </div>
         <Button variant="ghost" size="icon" @click="sidebarOpen = false" class="text-sidebar-foreground">
           <X class="h-5 w-5" />
@@ -103,7 +103,7 @@
           </Button>
           <div class="flex items-center gap-2">
             <NuxtLink to="/" class="text-sm font-medium text-muted-foreground hover:text-foreground">
-              Comface Crédito
+              Comfaca Crédito
             </NuxtLink>
             <span class="text-muted-foreground">/</span>
             <span class="text-sm font-semibold text-foreground">{{ sectionTitle }}</span>

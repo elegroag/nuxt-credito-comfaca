@@ -1,6 +1,6 @@
 <template>
   <label class="grid gap-1" v-bind="$attrs">
-    <span class="text-sm font-medium text-zinc-700">{{ label }}</span>
+    <span class="text-sm font-medium text-muted-foreground">{{ label }}</span>
     <slot />
   </label>
 </template>

@@ -16,10 +16,10 @@ export function useHealthCheck(): HealthStatus & { checkConnection: () => Promis
     })
 
     const connectionStatusClass = computed(() => {
-        if (checkingConnection.value) return 'bg-blue-50 text-blue-800 border border-blue-200'
-        if (connectionError.value) return 'bg-red-50 text-red-800 border border-red-200'
-        if (isConnected.value) return 'bg-green-50 text-green-800 border border-green-200'
-        return 'bg-gray-50 text-gray-800 border border-gray-200'
+        if (checkingConnection.value) return 'bg-primary/10 text-primary border-primary/20'
+        if (connectionError.value) return 'bg-destructive/10 text-destructive border-destructive/20'
+        if (isConnected.value) return 'bg-secondary/10 text-secondary border-secondary/20'
+        return 'bg-muted text-muted-foreground border-border'
     })
 
     const checkConnection = async () => {

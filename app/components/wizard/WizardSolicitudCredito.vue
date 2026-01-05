@@ -1,100 +1,114 @@
 <template>
-  <div class="rounded-xl border border-zinc-200 bg-white shadow-sm">
-    <div class="border-b border-zinc-200 p-4 sm:p-6">
-      <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <div class="text-sm text-zinc-600">Paso {{ step + 1 }} de {{ steps.length }}</div>
-          <div class="text-lg font-semibold">{{ steps[step]?.title }}</div>
+  <Card class="border-border shadow-sm">
+    <CardHeader class="border-b border-border p-4 sm:p-6">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="space-y-1">
+          <div class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            Paso {{ step + 1 }} de {{ steps.length }}
+          </div>
+          <CardTitle class="text-xl font-bold text-foreground">
+            {{ steps[step]?.title }}
+          </CardTitle>
         </div>
 
-        <div class="flex gap-2">
-          <button
-            class="rounded-lg border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-800 hover:bg-zinc-50 disabled:opacity-50"
+        <div class="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
             :disabled="step === 0"
             @click="prev"
             type="button"
           >
+            <ChevronLeft class="mr-2 h-4 w-4" />
             Atrás
-          </button>
-          <button
+          </Button>
+          
+          <Button
             v-if="step < steps.length - 1"
-            class="rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50"
+            size="sm"
             @click="next"
             type="button"
           >
             Siguiente
-          </button>
+            <ChevronRight class="ml-2 h-4 w-4" />
+          </Button>
+          
           <template v-else>
-            <button
-              class="rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+            <Button
+              variant="secondary"
+              size="sm"
               :disabled="loadingXml"
               @click="generarXml(false)"
               type="button"
             >
+              <FileCode class="mr-2 h-4 w-4" />
               Generar XML
-            </button>
-            <button
-              class="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-500 disabled:opacity-50"
+            </Button>
+            <Button
+              size="sm"
               :disabled="loadingXml"
               @click="generarXml(true)"
               type="button"
             >
+              <Send class="mr-2 h-4 w-4" />
               Enviar
-            </button>
+            </Button>
           </template>
         </div>
       </div>
 
-      <div class="mt-4 flex flex-wrap gap-2">
+      <div class="mt-6 flex flex-wrap gap-2">
         <button
           v-for="(s, i) in steps"
           :key="s.key"
-          class="rounded-full px-3 py-1 text-xs font-medium"
-          :class="i === step ? 'bg-zinc-900 text-white' : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200'"
+          class="rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition-all"
+          :class="i === step 
+            ? 'bg-primary text-primary-foreground shadow-sm' 
+            : 'bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground'"
           @click="step = i"
           type="button"
         >
           {{ s.short }}
         </button>
       </div>
-    </div>
+    </CardHeader>
 
-    <div class="p-4 sm:p-6">
+    <CardContent class="p-4 sm:p-6">
       <form class="grid gap-4" @submit.prevent>
         <template v-if="steps[step]?.key === 'encabezado'">
-            <FormField label="Fecha radicado">
-            <input v-model="form.encabezado.fecha_radicado" type="date" class="input" />
+          <FormField label="Fecha radicado">
+            <Input v-model="form.encabezado.fecha_radicado" type="date" />
           </FormField>
         </template>
 
         <template v-else-if="steps[step]?.key === 'solicitud'">
           <div class="grid gap-4 sm:grid-cols-2">
             <FormField label="Número solicitud">
-              <input v-model="form.solicitud.numero_solicitud" class="input" />
+              <Input v-model="form.solicitud.numero_solicitud" />
             </FormField>
             <FormField label="Número comprobante">
-              <input v-model="form.solicitud.numero_comprobante" class="input" />
+              <Input v-model="form.solicitud.numero_comprobante" />
             </FormField>
             <FormField label="Valor solicitud">
-              <input v-model.number="form.solicitud.valor_solicitud" type="number" min="0" class="input" />
+              <Input v-model.number="form.solicitud.valor_solicitud" type="number" min="0" />
             </FormField>
             <FormField label="Categoría">
-              <input v-model="form.solicitud.categoria" class="input" />
+              <Input v-model="form.solicitud.categoria" />
             </FormField>
             <FormField label="Rol en solicitud">
-              <select v-model="form.solicitud.rol_en_solicitud" class="input">
+              <select v-model="form.solicitud.rol_en_solicitud" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
                 <option value="solicitante">solicitante</option>
                 <option value="codeudor">codeudor</option>
               </select>
             </FormField>
             <FormField label="Valor solicitado">
-              <input v-model.number="form.solicitud.valor_solicitado" type="number" min="0" class="input" />
+              <Input v-model.number="form.solicitud.valor_solicitado" type="number" min="0" />
             </FormField>
             <FormField label="Plazo (meses)">
-              <input v-model.number="form.solicitud.plazo_meses" type="number" min="1" class="input" />
+              <Input v-model.number="form.solicitud.plazo_meses" type="number" min="1" />
             </FormField>
             <FormField label="URL Foto documento (opcional)">
-              <input v-model="form.solicitud.foto_documento!.url" class="input" placeholder="https://..." />
+              <Input v-model="form.solicitud.foto_documento!.url" placeholder="https://..." />
             </FormField>
           </div>
         </template>
@@ -102,7 +116,7 @@
         <template v-else-if="steps[step]?.key === 'producto'">
           <div class="grid gap-4 sm:grid-cols-2">
             <FormField label="Producto">
-              <select v-model="form.producto_solicitado.tipo" class="input">
+              <select v-model="form.producto_solicitado.tipo" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
                 <option value="educacion">educacion</option>
                 <option value="salud">salud</option>
                 <option value="vivienda">vivienda</option>
@@ -114,8 +128,8 @@
               </select>
             </FormField>
 
-            <label class="flex items-center gap-2 text-sm">
-              <input v-model="form.producto_solicitado.ha_tenido_credito_comfaca" type="checkbox" class="h-4 w-4" />
+            <label class="flex items-center gap-2 text-sm text-foreground">
+              <input v-model="form.producto_solicitado.ha_tenido_credito_comfaca" type="checkbox" class="h-4 w-4 rounded border-input text-primary focus:ring-primary" />
               Ha tenido crédito con Comfaca
             </label>
           </div>
@@ -124,40 +138,40 @@
         <template v-else-if="steps[step]?.key === 'solicitante'">
           <div class="grid gap-4 sm:grid-cols-2">
             <FormField label="Fecha vinculación">
-              <input v-model="form.solicitante.fecha_vinculacion" type="date" class="input" />
+              <Input v-model="form.solicitante.fecha_vinculacion" type="date" />
             </FormField>
             <FormField label="Tipo identificación">
-              <select v-model="form.solicitante.tipo_identificacion" class="input">
+              <select v-model="form.solicitante.tipo_identificacion" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
                 <option value="CC">CC</option>
                 <option value="CE">CE</option>
               </select>
             </FormField>
             <FormField label="Número identificación">
-              <input v-model="form.solicitante.numero_identificacion" class="input" />
+              <Input v-model="form.solicitante.numero_identificacion" />
             </FormField>
             <FormField label="Fecha nacimiento">
-              <input v-model="form.solicitante.fecha_nacimiento" type="date" class="input" />
+              <Input v-model="form.solicitante.fecha_nacimiento" type="date" />
             </FormField>
             <FormField label="País nacimiento">
-              <input v-model="form.solicitante.pais_nacimiento" class="input" />
+              <Input v-model="form.solicitante.pais_nacimiento" />
             </FormField>
             <FormField label="Nombres y apellidos">
-              <input v-model="form.solicitante.nombres_apellidos" class="input" />
+              <Input v-model="form.solicitante.nombres_apellidos" />
             </FormField>
             <FormField label="Fecha expedición documento">
-              <input v-model="form.solicitante.fecha_expedicion_documento" type="date" class="input" />
+              <Input v-model="form.solicitante.fecha_expedicion_documento" type="date" />
             </FormField>
             <FormField label="Profesión/Ocupación">
-              <input v-model="form.solicitante.profesion_ocupacion" class="input" />
+              <Input v-model="form.solicitante.profesion_ocupacion" />
             </FormField>
             <FormField label="Sexo">
-              <select v-model="form.solicitante.sexo" class="input">
+              <select v-model="form.solicitante.sexo" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
                 <option value="M">M</option>
                 <option value="F">F</option>
               </select>
             </FormField>
             <FormField label="Nivel educativo">
-              <select v-model="form.solicitante.nivel_educativo" class="input">
+              <select v-model="form.solicitante.nivel_educativo" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
                 <option value="primaria">primaria</option>
                 <option value="bachillerato">bachillerato</option>
                 <option value="tecnico">tecnico</option>
@@ -168,49 +182,49 @@
             </FormField>
 
             <FormField label="Barrio residencia">
-              <input v-model="form.solicitante.barrio_residencia" class="input" />
+              <Input v-model="form.solicitante.barrio_residencia" />
             </FormField>
             <FormField label="Ciudad residencia">
-              <input v-model="form.solicitante.ciudad_residencia" class="input" />
+              <Input v-model="form.solicitante.ciudad_residencia" />
             </FormField>
             <FormField label="País residencia">
-              <input v-model="form.solicitante.pais_residencia" class="input" />
+              <Input v-model="form.solicitante.pais_residencia" />
             </FormField>
             <FormField label="Teléfono fijo (opcional)">
-              <input v-model="form.solicitante.telefono_fijo" class="input" />
+              <Input v-model="form.solicitante.telefono_fijo" />
             </FormField>
             <FormField label="Teléfono móvil">
-              <input v-model="form.solicitante.telefono_movil" class="input" />
+              <Input v-model="form.solicitante.telefono_movil" />
             </FormField>
             <FormField label="Email">
-              <input v-model="form.solicitante.email" type="email" class="input" />
+              <Input v-model="form.solicitante.email" type="email" />
             </FormField>
 
             <FormField label="Tipo vivienda">
-              <select v-model="form.solicitante.tipo_vivienda" class="input">
+              <select v-model="form.solicitante.tipo_vivienda" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
                 <option value="propia">propia</option>
                 <option value="familiar">familiar</option>
                 <option value="arrendada">arrendada</option>
               </select>
             </FormField>
 
-            <label class="flex items-center gap-2 text-sm">
-              <input v-model="form.solicitante.vive_con_nucleo_familiar" type="checkbox" class="h-4 w-4" />
+            <label class="flex items-center gap-2 text-sm text-foreground">
+              <input v-model="form.solicitante.vive_con_nucleo_familiar" type="checkbox" class="h-4 w-4 rounded border-input text-primary focus:ring-primary" />
               Vive con núcleo familiar
             </label>
 
             <FormField label="Personas a cargo">
-              <input v-model.number="form.solicitante.personas_a_cargo" type="number" min="0" class="input" />
+              <Input v-model.number="form.solicitante.personas_a_cargo" type="number" min="0" />
             </FormField>
           </div>
         </template>
 
         <template v-else-if="steps[step]?.key === 'conyuge'">
           <div class="grid gap-4">
-            <label class="flex items-center gap-2 text-sm">
+            <label class="flex items-center gap-2 text-sm text-foreground">
               <input
                 type="checkbox"
-                class="h-4 w-4"
+                class="h-4 w-4 rounded border-input text-primary focus:ring-primary"
                 :checked="!!form.conyuge"
                 @change="(ev) => toggleConyuge((ev.target as HTMLInputElement).checked)"
               />
@@ -219,27 +233,27 @@
 
             <div v-if="form.conyuge" class="grid gap-4 sm:grid-cols-2">
               <FormField label="Identificación">
-                <input v-model="form.conyuge.identificacion" class="input" />
+                <Input v-model="form.conyuge.identificacion" />
               </FormField>
               <FormField label="Nombres y apellidos">
-                <input v-model="form.conyuge.nombres_apellidos" class="input" />
+                <Input v-model="form.conyuge.nombres_apellidos" />
               </FormField>
               <FormField label="Ingresos laborales">
-                <input v-model.number="form.conyuge.ingresos_laborales" type="number" min="0" class="input" />
+                <Input v-model.number="form.conyuge.ingresos_laborales" type="number" min="0" />
               </FormField>
-              <label class="flex items-center gap-2 text-sm">
-                <input v-model="form.conyuge.trabaja" type="checkbox" class="h-4 w-4" />
+              <label class="flex items-center gap-2 text-sm text-foreground">
+                <input v-model="form.conyuge.trabaja" type="checkbox" class="h-4 w-4 rounded border-input text-primary focus:ring-primary" />
                 Trabaja
               </label>
               <FormField label="Teléfono móvil">
-                <input v-model="form.conyuge.telefono_movil" class="input" />
+                <Input v-model="form.conyuge.telefono_movil" />
               </FormField>
 
-              <div class="sm:col-span-2 mt-2 text-sm font-semibold text-zinc-700">Empresa (opcional)</div>
-              <label class="sm:col-span-2 flex items-center gap-2 text-sm">
+              <div class="sm:col-span-2 mt-2 text-sm font-semibold text-foreground">Empresa (opcional)</div>
+              <label class="sm:col-span-2 flex items-center gap-2 text-sm text-foreground">
                 <input
                   type="checkbox"
-                  class="h-4 w-4"
+                  class="h-4 w-4 rounded border-input text-primary focus:ring-primary"
                   :checked="!!form.conyuge.empresa"
                   @change="(ev) => toggleEmpresaConyuge((ev.target as HTMLInputElement).checked)"
                 />
@@ -248,16 +262,16 @@
 
               <template v-if="form.conyuge.empresa">
                 <FormField label="Nombre" class="sm:col-span-2">
-                  <input v-model="form.conyuge.empresa.nombre" class="input" />
+                  <Input v-model="form.conyuge.empresa.nombre" />
                 </FormField>
                 <FormField label="Dirección" class="sm:col-span-2">
-                  <input v-model="form.conyuge.empresa.direccion" class="input" />
+                  <Input v-model="form.conyuge.empresa.direccion" />
                 </FormField>
                 <FormField label="Teléfono">
-                  <input v-model="form.conyuge.empresa.telefono" class="input" />
+                  <Input v-model="form.conyuge.empresa.telefono" />
                 </FormField>
                 <FormField label="Email">
-                  <input v-model="form.conyuge.empresa.email" type="email" class="input" />
+                  <Input v-model="form.conyuge.empresa.email" type="email" />
                 </FormField>
               </template>
             </div>
@@ -267,37 +281,37 @@
         <template v-else-if="steps[step]?.key === 'laboral'">
           <div class="grid gap-4 sm:grid-cols-2">
             <FormField label="Razón social">
-              <input v-model="form.informacion_laboral.empresa_razon_social" class="input" />
+              <Input v-model="form.informacion_laboral.empresa_razon_social" />
             </FormField>
             <FormField label="NIT">
-              <input v-model="form.informacion_laboral.empresa_nit" class="input" />
+              <Input v-model="form.informacion_laboral.empresa_nit" />
             </FormField>
             <FormField label="Teléfono">
-              <input v-model="form.informacion_laboral.empresa_telefono" class="input" />
+              <Input v-model="form.informacion_laboral.empresa_telefono" />
             </FormField>
             <FormField label="Dirección">
-              <input v-model="form.informacion_laboral.empresa_direccion" class="input" />
+              <Input v-model="form.informacion_laboral.empresa_direccion" />
             </FormField>
             <FormField label="Ciudad">
-              <input v-model="form.informacion_laboral.empresa_ciudad" class="input" />
+              <Input v-model="form.informacion_laboral.empresa_ciudad" />
             </FormField>
             <FormField label="Cargo">
-              <input v-model="form.informacion_laboral.cargo" class="input" />
+              <Input v-model="form.informacion_laboral.cargo" />
             </FormField>
             <FormField label="Fecha ingreso">
-              <input v-model="form.informacion_laboral.fecha_ingreso" type="date" class="input" />
+              <Input v-model="form.informacion_laboral.fecha_ingreso" type="date" />
             </FormField>
             <FormField label="Tipo contrato">
-              <input v-model="form.informacion_laboral.tipo_contrato" class="input" />
+              <Input v-model="form.informacion_laboral.tipo_contrato" />
             </FormField>
             <FormField label="Nombramiento / Pagador">
-              <input v-model="form.informacion_laboral.nombramiento_o_pagador" class="input" />
+              <Input v-model="form.informacion_laboral.nombramiento_o_pagador" />
             </FormField>
             <FormField label="Tiempo servicio">
-              <input v-model.number="form.informacion_laboral.tiempo_servicio" type="number" min="0" class="input" />
+              <Input v-model.number="form.informacion_laboral.tiempo_servicio" type="number" min="0" />
             </FormField>
             <FormField label="Unidad">
-              <select v-model="form.informacion_laboral.tiempo_servicio_unidad" class="input">
+              <select v-model="form.informacion_laboral.tiempo_servicio_unidad" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
                 <option value="meses">meses</option>
                 <option value="anios">anios</option>
               </select>
@@ -308,57 +322,64 @@
         <template v-else-if="steps[step]?.key === 'ingresos'">
           <div class="grid gap-4 sm:grid-cols-2">
             <FormField label="Salario básico mensual">
-              <input v-model.number="form.ingresos_descuentos.salario_basico_mensual" type="number" min="0" class="input" />
+              <Input v-model.number="form.ingresos_descuentos.salario_basico_mensual" type="number" min="0" />
             </FormField>
             <FormField label="Subsidio transporte">
-              <input v-model.number="form.ingresos_descuentos.subsidio_transporte" type="number" min="0" class="input" />
+              <Input v-model.number="form.ingresos_descuentos.subsidio_transporte" type="number" min="0" />
             </FormField>
             <FormField label="Horas extras">
-              <input v-model.number="form.ingresos_descuentos.horas_extras" type="number" min="0" class="input" />
+              <Input v-model.number="form.ingresos_descuentos.horas_extras" type="number" min="0" />
             </FormField>
             <FormField label="Comisiones">
-              <input v-model.number="form.ingresos_descuentos.comisiones" type="number" min="0" class="input" />
+              <Input v-model.number="form.ingresos_descuentos.comisiones" type="number" min="0" />
             </FormField>
             <FormField label="Otros ingresos">
-              <input v-model.number="form.ingresos_descuentos.otros_ingresos" type="number" min="0" class="input" />
+              <Input v-model.number="form.ingresos_descuentos.otros_ingresos" type="number" min="0" />
             </FormField>
             <FormField label="Total ingresos">
-              <input v-model.number="form.ingresos_descuentos.total_ingresos" type="number" min="0" class="input" />
+              <Input v-model.number="form.ingresos_descuentos.total_ingresos" type="number" min="0" disabled />
             </FormField>
 
-            <div class="col-span-full mt-2 text-sm font-semibold text-zinc-700">Descuentos</div>
+            <div class="col-span-full mt-4 flex items-center gap-2">
+               <div class="h-px flex-1 bg-border"></div>
+               <span class="text-xs font-bold uppercase tracking-wider text-muted-foreground">Descuentos</span>
+               <div class="h-px flex-1 bg-border"></div>
+            </div>
 
             <FormField label="Salud y pensión">
-              <input v-model.number="form.ingresos_descuentos.salud_pension" type="number" min="0" class="input" />
+              <Input v-model.number="form.ingresos_descuentos.salud_pension" type="number" min="0" />
             </FormField>
             <FormField label="Libranzas Comfaca">
-              <input v-model.number="form.ingresos_descuentos.libranzas_comfaca" type="number" min="0" class="input" />
+              <Input v-model.number="form.ingresos_descuentos.libranzas_comfaca" type="number" min="0" />
             </FormField>
             <FormField label="Otras libranzas">
-              <input v-model.number="form.ingresos_descuentos.otras_libranzas" type="number" min="0" class="input" />
+              <Input v-model.number="form.ingresos_descuentos.otras_libranzas" type="number" min="0" />
             </FormField>
             <FormField label="Judiciales">
-              <input v-model.number="form.ingresos_descuentos.judiciales" type="number" min="0" class="input" />
+              <Input v-model.number="form.ingresos_descuentos.judiciales" type="number" min="0" />
             </FormField>
             <FormField label="Otras deducciones">
-              <input v-model.number="form.ingresos_descuentos.otras_deducciones" type="number" min="0" class="input" />
+              <Input v-model.number="form.ingresos_descuentos.otras_deducciones" type="number" min="0" />
             </FormField>
             <FormField label="Total descuentos">
-              <input v-model.number="form.ingresos_descuentos.total_descuentos" type="number" min="0" class="input" />
+              <Input v-model.number="form.ingresos_descuentos.total_descuentos" type="number" min="0" disabled />
             </FormField>
 
             <FormField label="Total neto recibido">
-              <input v-model.number="form.ingresos_descuentos.total_neto_recibido" type="number" min="0" class="input" />
+              <Input v-model.number="form.ingresos_descuentos.total_neto_recibido" type="number" min="0" disabled />
             </FormField>
 
             <div class="col-span-full">
-              <button
-                class="rounded-lg border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50"
+              <Button
+                variant="outline"
+                size="sm"
                 type="button"
+                class="w-full"
                 @click="autocalcularIngresos"
               >
+                <RefreshCw class="mr-2 h-4 w-4" />
                 Autocalcular totales
-              </button>
+              </Button>
             </div>
           </div>
         </template>
@@ -366,285 +387,354 @@
         <template v-else-if="steps[step]?.key === 'economica'">
           <div class="grid gap-4 sm:grid-cols-2">
             <FormField label="Arrendamientos">
-              <input v-model.number="form.informacion_economica.arrendamientos" type="number" min="0" class="input" />
+              <Input v-model.number="form.informacion_economica.arrendamientos" type="number" min="0" />
             </FormField>
             <FormField label="Otros ingresos">
-              <input v-model.number="form.informacion_economica.otros" type="number" min="0" class="input" />
+              <Input v-model.number="form.informacion_economica.otros" type="number" min="0" />
             </FormField>
             <FormField label="Descripción otros ingresos" class="sm:col-span-2">
-              <textarea v-model="form.informacion_economica.descripcion" class="input min-h-24"></textarea>
+              <textarea v-model="form.informacion_economica.descripcion" class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"></textarea>
             </FormField>
 
             <FormField label="Total gastos">
-              <input v-model.number="form.informacion_economica.total_gastos" type="number" min="0" class="input" />
+              <Input v-model.number="form.informacion_economica.total_gastos" type="number" min="0" />
             </FormField>
             <FormField label="Descripción gastos" class="sm:col-span-2">
-              <textarea v-model="form.informacion_economica.gastos_descripcion" class="input min-h-24"></textarea>
+              <textarea v-model="form.informacion_economica.gastos_descripcion" class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"></textarea>
             </FormField>
 
             <FormField label="Total activos">
-              <input v-model.number="form.informacion_economica.total_activos" type="number" min="0" class="input" />
+              <Input v-model.number="form.informacion_economica.total_activos" type="number" min="0" />
             </FormField>
             <FormField label="Total pasivos">
-              <input v-model.number="form.informacion_economica.total_pasivos" type="number" min="0" class="input" />
+              <Input v-model.number="form.informacion_economica.total_pasivos" type="number" min="0" />
             </FormField>
           </div>
         </template>
 
         <template v-else-if="steps[step]?.key === 'propiedades'">
-          <div class="flex items-center justify-between">
-            <div class="text-sm font-semibold text-zinc-700">Propiedades</div>
-            <button
-              class="rounded-lg border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50"
+          <div class="flex items-center justify-between mb-4">
+            <div class="text-sm font-bold uppercase tracking-wider text-muted-foreground">Propiedades</div>
+            <Button
+              variant="outline"
+              size="sm"
               type="button"
               @click="addPropiedad"
             >
+              <Plus class="mr-2 h-4 w-4" />
               Agregar
-            </button>
+            </Button>
           </div>
 
-          <div v-if="form.propiedades.length === 0" class="rounded-lg bg-zinc-50 p-4 text-sm text-zinc-600">
-            Sin propiedades.
+          <div v-if="form.propiedades.length === 0" class="rounded-lg bg-muted/50 p-8 text-center border-2 border-dashed border-border">
+            <p class="text-sm text-muted-foreground italic">No se han registrado propiedades.</p>
           </div>
 
-          <div v-for="(p, idx) in form.propiedades" :key="idx" class="rounded-xl border border-zinc-200 p-4">
-            <div class="mb-3 flex items-center justify-between">
-              <div class="text-sm font-semibold">Propiedad #{{ idx + 1 }}</div>
-              <button class="text-sm text-red-600 hover:underline" type="button" @click="removePropiedad(idx)">
-                Eliminar
-              </button>
-            </div>
+          <div class="grid gap-4">
+            <Card v-for="(p, idx) in form.propiedades" :key="idx" class="border-border/50 bg-muted/20">
+              <CardHeader class="flex flex-row items-center justify-between py-3">
+                <CardTitle class="text-sm font-semibold">Propiedad #{{ idx + 1 }}</CardTitle>
+                <Button variant="ghost" size="sm" class="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-2" @click="removePropiedad(idx)">
+                  <Trash2 class="h-4 w-4" />
+                </Button>
+              </CardHeader>
+              <CardContent class="grid gap-4 sm:grid-cols-2 pb-4">
+                <FormField label="Tipo bien">
+                  <select v-model="p.tipo_bien" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                    <option value="vivienda">vivienda</option>
+                    <option value="vehiculo">vehiculo</option>
+                  </select>
+                </FormField>
+                <FormField label="Ciudad">
+                  <Input v-model="p.ciudad" />
+                </FormField>
+                <FormField label="Descripción" class="sm:col-span-2">
+                  <Input v-model="p.descripcion" />
+                </FormField>
 
-            <div class="grid gap-4 sm:grid-cols-2">
-              <FormField label="Tipo bien">
-                <select v-model="p.tipo_bien" class="input">
-                  <option value="vivienda">vivienda</option>
-                  <option value="vehiculo">vehiculo</option>
-                </select>
-              </FormField>
-              <FormField label="Ciudad">
-                <input v-model="p.ciudad" class="input" />
-              </FormField>
-              <FormField label="Descripción" class="sm:col-span-2">
-                <input v-model="p.descripcion" class="input" />
-              </FormField>
+                <FormField v-if="p.tipo_bien === 'vivienda'" label="Matrícula inmobiliaria">
+                  <Input v-model="p.matricula_inmobiliaria" />
+                </FormField>
+                <FormField v-else label="Modelo o matrícula">
+                  <Input v-model="p.modelo_o_matricula" />
+                </FormField>
 
-              <FormField v-if="p.tipo_bien === 'vivienda'" label="Matrícula inmobiliaria">
-                <input v-model="p.matricula_inmobiliaria" class="input" />
-              </FormField>
-              <FormField v-else label="Modelo o matrícula">
-                <input v-model="p.modelo_o_matricula" class="input" />
-              </FormField>
-
-              <FormField label="Valor comercial">
-                <input v-model.number="p.valor_comercial" type="number" min="0" class="input" />
-              </FormField>
-            </div>
+                <FormField label="Valor comercial">
+                  <Input v-model.number="p.valor_comercial" type="number" min="0" />
+                </FormField>
+              </CardContent>
+            </Card>
           </div>
         </template>
 
         <template v-else-if="steps[step]?.key === 'deudas'">
-          <div class="flex items-center justify-between">
-            <div class="text-sm font-semibold text-zinc-700">Deudas</div>
-            <button
-              class="rounded-lg border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50"
+          <div class="flex items-center justify-between mb-4">
+            <div class="text-sm font-bold uppercase tracking-wider text-muted-foreground">Deudas</div>
+            <Button
+              variant="outline"
+              size="sm"
               type="button"
               @click="addDeuda"
             >
+              <Plus class="mr-2 h-4 w-4" />
               Agregar
-            </button>
+            </Button>
           </div>
 
-          <div v-if="form.deudas.length === 0" class="rounded-lg bg-zinc-50 p-4 text-sm text-zinc-600">
-            Sin deudas.
+          <div v-if="form.deudas.length === 0" class="rounded-lg bg-muted/50 p-8 text-center border-2 border-dashed border-border">
+            <p class="text-sm text-muted-foreground italic">No se han registrado deudas.</p>
           </div>
 
-          <div v-for="(d, idx) in form.deudas" :key="idx" class="rounded-xl border border-zinc-200 p-4">
-            <div class="mb-3 flex items-center justify-between">
-              <div class="text-sm font-semibold">Deuda #{{ idx + 1 }}</div>
-              <button class="text-sm text-red-600 hover:underline" type="button" @click="removeDeuda(idx)">
-                Eliminar
-              </button>
-            </div>
-
-            <div class="grid gap-4 sm:grid-cols-2">
-              <FormField label="Acreedor">
-                <input v-model="d.acreedor_nombre" class="input" />
-              </FormField>
-              <FormField label="Concepto">
-                <input v-model="d.concepto" class="input" />
-              </FormField>
-              <FormField label="Valor cuota">
-                <input v-model.number="d.valor_cuota" type="number" min="0" class="input" />
-              </FormField>
-              <FormField label="Saldo obligación">
-                <input v-model.number="d.saldo_obligacion" type="number" min="0" class="input" />
-              </FormField>
-            </div>
+          <div class="grid gap-4">
+            <Card v-for="(d, idx) in form.deudas" :key="idx" class="border-border/50 bg-muted/20">
+              <CardHeader class="flex flex-row items-center justify-between py-3">
+                <CardTitle class="text-sm font-semibold">Deuda #{{ idx + 1 }}</CardTitle>
+                <Button variant="ghost" size="sm" class="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-2" @click="removeDeuda(idx)">
+                  <Trash2 class="h-4 w-4" />
+                </Button>
+              </CardHeader>
+              <CardContent class="grid gap-4 sm:grid-cols-2 pb-4">
+                <FormField label="Acreedor">
+                  <Input v-model="d.acreedor_nombre" />
+                </FormField>
+                <FormField label="Concepto">
+                  <Input v-model="d.concepto" />
+                </FormField>
+                <FormField label="Valor cuota">
+                  <Input v-model.number="d.valor_cuota" type="number" min="0" />
+                </FormField>
+                <FormField label="Saldo obligación">
+                  <Input v-model.number="d.saldo_obligacion" type="number" min="0" />
+                </FormField>
+              </CardContent>
+            </Card>
           </div>
         </template>
 
         <template v-else-if="steps[step]?.key === 'referencias'">
-          <div class="grid gap-6">
-            <div>
-              <div class="mb-3 flex items-center justify-between">
-                <div class="text-sm font-semibold text-zinc-700">Referencias familiares</div>
-                <button
-                  class="rounded-lg border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50"
+          <div class="grid gap-8">
+            <!-- Referencias Familiares -->
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <div class="h-8 w-1 bg-primary rounded-full"></div>
+                  <h3 class="text-sm font-bold uppercase tracking-wider text-muted-foreground">Referencias familiares</h3>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
                   type="button"
                   @click="addReferencia('familiares')"
                 >
+                  <Plus class="mr-2 h-4 w-4" />
                   Agregar
-                </button>
+                </Button>
               </div>
 
-              <div v-if="form.referencias.familiares.length === 0" class="rounded-lg bg-zinc-50 p-4 text-sm text-zinc-600">
-                Sin referencias familiares.
+              <div v-if="form.referencias.familiares.length === 0" class="rounded-lg bg-muted/50 p-6 text-center border-2 border-dashed border-border">
+                <p class="text-sm text-muted-foreground italic">No se han registrado referencias familiares.</p>
               </div>
 
-              <div
-                v-for="(r, idx) in form.referencias.familiares"
-                :key="`f-${idx}`"
-                class="mb-3 rounded-xl border border-zinc-200 p-4"
-              >
-                <div class="mb-3 flex items-center justify-between">
-                  <div class="text-sm font-semibold">Familiar #{{ idx + 1 }}</div>
-                  <button class="text-sm text-red-600 hover:underline" type="button" @click="removeReferencia('familiares', idx)">
-                    Eliminar
-                  </button>
-                </div>
-                <div class="grid gap-4 sm:grid-cols-2">
-                  <FormField label="Nombre y apellidos">
-                    <input v-model="r.nombre_apellidos" class="input" />
-                  </FormField>
-                  <FormField label="Celular">
-                    <input v-model="r.celular" class="input" />
-                  </FormField>
-                </div>
+              <div class="grid gap-4">
+                <Card v-for="(r, idx) in form.referencias.familiares" :key="`f-${idx}`" class="border-border/50 bg-muted/20 shadow-none">
+                  <CardHeader class="flex flex-row items-center justify-between py-3">
+                    <CardTitle class="text-sm font-semibold">Familiar #{{ idx + 1 }}</CardTitle>
+                    <Button variant="ghost" size="sm" class="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-2" @click="removeReferencia('familiares', idx)">
+                      <Trash2 class="h-4 w-4" />
+                    </Button>
+                  </CardHeader>
+                  <CardContent class="grid gap-4 sm:grid-cols-2 pb-4">
+                    <FormField label="Nombre y apellidos">
+                      <Input v-model="r.nombre_apellidos" placeholder="Nombre completo" />
+                    </FormField>
+                    <FormField label="Celular">
+                      <Input v-model="r.celular" placeholder="Número de celular" />
+                    </FormField>
+                  </CardContent>
+                </Card>
               </div>
             </div>
 
-            <div>
-              <div class="mb-3 flex items-center justify-between">
-                <div class="text-sm font-semibold text-zinc-700">Referencias personales</div>
-                <button
-                  class="rounded-lg border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50"
+            <!-- Referencias Personales -->
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <div class="h-8 w-1 bg-secondary rounded-full"></div>
+                  <h3 class="text-sm font-bold uppercase tracking-wider text-muted-foreground">Referencias personales</h3>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
                   type="button"
                   @click="addReferencia('personales')"
                 >
+                  <Plus class="mr-2 h-4 w-4" />
                   Agregar
-                </button>
+                </Button>
               </div>
 
-              <div v-if="form.referencias.personales.length === 0" class="rounded-lg bg-zinc-50 p-4 text-sm text-zinc-600">
-                Sin referencias personales.
+              <div v-if="form.referencias.personales.length === 0" class="rounded-lg bg-muted/50 p-6 text-center border-2 border-dashed border-border">
+                <p class="text-sm text-muted-foreground italic">No se han registrado referencias personales.</p>
               </div>
 
-              <div
-                v-for="(r, idx) in form.referencias.personales"
-                :key="`p-${idx}`"
-                class="mb-3 rounded-xl border border-zinc-200 p-4"
-              >
-                <div class="mb-3 flex items-center justify-between">
-                  <div class="text-sm font-semibold">Personal #{{ idx + 1 }}</div>
-                  <button class="text-sm text-red-600 hover:underline" type="button" @click="removeReferencia('personales', idx)">
-                    Eliminar
-                  </button>
-                </div>
-                <div class="grid gap-4 sm:grid-cols-2">
-                  <FormField label="Nombre y apellidos">
-                    <input v-model="r.nombre_apellidos" class="input" />
-                  </FormField>
-                  <FormField label="Celular">
-                    <input v-model="r.celular" class="input" />
-                  </FormField>
-                </div>
+              <div class="grid gap-4">
+                <Card v-for="(r, idx) in form.referencias.personales" :key="`p-${idx}`" class="border-border/50 bg-muted/20 shadow-none">
+                  <CardHeader class="flex flex-row items-center justify-between py-3">
+                    <CardTitle class="text-sm font-semibold">Personal #{{ idx + 1 }}</CardTitle>
+                    <Button variant="ghost" size="sm" class="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-2" @click="removeReferencia('personales', idx)">
+                      <Trash2 class="h-4 w-4" />
+                    </Button>
+                  </CardHeader>
+                  <CardContent class="grid gap-4 sm:grid-cols-2 pb-4">
+                    <FormField label="Nombre y apellidos">
+                      <Input v-model="r.nombre_apellidos" placeholder="Nombre completo" />
+                    </FormField>
+                    <FormField label="Celular">
+                      <Input v-model="r.celular" placeholder="Número de celular" />
+                    </FormField>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </div>
         </template>
 
         <template v-else-if="steps[step]?.key === 'revision'">
-          <div class="grid gap-4">
-            <div class="rounded-lg bg-zinc-50 p-4">
-              <div class="mb-2 text-sm font-semibold text-zinc-700">Payload (JSON)</div>
-              <pre class="overflow-auto text-xs text-zinc-800">{{ prettyPayload }}</pre>
-            </div>
+          <div class="grid gap-6">
+            <Card class="border-border/50 bg-muted/10 shadow-none">
+              <CardHeader class="py-3">
+                <CardTitle class="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                  <FileCode class="h-4 w-4" />
+                  Payload (JSON)
+                </CardTitle>
+              </CardHeader>
+              <CardContent class="pb-4">
+                <div class="rounded-lg bg-background p-4 border border-border">
+                  <pre class="overflow-auto text-[10px] text-foreground font-mono leading-relaxed">{{ prettyPayload }}</pre>
+                </div>
+              </CardContent>
+            </Card>
 
-            <div v-if="xmlText" class="rounded-lg bg-zinc-50 p-4">
-              <div class="mb-2 flex items-center justify-between">
-                <div class="text-sm font-semibold text-zinc-700">XML generado</div>
-                <button
-                  class="rounded-lg border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50"
-                  type="button"
+            <Card v-if="xmlText" class="border-primary/20 bg-primary/5 shadow-none animate-in fade-in slide-in-from-bottom-2">
+              <CardHeader class="flex flex-row items-center justify-between py-3">
+                <CardTitle class="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
+                  <FileCode class="h-4 w-4" />
+                  XML generado
+                </CardTitle>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  class="h-8 gap-2 bg-background"
                   @click="() => downloadXml()"
                 >
+                  <Download class="h-3.5 w-3.5" />
                   Descargar
-                </button>
-              </div>
-              <div v-if="savedFilename" class="mb-2 text-xs text-emerald-700">
-                Guardado en: {{ savedFilename }}
-              </div>
-              <pre class="overflow-auto text-xs text-zinc-800">{{ xmlText }}</pre>
-            </div>
+                </Button>
+              </CardHeader>
+              <CardContent class="pb-4 space-y-3">
+                <div v-if="savedFilename" class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-secondary/20 text-secondary-foreground text-[10px] font-bold uppercase tracking-wider">
+                  <CheckCircle2 class="h-3 w-3" />
+                  Guardado en: {{ savedFilename }}
+                </div>
+                <div class="rounded-lg bg-background p-4 border border-border">
+                  <pre class="overflow-auto text-[10px] text-foreground font-mono leading-relaxed">{{ xmlText }}</pre>
+                </div>
+              </CardContent>
+            </Card>
 
-            <div v-if="errorMsg" class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-              {{ errorMsg }}
+            <div v-if="errorMsg" class="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive flex items-center gap-3">
+              <AlertCircle class="h-5 w-5 shrink-0" />
+              <span class="font-medium">{{ errorMsg }}</span>
             </div>
           </div>
         </template>
       </form>
-    </div>
+    </CardContent>
+  </Card>
 
-    <Teleport to="body">
-      <div v-if="successModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <button class="absolute inset-0 bg-black/40" type="button" @click="closeSuccessModal" />
-        <div class="relative w-full max-w-md rounded-xl bg-white p-6 shadow-xl" @click.stop>
-          <div class="text-lg font-semibold text-zinc-900">Solicitud creada con éxito</div>
-          <div class="mt-2 text-sm text-zinc-600">
+  <Teleport to="body">
+    <div v-if="successModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-background/80 backdrop-blur-sm" @click="closeSuccessModal" />
+      <Card class="relative w-full max-w-md shadow-2xl border-primary/20 animate-in zoom-in-95 duration-200" @click.stop>
+        <CardHeader class="text-center pb-2">
+          <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-secondary/20 text-secondary">
+            <CheckCircle2 class="h-6 w-6" />
+          </div>
+          <CardTitle class="text-xl font-bold text-foreground">Solicitud creada con éxito</CardTitle>
+          <CardDescription>
             Tu solicitud fue enviada y quedó en estado
-            <span class="font-medium text-zinc-900">Postulado</span>.
+            <span class="font-bold text-secondary-foreground bg-secondary/30 px-1.5 py-0.5 rounded">Postulado</span>.
+          </CardDescription>
+        </CardHeader>
+        
+        <CardContent class="space-y-4">
+          <div v-if="createdSolicitudId" class="rounded-lg bg-muted p-3 space-y-1">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">ID de Solicitud</div>
+            <div class="font-mono text-sm break-all text-foreground">{{ createdSolicitudId }}</div>
           </div>
-          <div v-if="createdSolicitudId" class="mt-3 text-sm text-zinc-700">
-            <span class="font-medium">ID:</span>
-            <span class="ml-1 font-mono text-xs">{{ createdSolicitudId }}</span>
+          
+          <div v-if="savedFilename" class="rounded-lg bg-muted p-3 space-y-1">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Archivo XML</div>
+            <div class="text-sm text-foreground break-all">{{ savedFilename }}</div>
           </div>
-          <div v-if="savedFilename" class="mt-2 text-sm text-zinc-700">
-            <span class="font-medium">XML:</span>
-            <span class="ml-1">{{ savedFilename }}</span>
-          </div>
-          <div class="mt-6 flex items-center justify-end gap-2">
-            <button
-              class="rounded-lg border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-800 hover:bg-zinc-50"
-              type="button"
+
+          <div class="grid grid-cols-1 gap-2 pt-2">
+            <Button
+              variant="secondary"
+              class="w-full"
               @click="goToHome"
             >
+              <ClipboardList class="mr-2 h-4 w-4" />
               Ver mis solicitudes
-            </button>
-            <button
+            </Button>
+            
+            <Button
               v-if="savedFilename"
-              class="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-500"
-              type="button"
+              class="w-full bg-primary hover:bg-primary/90"
               @click="goToFirmas"
             >
+              <PenTool class="mr-2 h-4 w-4" />
               Firmar ahora
-            </button>
-            <button
-              class="rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-800"
-              type="button"
+            </Button>
+            
+            <Button
+              variant="ghost"
+              class="w-full text-muted-foreground hover:text-foreground"
               @click="closeSuccessModal"
             >
               Cerrar
-            </button>
+            </Button>
           </div>
-        </div>
-      </div>
-    </Teleport>
-  </div>
+        </CardContent>
+      </Card>
+    </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
+import { 
+  ChevronLeft, 
+  ChevronRight, 
+  FileCode, 
+  Send, 
+  Plus, 
+  Trash2, 
+  CheckCircle2, 
+  AlertCircle,
+  Download,
+  X,
+  RefreshCw,
+  ClipboardList,
+  PenTool
+} from 'lucide-vue-next'
 import FormField from '~/components/shared/FormField.vue'
+import Button from '@/components/ui/Button.vue'
+import Input from '@/components/ui/Input.vue'
+import Card from '@/components/ui/Card.vue'
+import CardHeader from '@/components/ui/CardHeader.vue'
+import CardTitle from '@/components/ui/CardTitle.vue'
+import CardDescription from '@/components/ui/CardDescription.vue'
+import CardContent from '@/components/ui/CardContent.vue'
 import { useWizardSolicitud } from '~/composables/solicitud/useWizardSolicitud'
 
 const {

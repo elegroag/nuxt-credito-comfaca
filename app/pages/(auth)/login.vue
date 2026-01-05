@@ -1,49 +1,73 @@
 <template>
-  <div>
-    <h1 class="text-lg font-semibold">Iniciar sesión</h1>
-    <p class="mt-1 text-sm text-zinc-600">Ingresa tus credenciales para acceder al dashboard.</p>
+  <div class="space-y-6">
+    <div class="text-center">
+      <h1 class="text-2xl font-bold tracking-tight">Iniciar sesión</h1>
+      <p class="text-sm text-muted-foreground mt-1">
+        Ingresa tus credenciales para acceder al sistema.
+      </p>
+    </div>
 
     <!-- Estado de conexión -->
-    <div class="mt-3 rounded-md p-3 text-sm" :class="connectionStatusClass">
+    <div 
+      :class="cn('rounded-lg p-3 text-xs border transition-colors', connectionStatusClass)"
+    >
       <div class="flex items-center gap-2">
-        <div v-if="checkingConnection" class="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-        <svg v-else-if="isConnected" class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-        </svg>
-        <svg v-else class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-        <span>{{ connectionMessage }}</span>
+        <Loader2 v-if="checkingConnection" class="h-4 w-4 animate-spin" />
+        <CheckCircle2 v-else-if="isConnected" class="h-4 w-4" />
+        <AlertCircle v-else class="h-4 w-4" />
+        <span class="font-medium">{{ connectionMessage }}</span>
       </div>
     </div>
 
-    <div class="mt-4 grid gap-3">
-      <div>
-        <label class="mb-1 block text-sm font-medium text-zinc-900">Usuario</label>
-        <input v-model="username" type="text" class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm" />
+    <form @submit.prevent="login" class="space-y-4">
+      <div class="space-y-2">
+        <Label for="username">Usuario</Label>
+        <Input 
+          id="username"
+          v-model="username" 
+          type="text" 
+          placeholder="Tu nombre de usuario"
+          required
+        />
       </div>
 
-      <div>
-        <label class="mb-1 block text-sm font-medium text-zinc-900">Contraseña</label>
-        <input v-model="password" type="password" class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm" />
+      <div class="space-y-2">
+        <Label for="password">Contraseña</Label>
+        <Input 
+          id="password"
+          v-model="password" 
+          type="password" 
+          placeholder="••••••••"
+          required
+        />
       </div>
 
-      <button
-        type="button"
-        class="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+      <Button
+        type="submit"
+        class="w-full"
         :disabled="loading || !isConnected"
-        @click="login"
       >
+        <Loader2 v-if="loading" class="mr-2 h-4 w-4 animate-spin" />
         {{ loading ? 'Ingresando...' : 'Ingresar' }}
-      </button>
+      </Button>
 
-      <div v-if="errorMsg" class="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">
+      <div v-if="errorMsg" class="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive flex items-center gap-2">
+        <AlertCircle class="h-4 w-4" />
         {{ errorMsg }}
       </div>
+    </form>
 
-      <div class="text-sm text-zinc-600">
+    <div class="text-center text-sm">
+      <p class="text-muted-foreground">
         ¿No tienes cuenta?
-        <NuxtLink to="/registro" class="font-medium underline">Crear cuenta</NuxtLink>
+        <NuxtLink to="/registro" class="font-medium text-primary underline underline-offset-4">
+          Crear cuenta
+        </NuxtLink>
+      </p>
+      <div class="mt-4">
+        <NuxtLink to="/" class="text-xs text-muted-foreground hover:text-primary transition-colors">
+          Volver al inicio
+        </NuxtLink>
       </div>
     </div>
   </div>
@@ -51,8 +75,13 @@
 
 <script setup lang="ts">
 import { onMounted } from '#imports'
+import { Loader2, CheckCircle2, AlertCircle } from 'lucide-vue-next'
 import { useLogin } from '~/composables/auth/useLogin'
 import { useHealthCheck } from '~/composables/useHealthCheck'
+import { cn } from '@/lib/utils'
+import Button from '@/components/ui/Button.vue'
+import Input from '@/components/ui/Input.vue'
+import Label from '@/components/ui/Label.vue'
 
 definePageMeta({
   layout: 'auth'
