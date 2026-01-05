@@ -41,8 +41,7 @@
         </div>
 
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label class="mb-1 block text-sm font-medium text-zinc-900">Rol firmante</label>
+          <FormField label="Rol firmante">
             <select v-model="rolFirmante" class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm">
               <option value="solicitante">solicitante</option>
               <option value="codeudor">codeudor</option>
@@ -53,51 +52,45 @@
               <option value="notario">notario</option>
               <option value="sistema">sistema</option>
             </select>
-          </div>
+          </FormField>
 
-          <div>
-            <label class="mb-1 block text-sm font-medium text-zinc-900">Aprobado</label>
+          <FormField label="Aprobado">
             <label class="flex items-center gap-2 text-sm text-zinc-900">
               <input v-model="aprobado" type="checkbox" class="h-4 w-4" />
               Sí
             </label>
-          </div>
+          </FormField>
 
-          <div class="sm:col-span-2">
-            <label class="mb-1 block text-sm font-medium text-zinc-900">Nombre y apellidos</label>
+          <FormField label="Nombre y apellidos" class="sm:col-span-2">
             <input v-model="nombreApellidos" type="text" class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm" />
-          </div>
+          </FormField>
 
-          <div>
-            <label class="mb-1 block text-sm font-medium text-zinc-900">Tipo identificación</label>
+          <FormField label="Tipo identificación">
             <select v-model="tipoIdentificacion" class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm" @change="verificarIdentidad">
               <option value="CC">CC</option>
               <option value="CE">CE</option>
               <option value="NIT">NIT</option>
               <option value="PAS">PAS</option>
             </select>
-          </div>
+          </FormField>
 
-          <div>
-            <label class="mb-1 block text-sm font-medium text-zinc-900">Número identificación</label>
+          <FormField label="Número identificación">
             <input
               v-model="numeroIdentificacion"
               type="text"
               class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm"
               @blur="verificarIdentidad"
             />
-          </div>
+          </FormField>
 
-          <div class="sm:col-span-2">
-            <label class="mb-1 block text-sm font-medium text-zinc-900">Clave segura de firma</label>
+          <FormField label="Clave segura de firma" class="sm:col-span-2">
             <input v-model="claveFirma" type="password" class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm" />
             <p class="mt-1 text-xs text-zinc-600">Clave para descifrar tu llave privada (creada en identidad digital).</p>
-          </div>
+          </FormField>
 
-          <div class="sm:col-span-2">
-            <label class="mb-1 block text-sm font-medium text-zinc-900">Confirmar clave segura</label>
+          <FormField label="Confirmar clave segura" class="sm:col-span-2">
             <input v-model="claveFirmaConfirm" type="password" class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm" />
-          </div>
+          </FormField>
 
           <div class="sm:col-span-2">
             <button
@@ -129,6 +122,7 @@
 </template>
 
 <script setup lang="ts">
+import FormField from '~/components/shared/FormField.vue'
 import { useFirmaShareToken } from '~/composables/firmas/useFirmaShareToken'
 
 const {

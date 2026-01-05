@@ -285,70 +285,33 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
-import { ExclamationCircleIcon } from '@heroicons/vue/24/outline';
-import { useRegistro } from '~/composables/auth/useRegistro';
-
-const { formData, loading, error, registrar, tiposDocumento } = useRegistro();
-
-// Estado para el paso actual del formulario
-const pasoActual = ref(1);
-
-// Validaciones para cada paso
-const validarPaso1 = computed(() => {
-  return formData.value.tipo_documento && 
-         formData.value.numero_documento && 
-         formData.value.nombres && 
-         formData.value.apellidos;
-});
-
-const validarPaso2 = computed(() => {
-  return formData.value.email && 
-         formData.value.telefono;
-});
-
-const validarPaso3 = computed(() => {
-  return formData.value.username &&
-         formData.value.password && 
-         formData.value.confirmar_password &&
-         formData.value.password.length >= 8 &&
-         formData.value.password === formData.value.confirmar_password;
-});
-
-// Generar username por defecto cuando se tienen nombres y apellidos
-watch([() => formData.value.nombres, () => formData.value.apellidos], ([nombres, apellidos]) => {
-  if (nombres && apellidos && !formData.value.username) {
-    // Tomar primeros 3 caracteres de nombres y apellidos, convertir a minúsculas y quitar espacios
-    const nombrePart = nombres.trim().replace(/\s/g, '').substring(0, 4).toLowerCase();
-    const apellidoPart = apellidos.trim().replace(/\s/g, '').substring(0, 3).toLowerCase();
-    formData.value.username = `${nombrePart}${apellidoPart}`;
-  }
-});
-
-// Navegación entre pasos
-const pasoSiguiente = () => {
-  if (pasoActual.value < 3) {
-    pasoActual.value++;
-  }
-};
-
-const pasoAnterior = () => {
-  if (pasoActual.value > 1) {
-    pasoActual.value--;
-  }
-};
-
-const handleSubmit = async () => {
-  if (pasoActual.value === 3) {
-    const success = await registrar();
-    if (success) {
-      navigateTo('/');
-    }
-  }
-};
+import { ExclamationCircleIcon } from '@heroicons/vue/24/outline'
+import { useRegistro } from '~/composables/auth/useRegistro'
 
 definePageMeta({
   layout: 'auth'
-});
+})
 
+const {
+  formData,
+  loading,
+  error,
+  pasoActual,
+  tiposDocumento,
+  validarPaso1,
+  validarPaso2,
+  validarPaso3,
+  pasoSiguiente,
+  pasoAnterior,
+  registrar
+} = useRegistro()
+
+const handleSubmit = async () => {
+  if (pasoActual.value === 3) {
+    const success = await registrar()
+    if (success) {
+      await navigateTo('/')
+    }
+  }
+}
 </script>

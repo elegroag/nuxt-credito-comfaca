@@ -3,11 +3,7 @@ import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useApi } from '~/composables/useApi';
 import { useSession } from '~/composables/useSession';
-
-interface LoginData {
-    username: string;
-    password: string;
-}
+import type { LoginData } from '~/shared/types/auth';
 
 export function useLogin() {
     const router = useRouter();

@@ -2,18 +2,19 @@
 import { ref, computed, onMounted } from 'vue';
 import { useSession } from '~/composables/useSession';
 import { useApi } from '~/composables/useApi';
+import type { SolicitudResumen, EstadoSolicitud } from '~/shared/types/inicio';
 
 export function useInicio() {
     const { session, authHeader } = useSession();
     const { getJson } = useApi();
 
     // Estado de solicitudes
-    const solicitudes = ref<any[]>([]);
+    const solicitudes = ref<SolicitudResumen[]>([]);
     const loadingSolicitudes = ref(false);
     const solicitudesError = ref('');
 
     // Flujo de aprobación
-    const flujoAprobacion = ['Postulado', 'En validación', 'Aprobado', 'Desembolsado', 'Activo', 'Finalizado'] as const;
+    const flujoAprobacion: EstadoSolicitud[] = ['Postulado', 'En validación', 'Aprobado', 'Desembolsado', 'Activo', 'Finalizado'];
 
     // Utilidades de formateo
     const fmtMoney = (value: unknown) => {

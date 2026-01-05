@@ -46,10 +46,7 @@
         <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
           <!-- Nombre -->
           <div class="sm:col-span-3">
-            <label for="nombre" class="block text-sm font-medium text-zinc-700">
-              Nombre completo
-            </label>
-            <div class="mt-1">
+            <FormField label="Nombre completo">
               <input
                 type="text"
                 id="nombre"
@@ -57,15 +54,12 @@
                 required
                 class="block w-full rounded-md border border-zinc-300 px-3 py-2 shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 sm:text-sm"
               />
-            </div>
+            </FormField>
           </div>
 
           <!-- Email -->
           <div class="sm:col-span-4">
-            <label for="email" class="block text-sm font-medium text-zinc-700">
-              Correo electrónico
-            </label>
-            <div class="mt-1">
+            <FormField label="Correo electrónico">
               <input
                 id="email"
                 type="email"
@@ -73,37 +67,31 @@
                 required
                 class="block w-full rounded-md border border-zinc-300 px-3 py-2 shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 sm:text-sm"
               />
-            </div>
+            </FormField>
           </div>
 
           <!-- Teléfono -->
           <div class="sm:col-span-3">
-            <label for="telefono" class="block text-sm font-medium text-zinc-700">
-              Teléfono
-            </label>
-            <div class="mt-1">
+            <FormField label="Teléfono">
               <input
                 type="tel"
                 id="telefono"
                 v-model="perfil.telefono"
                 class="block w-full rounded-md border border-zinc-300 px-3 py-2 shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 sm:text-sm"
               />
-            </div>
+            </FormField>
           </div>
 
           <!-- Dirección -->
           <div class="sm:col-span-6">
-            <label for="direccion" class="block text-sm font-medium text-zinc-700">
-              Dirección
-            </label>
-            <div class="mt-1">
+            <FormField label="Dirección">
               <textarea
                 id="direccion"
                 v-model="perfil.direccion"
                 rows="3"
                 class="block w-full rounded-md border border-zinc-300 px-3 py-2 shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 sm:text-sm"
               ></textarea>
-            </div>
+            </FormField>
           </div>
         </div>
       </div>
@@ -114,45 +102,36 @@
         
         <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
           <div class="sm:col-span-4">
-            <label for="password_actual" class="block text-sm font-medium text-zinc-700">
-              Contraseña actual
-            </label>
-            <div class="mt-1">
+            <FormField label="Contraseña actual">
               <input
                 type="password"
                 id="password_actual"
                 v-model="passwordData.password_actual"
                 class="block w-full rounded-md border border-zinc-300 px-3 py-2 shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 sm:text-sm"
               />
-            </div>
+            </FormField>
           </div>
 
           <div class="sm:col-span-4">
-            <label for="nueva_password" class="block text-sm font-medium text-zinc-700">
-              Nueva contraseña
-            </label>
-            <div class="mt-1">
+            <FormField label="Nueva contraseña">
               <input
                 type="password"
                 id="nueva_password"
                 v-model="passwordData.nueva_password"
                 class="block w-full rounded-md border border-zinc-300 px-3 py-2 shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 sm:text-sm"
               />
-            </div>
+            </FormField>
           </div>
 
           <div class="sm:col-span-4">
-            <label for="confirmar_password" class="block text-sm font-medium text-zinc-700">
-              Confirmar nueva contraseña
-            </label>
-            <div class="mt-1">
+            <FormField label="Confirmar nueva contraseña">
               <input
                 type="password"
                 id="confirmar_password"
                 v-model="passwordData.confirmar_password"
                 class="block w-full rounded-md border border-zinc-300 px-3 py-2 shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 sm:text-sm"
               />
-            </div>
+            </FormField>
           </div>
         </div>
       </div>
@@ -184,8 +163,9 @@
 </template>
 
 <script setup lang="ts">
-import { CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/vue/24/outline';
-import { usePerfil } from '~/composables/perfil/usePerfil';
+import FormField from '~/components/shared/FormField.vue'
+import { CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/vue/24/outline'
+import { usePerfil } from '~/composables/perfil/usePerfil'
 
 const {
   perfil,

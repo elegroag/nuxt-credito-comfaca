@@ -30,6 +30,17 @@ export type TiempoServicioUnidad = 'meses' | 'anios'
 
 export type TipoBien = 'vivienda' | 'vehiculo'
 
+export interface WizardStep {
+    key: string;
+    title: string;
+    short: string;
+}
+
+export interface WizardState {
+    step: number;
+    successModalOpen: boolean;
+}
+
 export interface SolicitudCreditoPayload {
     version: string
     encabezado: {

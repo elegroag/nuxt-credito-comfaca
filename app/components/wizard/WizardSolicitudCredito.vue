@@ -62,46 +62,46 @@
     <div class="p-4 sm:p-6">
       <form class="grid gap-4" @submit.prevent>
         <template v-if="steps[step]?.key === 'encabezado'">
-          <Field label="Fecha radicado">
+            <FormField label="Fecha radicado">
             <input v-model="form.encabezado.fecha_radicado" type="date" class="input" />
-          </Field>
+          </FormField>
         </template>
 
         <template v-else-if="steps[step]?.key === 'solicitud'">
           <div class="grid gap-4 sm:grid-cols-2">
-            <Field label="Número solicitud">
+            <FormField label="Número solicitud">
               <input v-model="form.solicitud.numero_solicitud" class="input" />
-            </Field>
-            <Field label="Número comprobante">
+            </FormField>
+            <FormField label="Número comprobante">
               <input v-model="form.solicitud.numero_comprobante" class="input" />
-            </Field>
-            <Field label="Valor solicitud">
+            </FormField>
+            <FormField label="Valor solicitud">
               <input v-model.number="form.solicitud.valor_solicitud" type="number" min="0" class="input" />
-            </Field>
-            <Field label="Categoría">
+            </FormField>
+            <FormField label="Categoría">
               <input v-model="form.solicitud.categoria" class="input" />
-            </Field>
-            <Field label="Rol en solicitud">
+            </FormField>
+            <FormField label="Rol en solicitud">
               <select v-model="form.solicitud.rol_en_solicitud" class="input">
                 <option value="solicitante">solicitante</option>
                 <option value="codeudor">codeudor</option>
               </select>
-            </Field>
-            <Field label="Valor solicitado">
+            </FormField>
+            <FormField label="Valor solicitado">
               <input v-model.number="form.solicitud.valor_solicitado" type="number" min="0" class="input" />
-            </Field>
-            <Field label="Plazo (meses)">
+            </FormField>
+            <FormField label="Plazo (meses)">
               <input v-model.number="form.solicitud.plazo_meses" type="number" min="1" class="input" />
-            </Field>
-            <Field label="URL Foto documento (opcional)">
+            </FormField>
+            <FormField label="URL Foto documento (opcional)">
               <input v-model="form.solicitud.foto_documento!.url" class="input" placeholder="https://..." />
-            </Field>
+            </FormField>
           </div>
         </template>
 
         <template v-else-if="steps[step]?.key === 'producto'">
           <div class="grid gap-4 sm:grid-cols-2">
-            <Field label="Producto">
+            <FormField label="Producto">
               <select v-model="form.producto_solicitado.tipo" class="input">
                 <option value="educacion">educacion</option>
                 <option value="salud">salud</option>
@@ -112,7 +112,7 @@
                 <option value="recreacion">recreacion</option>
                 <option value="turismo">turismo</option>
               </select>
-            </Field>
+            </FormField>
 
             <label class="flex items-center gap-2 text-sm">
               <input v-model="form.producto_solicitado.ha_tenido_credito_comfaca" type="checkbox" class="h-4 w-4" />
@@ -123,40 +123,40 @@
 
         <template v-else-if="steps[step]?.key === 'solicitante'">
           <div class="grid gap-4 sm:grid-cols-2">
-            <Field label="Fecha vinculación">
+            <FormField label="Fecha vinculación">
               <input v-model="form.solicitante.fecha_vinculacion" type="date" class="input" />
-            </Field>
-            <Field label="Tipo identificación">
+            </FormField>
+            <FormField label="Tipo identificación">
               <select v-model="form.solicitante.tipo_identificacion" class="input">
                 <option value="CC">CC</option>
                 <option value="CE">CE</option>
               </select>
-            </Field>
-            <Field label="Número identificación">
+            </FormField>
+            <FormField label="Número identificación">
               <input v-model="form.solicitante.numero_identificacion" class="input" />
-            </Field>
-            <Field label="Fecha nacimiento">
+            </FormField>
+            <FormField label="Fecha nacimiento">
               <input v-model="form.solicitante.fecha_nacimiento" type="date" class="input" />
-            </Field>
-            <Field label="País nacimiento">
+            </FormField>
+            <FormField label="País nacimiento">
               <input v-model="form.solicitante.pais_nacimiento" class="input" />
-            </Field>
-            <Field label="Nombres y apellidos">
+            </FormField>
+            <FormField label="Nombres y apellidos">
               <input v-model="form.solicitante.nombres_apellidos" class="input" />
-            </Field>
-            <Field label="Fecha expedición documento">
+            </FormField>
+            <FormField label="Fecha expedición documento">
               <input v-model="form.solicitante.fecha_expedicion_documento" type="date" class="input" />
-            </Field>
-            <Field label="Profesión/Ocupación">
+            </FormField>
+            <FormField label="Profesión/Ocupación">
               <input v-model="form.solicitante.profesion_ocupacion" class="input" />
-            </Field>
-            <Field label="Sexo">
+            </FormField>
+            <FormField label="Sexo">
               <select v-model="form.solicitante.sexo" class="input">
                 <option value="M">M</option>
                 <option value="F">F</option>
               </select>
-            </Field>
-            <Field label="Nivel educativo">
+            </FormField>
+            <FormField label="Nivel educativo">
               <select v-model="form.solicitante.nivel_educativo" class="input">
                 <option value="primaria">primaria</option>
                 <option value="bachillerato">bachillerato</option>
@@ -165,43 +165,43 @@
                 <option value="posgrado">posgrado</option>
                 <option value="ninguno">ninguno</option>
               </select>
-            </Field>
+            </FormField>
 
-            <Field label="Barrio residencia">
+            <FormField label="Barrio residencia">
               <input v-model="form.solicitante.barrio_residencia" class="input" />
-            </Field>
-            <Field label="Ciudad residencia">
+            </FormField>
+            <FormField label="Ciudad residencia">
               <input v-model="form.solicitante.ciudad_residencia" class="input" />
-            </Field>
-            <Field label="País residencia">
+            </FormField>
+            <FormField label="País residencia">
               <input v-model="form.solicitante.pais_residencia" class="input" />
-            </Field>
-            <Field label="Teléfono fijo (opcional)">
+            </FormField>
+            <FormField label="Teléfono fijo (opcional)">
               <input v-model="form.solicitante.telefono_fijo" class="input" />
-            </Field>
-            <Field label="Teléfono móvil">
+            </FormField>
+            <FormField label="Teléfono móvil">
               <input v-model="form.solicitante.telefono_movil" class="input" />
-            </Field>
-            <Field label="Email">
+            </FormField>
+            <FormField label="Email">
               <input v-model="form.solicitante.email" type="email" class="input" />
-            </Field>
+            </FormField>
 
-            <Field label="Tipo vivienda">
+            <FormField label="Tipo vivienda">
               <select v-model="form.solicitante.tipo_vivienda" class="input">
                 <option value="propia">propia</option>
                 <option value="familiar">familiar</option>
                 <option value="arrendada">arrendada</option>
               </select>
-            </Field>
+            </FormField>
 
             <label class="flex items-center gap-2 text-sm">
               <input v-model="form.solicitante.vive_con_nucleo_familiar" type="checkbox" class="h-4 w-4" />
               Vive con núcleo familiar
             </label>
 
-            <Field label="Personas a cargo">
+            <FormField label="Personas a cargo">
               <input v-model.number="form.solicitante.personas_a_cargo" type="number" min="0" class="input" />
-            </Field>
+            </FormField>
           </div>
         </template>
 
@@ -212,28 +212,28 @@
                 type="checkbox"
                 class="h-4 w-4"
                 :checked="!!form.conyuge"
-                @change="toggleConyuge"
+                @change="(ev) => toggleConyuge((ev.target as HTMLInputElement).checked)"
               />
               Incluir datos del cónyuge
             </label>
 
             <div v-if="form.conyuge" class="grid gap-4 sm:grid-cols-2">
-              <Field label="Identificación">
+              <FormField label="Identificación">
                 <input v-model="form.conyuge.identificacion" class="input" />
-              </Field>
-              <Field label="Nombres y apellidos">
+              </FormField>
+              <FormField label="Nombres y apellidos">
                 <input v-model="form.conyuge.nombres_apellidos" class="input" />
-              </Field>
-              <Field label="Ingresos laborales">
+              </FormField>
+              <FormField label="Ingresos laborales">
                 <input v-model.number="form.conyuge.ingresos_laborales" type="number" min="0" class="input" />
-              </Field>
+              </FormField>
               <label class="flex items-center gap-2 text-sm">
                 <input v-model="form.conyuge.trabaja" type="checkbox" class="h-4 w-4" />
                 Trabaja
               </label>
-              <Field label="Teléfono móvil">
+              <FormField label="Teléfono móvil">
                 <input v-model="form.conyuge.telefono_movil" class="input" />
-              </Field>
+              </FormField>
 
               <div class="sm:col-span-2 mt-2 text-sm font-semibold text-zinc-700">Empresa (opcional)</div>
               <label class="sm:col-span-2 flex items-center gap-2 text-sm">
@@ -241,24 +241,24 @@
                   type="checkbox"
                   class="h-4 w-4"
                   :checked="!!form.conyuge.empresa"
-                  @change="toggleEmpresaConyuge"
+                  @change="(ev) => toggleEmpresaConyuge((ev.target as HTMLInputElement).checked)"
                 />
                 Incluir empresa
               </label>
 
               <template v-if="form.conyuge.empresa">
-                <Field label="Nombre" class="sm:col-span-2">
+                <FormField label="Nombre" class="sm:col-span-2">
                   <input v-model="form.conyuge.empresa.nombre" class="input" />
-                </Field>
-                <Field label="Dirección" class="sm:col-span-2">
+                </FormField>
+                <FormField label="Dirección" class="sm:col-span-2">
                   <input v-model="form.conyuge.empresa.direccion" class="input" />
-                </Field>
-                <Field label="Teléfono">
+                </FormField>
+                <FormField label="Teléfono">
                   <input v-model="form.conyuge.empresa.telefono" class="input" />
-                </Field>
-                <Field label="Email">
+                </FormField>
+                <FormField label="Email">
                   <input v-model="form.conyuge.empresa.email" type="email" class="input" />
-                </Field>
+                </FormField>
               </template>
             </div>
           </div>
@@ -266,90 +266,90 @@
 
         <template v-else-if="steps[step]?.key === 'laboral'">
           <div class="grid gap-4 sm:grid-cols-2">
-            <Field label="Razón social">
+            <FormField label="Razón social">
               <input v-model="form.informacion_laboral.empresa_razon_social" class="input" />
-            </Field>
-            <Field label="NIT">
+            </FormField>
+            <FormField label="NIT">
               <input v-model="form.informacion_laboral.empresa_nit" class="input" />
-            </Field>
-            <Field label="Teléfono">
+            </FormField>
+            <FormField label="Teléfono">
               <input v-model="form.informacion_laboral.empresa_telefono" class="input" />
-            </Field>
-            <Field label="Dirección">
+            </FormField>
+            <FormField label="Dirección">
               <input v-model="form.informacion_laboral.empresa_direccion" class="input" />
-            </Field>
-            <Field label="Ciudad">
+            </FormField>
+            <FormField label="Ciudad">
               <input v-model="form.informacion_laboral.empresa_ciudad" class="input" />
-            </Field>
-            <Field label="Cargo">
+            </FormField>
+            <FormField label="Cargo">
               <input v-model="form.informacion_laboral.cargo" class="input" />
-            </Field>
-            <Field label="Fecha ingreso">
+            </FormField>
+            <FormField label="Fecha ingreso">
               <input v-model="form.informacion_laboral.fecha_ingreso" type="date" class="input" />
-            </Field>
-            <Field label="Tipo contrato">
+            </FormField>
+            <FormField label="Tipo contrato">
               <input v-model="form.informacion_laboral.tipo_contrato" class="input" />
-            </Field>
-            <Field label="Nombramiento / Pagador">
+            </FormField>
+            <FormField label="Nombramiento / Pagador">
               <input v-model="form.informacion_laboral.nombramiento_o_pagador" class="input" />
-            </Field>
-            <Field label="Tiempo servicio">
+            </FormField>
+            <FormField label="Tiempo servicio">
               <input v-model.number="form.informacion_laboral.tiempo_servicio" type="number" min="0" class="input" />
-            </Field>
-            <Field label="Unidad">
+            </FormField>
+            <FormField label="Unidad">
               <select v-model="form.informacion_laboral.tiempo_servicio_unidad" class="input">
                 <option value="meses">meses</option>
                 <option value="anios">anios</option>
               </select>
-            </Field>
+            </FormField>
           </div>
         </template>
 
         <template v-else-if="steps[step]?.key === 'ingresos'">
           <div class="grid gap-4 sm:grid-cols-2">
-            <Field label="Salario básico mensual">
+            <FormField label="Salario básico mensual">
               <input v-model.number="form.ingresos_descuentos.salario_basico_mensual" type="number" min="0" class="input" />
-            </Field>
-            <Field label="Subsidio transporte">
+            </FormField>
+            <FormField label="Subsidio transporte">
               <input v-model.number="form.ingresos_descuentos.subsidio_transporte" type="number" min="0" class="input" />
-            </Field>
-            <Field label="Horas extras">
+            </FormField>
+            <FormField label="Horas extras">
               <input v-model.number="form.ingresos_descuentos.horas_extras" type="number" min="0" class="input" />
-            </Field>
-            <Field label="Comisiones">
+            </FormField>
+            <FormField label="Comisiones">
               <input v-model.number="form.ingresos_descuentos.comisiones" type="number" min="0" class="input" />
-            </Field>
-            <Field label="Otros ingresos">
+            </FormField>
+            <FormField label="Otros ingresos">
               <input v-model.number="form.ingresos_descuentos.otros_ingresos" type="number" min="0" class="input" />
-            </Field>
-            <Field label="Total ingresos">
+            </FormField>
+            <FormField label="Total ingresos">
               <input v-model.number="form.ingresos_descuentos.total_ingresos" type="number" min="0" class="input" />
-            </Field>
+            </FormField>
 
             <div class="col-span-full mt-2 text-sm font-semibold text-zinc-700">Descuentos</div>
 
-            <Field label="Salud y pensión">
+            <FormField label="Salud y pensión">
               <input v-model.number="form.ingresos_descuentos.salud_pension" type="number" min="0" class="input" />
-            </Field>
-            <Field label="Libranzas Comfaca">
+            </FormField>
+            <FormField label="Libranzas Comfaca">
               <input v-model.number="form.ingresos_descuentos.libranzas_comfaca" type="number" min="0" class="input" />
-            </Field>
-            <Field label="Otras libranzas">
+            </FormField>
+            <FormField label="Otras libranzas">
               <input v-model.number="form.ingresos_descuentos.otras_libranzas" type="number" min="0" class="input" />
-            </Field>
-            <Field label="Judiciales">
+            </FormField>
+            <FormField label="Judiciales">
               <input v-model.number="form.ingresos_descuentos.judiciales" type="number" min="0" class="input" />
-            </Field>
-            <Field label="Otras deducciones">
+            </FormField>
+            <FormField label="Otras deducciones">
               <input v-model.number="form.ingresos_descuentos.otras_deducciones" type="number" min="0" class="input" />
-            </Field>
-            <Field label="Total descuentos">
+            </FormField>
+            <FormField label="Total descuentos">
               <input v-model.number="form.ingresos_descuentos.total_descuentos" type="number" min="0" class="input" />
-            </Field>
+            </FormField>
 
-            <Field label="Total neto recibido">
+            <FormField label="Total neto recibido">
               <input v-model.number="form.ingresos_descuentos.total_neto_recibido" type="number" min="0" class="input" />
-            </Field>
+            </FormField>
 
             <div class="col-span-full">
               <button
@@ -365,29 +365,29 @@
 
         <template v-else-if="steps[step]?.key === 'economica'">
           <div class="grid gap-4 sm:grid-cols-2">
-            <Field label="Arrendamientos">
+            <FormField label="Arrendamientos">
               <input v-model.number="form.informacion_economica.arrendamientos" type="number" min="0" class="input" />
-            </Field>
-            <Field label="Otros ingresos">
+            </FormField>
+            <FormField label="Otros ingresos">
               <input v-model.number="form.informacion_economica.otros" type="number" min="0" class="input" />
-            </Field>
-            <Field label="Descripción otros ingresos" class="sm:col-span-2">
+            </FormField>
+            <FormField label="Descripción otros ingresos" class="sm:col-span-2">
               <textarea v-model="form.informacion_economica.descripcion" class="input min-h-24"></textarea>
-            </Field>
+            </FormField>
 
-            <Field label="Total gastos">
+            <FormField label="Total gastos">
               <input v-model.number="form.informacion_economica.total_gastos" type="number" min="0" class="input" />
-            </Field>
-            <Field label="Descripción gastos" class="sm:col-span-2">
+            </FormField>
+            <FormField label="Descripción gastos" class="sm:col-span-2">
               <textarea v-model="form.informacion_economica.gastos_descripcion" class="input min-h-24"></textarea>
-            </Field>
+            </FormField>
 
-            <Field label="Total activos">
+            <FormField label="Total activos">
               <input v-model.number="form.informacion_economica.total_activos" type="number" min="0" class="input" />
-            </Field>
-            <Field label="Total pasivos">
+            </FormField>
+            <FormField label="Total pasivos">
               <input v-model.number="form.informacion_economica.total_pasivos" type="number" min="0" class="input" />
-            </Field>
+            </FormField>
           </div>
         </template>
 
@@ -416,29 +416,29 @@
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2">
-              <Field label="Tipo bien">
+              <FormField label="Tipo bien">
                 <select v-model="p.tipo_bien" class="input">
                   <option value="vivienda">vivienda</option>
                   <option value="vehiculo">vehiculo</option>
                 </select>
-              </Field>
-              <Field label="Ciudad">
+              </FormField>
+              <FormField label="Ciudad">
                 <input v-model="p.ciudad" class="input" />
-              </Field>
-              <Field label="Descripción" class="sm:col-span-2">
+              </FormField>
+              <FormField label="Descripción" class="sm:col-span-2">
                 <input v-model="p.descripcion" class="input" />
-              </Field>
+              </FormField>
 
-              <Field v-if="p.tipo_bien === 'vivienda'" label="Matrícula inmobiliaria">
+              <FormField v-if="p.tipo_bien === 'vivienda'" label="Matrícula inmobiliaria">
                 <input v-model="p.matricula_inmobiliaria" class="input" />
-              </Field>
-              <Field v-else label="Modelo o matrícula">
+              </FormField>
+              <FormField v-else label="Modelo o matrícula">
                 <input v-model="p.modelo_o_matricula" class="input" />
-              </Field>
+              </FormField>
 
-              <Field label="Valor comercial">
+              <FormField label="Valor comercial">
                 <input v-model.number="p.valor_comercial" type="number" min="0" class="input" />
-              </Field>
+              </FormField>
             </div>
           </div>
         </template>
@@ -468,18 +468,18 @@
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2">
-              <Field label="Acreedor">
+              <FormField label="Acreedor">
                 <input v-model="d.acreedor_nombre" class="input" />
-              </Field>
-              <Field label="Concepto">
+              </FormField>
+              <FormField label="Concepto">
                 <input v-model="d.concepto" class="input" />
-              </Field>
-              <Field label="Valor cuota">
+              </FormField>
+              <FormField label="Valor cuota">
                 <input v-model.number="d.valor_cuota" type="number" min="0" class="input" />
-              </Field>
-              <Field label="Saldo obligación">
+              </FormField>
+              <FormField label="Saldo obligación">
                 <input v-model.number="d.saldo_obligacion" type="number" min="0" class="input" />
-              </Field>
+              </FormField>
             </div>
           </div>
         </template>
@@ -514,12 +514,12 @@
                   </button>
                 </div>
                 <div class="grid gap-4 sm:grid-cols-2">
-                  <Field label="Nombre y apellidos">
+                  <FormField label="Nombre y apellidos">
                     <input v-model="r.nombre_apellidos" class="input" />
-                  </Field>
-                  <Field label="Celular">
+                  </FormField>
+                  <FormField label="Celular">
                     <input v-model="r.celular" class="input" />
-                  </Field>
+                  </FormField>
                 </div>
               </div>
             </div>
@@ -552,12 +552,12 @@
                   </button>
                 </div>
                 <div class="grid gap-4 sm:grid-cols-2">
-                  <Field label="Nombre y apellidos">
+                  <FormField label="Nombre y apellidos">
                     <input v-model="r.nombre_apellidos" class="input" />
-                  </Field>
-                  <Field label="Celular">
+                  </FormField>
+                  <FormField label="Celular">
                     <input v-model="r.celular" class="input" />
-                  </Field>
+                  </FormField>
                 </div>
               </div>
             </div>
@@ -577,7 +577,7 @@
                 <button
                   class="rounded-lg border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-50"
                   type="button"
-                  @click="downloadXml"
+                  @click="() => downloadXml()"
                 >
                   Descargar
                 </button>
@@ -644,7 +644,7 @@
 </template>
 
 <script setup lang="ts">
-import { Teleport } from 'vue'
+import FormField from '~/components/shared/FormField.vue'
 import { useWizardSolicitud } from '~/composables/solicitud/useWizardSolicitud'
 
 const {
@@ -673,7 +673,6 @@ const {
   goToHome,
   goToFirmas,
   generarXml,
-  downloadXml,
-  Field
+  downloadXml
 } = useWizardSolicitud()
 </script>

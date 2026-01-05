@@ -15,8 +15,7 @@
 
     <div class="rounded-lg border border-zinc-200 bg-white p-4">
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div class="sm:col-span-2">
-          <label class="mb-1 block text-sm font-medium text-zinc-900">XML de solicitud (existente)</label>
+        <FormField label="XML de solicitud (existente)" class="sm:col-span-2">
           <input
             v-model="solicitudFilename"
             type="text"
@@ -27,10 +26,9 @@
             Busca primero en <code class="rounded bg-zinc-100 px-1">backend/storage/activos</code> y luego en
             <code class="rounded bg-zinc-100 px-1">backend/xml</code>.
           </p>
-        </div>
+        </FormField>
 
-        <div class="sm:col-span-2">
-          <label class="mb-1 block text-sm font-medium text-zinc-900">XML de firmas existente (opcional)</label>
+        <FormField label="XML de firmas existente (opcional)" class="sm:col-span-2">
           <input
             v-model="firmasFilename"
             type="text"
@@ -38,10 +36,9 @@
             class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-400"
           />
           <p class="mt-1 text-xs text-zinc-600">Si lo envías, se adiciona la firma al archivo indicado; si no, se crea uno nuevo.</p>
-        </div>
+        </FormField>
 
-        <div>
-          <label class="mb-1 block text-sm font-medium text-zinc-900">Rol firmante</label>
+        <FormField label="Rol firmante">
           <select v-model="rolFirmante" class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm">
             <option value="solicitante">solicitante</option>
             <option value="codeudor">codeudor</option>
@@ -52,55 +49,48 @@
             <option value="notario">notario</option>
             <option value="sistema">sistema</option>
           </select>
-        </div>
+        </FormField>
 
-        <div>
-          <label class="mb-1 block text-sm font-medium text-zinc-900">Aprobado</label>
+        <FormField label="Aprobado">
           <label class="flex items-center gap-2 text-sm text-zinc-900">
             <input v-model="aprobado" type="checkbox" class="h-4 w-4" />
             Sí
           </label>
-        </div>
+        </FormField>
 
-        <div class="sm:col-span-2">
-          <label class="mb-1 block text-sm font-medium text-zinc-900">Nombre y apellidos</label>
+        <FormField label="Nombre y apellidos" class="sm:col-span-2">
           <input v-model="nombreApellidos" type="text" class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm" />
-        </div>
+        </FormField>
 
-        <div>
-          <label class="mb-1 block text-sm font-medium text-zinc-900">Tipo identificación</label>
+        <FormField label="Tipo identificación">
           <select v-model="tipoIdentificacion" class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm">
             <option value="CC">CC</option>
             <option value="CE">CE</option>
             <option value="NIT">NIT</option>
             <option value="PAS">PAS</option>
           </select>
-        </div>
+        </FormField>
 
-        <div>
-          <label class="mb-1 block text-sm font-medium text-zinc-900">Número identificación</label>
+        <FormField label="Número identificación">
           <input v-model="numeroIdentificacion" type="text" class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm" />
-        </div>
+        </FormField>
 
-        <div class="sm:col-span-2">
-          <label class="mb-1 block text-sm font-medium text-zinc-900">Fecha firma (opcional, ISO 8601)</label>
+        <FormField label="Fecha firma (opcional, ISO 8601)" class="sm:col-span-2">
           <input
             v-model="fechaFirma"
             type="text"
             placeholder="2025-01-15T10:35:00Z"
             class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm"
           />
-        </div>
+        </FormField>
 
-        <div class="sm:col-span-2">
-          <label class="mb-1 block text-sm font-medium text-zinc-900">Clave segura de firma</label>
+        <FormField label="Clave segura de firma" class="sm:col-span-2">
           <input v-model="claveFirma" type="password" class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm" />
-        </div>
+        </FormField>
 
-        <div class="sm:col-span-2">
-          <label class="mb-1 block text-sm font-medium text-zinc-900">Confirmar clave de firma</label>
+        <FormField label="Confirmar clave de firma" class="sm:col-span-2">
           <input v-model="claveFirmaConfirm" type="password" class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm" />
-        </div>
+        </FormField>
 
         <div class="sm:col-span-2 flex items-center gap-4">
           <label class="flex items-center gap-2 text-sm text-zinc-900">
@@ -136,6 +126,7 @@
 </template>
 
 <script setup lang="ts">
+import FormField from '~/components/shared/FormField.vue'
 import { useFirmas } from '~/composables/firmas/useFirmas'
 
 definePageMeta({

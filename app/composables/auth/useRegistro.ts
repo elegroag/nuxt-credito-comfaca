@@ -1,28 +1,15 @@
-// frontend/pages/auth/useRegistro.ts
-import { ref } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useApi } from '~/composables/useApi';
-import { useSession } from '~/composables/useSession';
 import { storage } from '~/composables/useStorage';
-
-interface RegistroData {
-    tipo_documento: string;
-    numero_documento: string;
-    nombres: string;
-    apellidos: string;
-    telefono: string;
-    email: string;
-    username: string;
-    password: string;
-    confirmar_password: string;
-}
+import type { RegistroData } from '~/shared/types/auth';
 
 export function useRegistro() {
     const router = useRouter();
     const { postJson } = useApi();
 
     const formData = ref<RegistroData>({
-        tipo_documento: 'CC', // Valor por defecto
+        tipo_documento: 'CC',
         numero_documento: '',
         nombres: '',
         apellidos: '',
@@ -36,6 +23,7 @@ export function useRegistro() {
     const loading = ref(false);
     const error = ref<string | null>(null);
     const success = ref(false);
+    const pasoActual = ref(1);
 
     const tiposDocumento = [
         { value: 'CC', label: 'Cédula de Ciudadanía' },
@@ -44,18 +32,51 @@ export function useRegistro() {
         { value: 'NIT', label: 'NIT' }
     ];
 
-    interface ResponseRegister {
-        success: boolean;
-        message: string;
-        access_token?: string;
-        token_type?: string;
-        user?: {
-            username: string;
-            roles: string[];
-        };
-    }
+    // Validaciones para cada paso
+    const validarPaso1 = computed(() => {
+        return formData.value.tipo_documento &&
+            formData.value.numero_documento &&
+            formData.value.nombres &&
+            formData.value.apellidos;
+    });
+
+    const validarPaso2 = computed(() => {
+        return formData.value.email &&
+            formData.value.telefono;
+    });
+
+    const validarPaso3 = computed(() => {
+        return formData.value.username &&
+            formData.value.password &&
+            formData.value.confirmar_password &&
+            formData.value.password.length >= 8 &&
+            formData.value.password === formData.value.confirmar_password;
+    });
+
+    // Generar username por defecto
+    watch([() => formData.value.nombres, () => formData.value.apellidos], ([nombres, apellidos]) => {
+        if (nombres && apellidos && !formData.value.username) {
+            const nombrePart = nombres.trim().replace(/\s/g, '').substring(0, 4).toLowerCase();
+            const apellidoPart = apellidos.trim().replace(/\s/g, '').substring(0, 3).toLowerCase();
+            formData.value.username = `${nombrePart}${apellidoPart}`;
+        }
+    });
+
+    const pasoSiguiente = () => {
+        if (pasoActual.value < 3) {
+            pasoActual.value++;
+        }
+    };
+
+    const pasoAnterior = () => {
+        if (pasoActual.value > 1) {
+            pasoActual.value--;
+        }
+    };
 
     const registrar = async () => {
+        if (pasoActual.value !== 3) return false;
+
         if (formData.value.password !== formData.value.confirmar_password) {
             error.value = 'Las contraseñas no coinciden';
             return false;
@@ -65,15 +86,11 @@ export function useRegistro() {
             loading.value = true;
             error.value = null;
 
-            // Eliminar confirmar_password antes de enviar
             const { confirmar_password, ...datosRegistro } = formData.value;
-
-            const response = await postJson<ResponseRegister>('/api/auth/register', datosRegistro);
+            const response = await postJson<any>('/api/auth/register', datosRegistro);
 
             if (response) {
                 success.value = true;
-
-                // Guardar datos completos del usuario en localStorage
                 const userData = {
                     username: response.user?.username || '',
                     email: formData.value.email,
@@ -83,18 +100,13 @@ export function useRegistro() {
                     apellidos: formData.value.apellidos,
                     roles: response.user?.roles || ['user']
                 };
-
                 await storage.setItem('comfaca_credito_user', JSON.stringify(userData));
-
                 return true;
-            } else {
-                error.value = 'Error en el registro. Por favor, inténtalo de nuevo.';
-                return false;
             }
+            error.value = 'Error en el registro. Por favor, inténtalo de nuevo.';
+            return false;
         } catch (err: any) {
             console.error('Error en el registro:', err);
-
-            // Manejar errores específicos del backend
             if (err.response?.status === 409) {
                 error.value = 'El usuario ya existe. Por favor, usa otro nombre de usuario o inicia sesión.';
             } else if (err.response?.data?.error) {
@@ -102,7 +114,6 @@ export function useRegistro() {
             } else {
                 error.value = 'Error en el registro. Por favor, inténtalo de nuevo.';
             }
-
             return false;
         } finally {
             loading.value = false;
@@ -114,7 +125,13 @@ export function useRegistro() {
         loading,
         error,
         success,
+        pasoActual,
         tiposDocumento,
+        validarPaso1,
+        validarPaso2,
+        validarPaso3,
+        pasoSiguiente,
+        pasoAnterior,
         registrar
     };
 }

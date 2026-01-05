@@ -202,155 +202,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useEntidadDigital } from '~/composables/entidad/useEntidadDigital'
-import { storage } from '~/composables/useStorage'
+import { useEntidadDigitalConfirmation } from '~/composables/entidad/useEntidadDigitalConfirmation'
 
-const router = useRouter()
-
-// Composable de entidad digital
 const {
-  tipoIdentificacion: tipoId,
-  numeroIdentificacion: numId,
-  clave: claveComp,
-  claveConfirm: claveConfirmComp,
-  overwrite,
+  claveLocal,
+  claveConfirmLocal,
+  overwriteLocal,
+  verificationData,
+  termsAccepted,
+  privacyAccepted,
+  successMsg,
   loading,
   errorMsg,
-  result,
-  crear,
-  validateForm,
-  isCapturasConfirmadas
-} = useEntidadDigital()
-
-// Referencias locales para las claves
-const claveLocal = ref('')
-const claveConfirmLocal = ref('')
-const overwriteLocal = ref(false)
-
-// Estado local
-const verificationData = ref<{
-  tipoIdentificacion: string;
-  numeroIdentificacion: string;
-  documents: { front: string; back: string };
-  selfie: string;
-} | null>(null)
-const termsAccepted = ref(false)
-const privacyAccepted = ref(false)
-const successMsg = ref('')
-
-// Computed para validar si se puede confirmar
-const canConfirm = computed(() => {
-  return verificationData.value && 
-         claveLocal.value && 
-         claveConfirmLocal.value && 
-         claveLocal.value.length >= 10 && 
-         claveLocal.value === claveConfirmLocal.value &&
-         termsAccepted.value && 
-         privacyAccepted.value &&
-         !loading.value
-})
-
-// Cargar datos de verificación al montar
-onMounted(async () => {
-  const completeData = await storage.getItem('completeVerificationData')
-  const basicData = await storage.getItem('basicFormData')
-  
-  if (completeData && basicData) {
-    verificationData.value = JSON.parse(completeData)
-    // Combinar con datos básicos
-    verificationData.value = {
-      ...verificationData.value,
-      ...JSON.parse(basicData)
-    }
-    
-    // No cargar overwrite ya que no se guarda en datos básicos
-    // El usuario lo seleccionará aquí en confirmación
-
-    // Si las capturas fueron confirmadas recientemente (viene de la redirección del socket)
-    // podemos mostrar un mensaje de éxito inicial o marcar visualmente el progreso.
-  } else {
-    // Si no hay datos completos, redirigir al inicio
-    router.push('/entidad-digital')
-  }
-})
-
-// Métodos
-const goBack = async () => {
-  if (confirm('¿Estás seguro de que deseas regresar?')) {
-    await storage.removeItem('completeVerificationData')
-    router.push('/entidad-digital')
-  }
-}
-
-const cancelProcess = async () => {
-  if (confirm('¿Estás seguro de que deseas cancelar el proceso? Se perderán todos los datos capturados.')) {
-    await storage.removeItem('capturedDocuments')
-    await storage.removeItem('completeVerificationData')
-    await storage.removeItem('basicFormData')
-    router.push('/entidad-digital')
-  }
-}
-
-const confirmAndCreate = async () => {
-  if (!canConfirm.value) return
-
-  errorMsg.value = ''
-  successMsg.value = ''
-
-  try {
-    // Validar formulario localmente antes de asignar al composable
-    if (!verificationData.value?.numeroIdentificacion?.trim()) {
-      errorMsg.value = 'El número de identificación es requerido.';
-      return;
-    }
-
-    if (claveLocal.value.length < 10) {
-      errorMsg.value = 'La clave debe tener al menos 10 caracteres.';
-      return;
-    }
-
-    if (claveLocal.value !== claveConfirmLocal.value) {
-      errorMsg.value = 'La confirmación de clave no coincide.';
-      return;
-    }
-
-    // Establecer los datos del formulario desde los datos de verificación
-    if (verificationData.value?.tipoIdentificacion) {
-      const tipoIdEnum = verificationData.value.tipoIdentificacion as 'CC' | 'CE' | 'NIT' | 'PAS'
-      tipoId.value = tipoIdEnum
-    }
-    if (verificationData.value?.numeroIdentificacion) {
-      numId.value = verificationData.value.numeroIdentificacion
-    }
-    
-    // Establecer las claves desde el estado local al composable
-    claveComp.value = claveLocal.value
-    claveConfirmComp.value = claveConfirmLocal.value
-    overwrite.value = overwriteLocal.value
-
-    // Crear entidad digital
-    await crear()
-
-    if (result.value) {
-      successMsg.value = '¡Entidad digital creada exitosamente!'
-      
-      // Limpiar storage
-      await storage.removeItem('capturedDocuments')
-      await storage.removeItem('completeVerificationData')
-      await storage.removeItem('basicFormData')
-
-      // Redirigir después de un breve delay
-      setTimeout(() => {
-        router.push('/inicio')
-      }, 3000)
-    }
-  } catch (error: any) {
-    console.error('Error creando entidad digital:', error)
-    errorMsg.value = error?.data?.error || error?.message || 'Error creating digital entity'
-  }
-}
+  canConfirm,
+  goBack,
+  cancelProcess,
+  confirmAndCreate
+} = useEntidadDigitalConfirmation()
 
 definePageMeta({
   layout: 'dashboard',

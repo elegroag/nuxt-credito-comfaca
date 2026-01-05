@@ -1,21 +1,6 @@
 import { computed, useState } from '#imports'
 import { storage } from '~/composables/useStorage'
-
-export type SessionUser = {
-    username: string
-    roles: string[],
-    email: string,
-    tipo_documento: string,
-    numero_documento: string,
-    nombres: string,
-    apellidos: string,
-}
-
-export type SessionData = {
-    accessToken: string
-    tokenType: string
-    user: SessionUser | null
-}
+import type { SessionData, SessionUser } from '~/shared/types/session'
 
 const STORAGE_KEY_V1 = 'comfaca_credito_session'
 const STORAGE_TOKEN_KEY = 'comfaca_credito_access_token'

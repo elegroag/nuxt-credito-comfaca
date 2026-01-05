@@ -15,8 +15,7 @@
 
     <div class="rounded-lg border border-zinc-200 bg-white p-4">
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div class="sm:col-span-2">
-          <label class="mb-1 block text-sm font-medium text-zinc-900">Buscar XML en storage/activos</label>
+        <FormField label="Buscar XML en storage/activos" class="sm:col-span-2">
           <input
             v-model="query"
             type="text"
@@ -25,7 +24,7 @@
             @input="buscar"
           />
           <p class="mt-1 text-xs text-zinc-600">Se listan archivos desde <code class="rounded bg-zinc-100 px-1">backend/storage/activos</code>.</p>
-        </div>
+        </FormField>
 
         <div class="sm:col-span-2">
           <div class="mb-2 text-sm font-semibold text-zinc-900">Resultados</div>
@@ -43,13 +42,11 @@
           </div>
         </div>
 
-        <div class="sm:col-span-2">
-          <label class="mb-1 block text-sm font-medium text-zinc-900">XML de solicitud seleccionado</label>
+        <FormField label="XML de solicitud seleccionado" class="sm:col-span-2">
           <input v-model="solicitudFilename" type="text" class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm" />
-        </div>
+        </FormField>
 
-        <div class="sm:col-span-2">
-          <label class="mb-1 block text-sm font-medium text-zinc-900">XML de firmas existente (opcional)</label>
+        <FormField label="XML de firmas existente (opcional)" class="sm:col-span-2">
           <input
             v-model="firmasFilename"
             type="text"
@@ -57,7 +54,7 @@
             class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm"
           />
           <p class="mt-1 text-xs text-zinc-600">Si ya existe un XML de firmas, lo puedes pasar para que el link continúe firmando sobre ese documento.</p>
-        </div>
+        </FormField>
 
         <div class="sm:col-span-2 flex items-center gap-3">
           <button
@@ -107,6 +104,7 @@
 </template>
 
 <script setup lang="ts">
+import FormField from '~/components/shared/FormField.vue'
 import { useFirmaCompartir } from '~/composables/firmas/useFirmaCompartir'
 
 definePageMeta({

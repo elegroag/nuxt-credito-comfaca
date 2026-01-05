@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useSession } from '~/composables/useSession';
 import { useApi } from '~/composables/useApi';
 import QRCode from 'qrcode';
+import type { FirmaShareRequest, FirmaShareResponse } from '~/shared/types/firmas';
 
 export function useFirmaCompartir() {
     const { authHeader } = useSession();
@@ -32,7 +33,7 @@ export function useFirmaCompartir() {
     // File operations
     const fetchFiles = async (q: string) => {
         const url = q ? `/api/activos/xml?q=${encodeURIComponent(q)}` : '/api/activos/xml';
-        const data = await getJson<any>(url, { auth: true });
+        const data = await getJson<{ files: string[] }>(url, { auth: true });
         const arr = Array.isArray(data?.files) ? data.files : [];
         files.value = arr;
     };
@@ -59,14 +60,14 @@ export function useFirmaCompartir() {
         expiresAt.value = '';
 
         try {
-            const body: any = {
+            const body: FirmaShareRequest = {
                 solicitud_filename: solicitudFilename.value
             };
             if (firmasFilename.value.trim()) {
                 body.firmas_filename = firmasFilename.value;
             }
 
-            const data = await postJson<any>('/api/solicitud-credito/firmas/share', body, { auth: true });
+            const data = await postJson<FirmaShareResponse>('/api/solicitud-credito/firmas/share', body as any, { auth: true });
 
             token.value = String(data?.token || '');
             expiresAt.value = String(data?.expires_at || '');

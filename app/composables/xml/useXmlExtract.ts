@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue';
 import { useSession } from '~/composables/useSession';
 import { useApi } from '~/composables/useApi';
+import type { XmlExtractRequest, XmlExtractResponse } from '~/shared/types/xml';
 
 export function useXmlExtract() {
     const { authHeader } = useSession();
@@ -37,10 +38,11 @@ export function useXmlExtract() {
         data.value = null;
 
         try {
-            data.value = await postJson<any>('/api/solicitud-credito/xml-extract', {
+            const response = await postJson<XmlExtractResponse>('/api/solicitud-credito/xml-extract', {
                 filename: filename.value,
                 validate: validate.value
-            }, { auth: true });
+            } as XmlExtractRequest, { auth: true });
+            data.value = response;
         } catch (e: any) {
             errorMsg.value = e?.data?.error || e?.message || 'Error extrayendo XML';
         } finally {

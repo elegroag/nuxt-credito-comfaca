@@ -1,14 +1,6 @@
 // frontend/composables/simulador/useSimulador.ts
 import { computed, ref } from 'vue';
-
-interface SimuladorData {
-    monto: number;
-    plazoMeses: number;
-    tasaEfectivaAnual: number;
-    ingresosMensuales: number;
-    descuentosMensuales: number;
-    maxEndeudamientoPct: number;
-}
+import type { SimuladorData } from '~/shared/types/simulador';
 
 export function useSimulador() {
     // Valores por defecto

@@ -1,19 +1,29 @@
-// frontend/composables/entidad/useEntidadDigital.ts
-import { ref, onMounted, computed, onUnmounted, nextTick } from 'vue';
+import { ref, onMounted, computed, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
-import { navigateTo, useRuntimeConfig } from '#app';
+import { navigateTo } from '#app';
 import { useApi } from '~/composables/useApi';
 import { storage } from '~/composables/useStorage';
-import QRCode from 'qrcode';
-import { io, Socket } from 'socket.io-client';
+import { useEntidadDigitalQr } from './useEntidadDigitalQr';
+import type { TipoIdentificacionExtendido } from '~/shared/types/entidad';
 
 export function useEntidadDigital() {
     const route = useRoute();
-    const config = useRuntimeConfig();
-    const { postJson, getJson } = useApi();
+    const { postJson } = useApi();
+    const {
+        qrCodeUrl,
+        loadingQR,
+        tokenExpired,
+        timeRemaining,
+        timeRemainingClass,
+        isCapturasConfirmadas,
+        socketResult,
+        formatTimeRemaining,
+        generateQR,
+        cleanup
+    } = useEntidadDigitalQr();
 
     // Form state
-    const tipoIdentificacion = ref<'CC' | 'CE' | 'NIT' | 'PAS'>('CC');
+    const tipoIdentificacion = ref<TipoIdentificacionExtendido>('CC');
     const numeroIdentificacion = ref('');
     const clave = ref('');
     const claveConfirm = ref('');
@@ -26,27 +36,11 @@ export function useEntidadDigital() {
 
     // Flow state
     const currentStep = ref<'basic' | 'qr'>('basic');
-    const qrCodeUrl = ref<string>('');
-    const loadingQR = ref(false);
-    const tokenExpired = ref(false);
-    const timeRemaining = ref(1200); // 20 minutos en segundos
-    let countdownInterval: any = null;
-    let socket: Socket | null = null;
-
-    const isCapturasConfirmadas = ref(false);
-
-    // Navigation state
     const redirectTo = ref('');
 
     // Computed
     const isBasicFormValid = computed(() => {
         return tipoIdentificacion.value && numeroIdentificacion.value;
-    });
-
-    const timeRemainingClass = computed(() => {
-        if (timeRemaining.value <= 60) return 'text-red-600';
-        if (timeRemaining.value <= 300) return 'text-yellow-600';
-        return 'text-green-600';
     });
 
     // Initialize from query params or storage
@@ -65,7 +59,6 @@ export function useEntidadDigital() {
             redirectTo.value = r;
         }
 
-        // Cargar datos guardados si no vienen por query
         if (!numeroIdentificacion.value) {
             const savedData = await storage.getItem('basicFormData');
             if (savedData) {
@@ -76,139 +69,40 @@ export function useEntidadDigital() {
         }
     });
 
-    onUnmounted(() => {
-        if (countdownInterval) {
-            clearInterval(countdownInterval);
-            countdownInterval = null;
-        }
-        if (socket) {
-            socket.disconnect();
-        }
-    });
-
-    // Form validation
     const validateForm = () => {
         if (!numeroIdentificacion.value.trim()) {
             errorMsg.value = 'El número de identificación es requerido.';
             return false;
         }
-
         if (clave.value.length < 10) {
             errorMsg.value = 'La clave debe tener al menos 10 caracteres.';
             return false;
         }
-
         if (clave.value !== claveConfirm.value) {
             errorMsg.value = 'La confirmación de clave no coincide.';
             return false;
         }
-
         return true;
     };
 
-    // Helper functions
-    const formatTimeRemaining = (seconds: number) => {
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = seconds % 60;
-        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    const handleQrConfirm = async (data: any) => {
+        await storage.setItem('completeVerificationData', JSON.stringify(data));
+        result.value = data;
+        await navigateTo('/entidad-digital/confirmation');
     };
 
-    const startCountdown = (initialSeconds: number = 1200) => {
-        timeRemaining.value = initialSeconds;
-        if (countdownInterval) clearInterval(countdownInterval);
-
-        countdownInterval = setInterval(() => {
-            timeRemaining.value--;
-            if (timeRemaining.value <= 0) {
-                tokenExpired.value = true;
-                if (countdownInterval) {
-                    clearInterval(countdownInterval);
-                    countdownInterval = null;
-                }
-            }
-        }, 1000);
-    };
-
-    const initSocket = (username: string) => {
-        const backendUrl = config.public.backendBaseUrl || 'http://localhost:5001';
-        socket = io(backendUrl);
-
-        socket.on('connect', () => {
-            console.log('Socket conectado para:', username);
-        });
-
-        socket.on(`auth_complete_${username}`, async (data: any) => {
-            console.log('Autorización recibida:', data);
-            // Cuando la app móvil autoriza, pasamos al siguiente estado o mostramos éxito
-            result.value = data;
-            // Aquí se podría redirigir o actualizar el estado para mostrar que ya se puede continuar
-        });
-
-        socket.on(`confirma_capturas_${username}`, async (response: any) => {
-            console.log('Confirmación de capturas recibida:', response);
-            if (!response.success) {
-                errorMsg.value = response.error || 'Error al confirmar capturas';
-                return;
-            }
-
-            // Guardar los datos de captura en el storage para que confirmation.vue los use
-            await storage.setItem('completeVerificationData', JSON.stringify(response.data));
-
-            // Actualizar estado para que la UI reaccione
-            result.value = response.data;
-            isCapturasConfirmadas.value = true;
-
-            // Redirigir a la página de confirmación
-            await navigateTo('/entidad-digital/confirmation');
-        });
-    };
-
-    const generateQR = async (canvasRef: HTMLCanvasElement | null) => {
+    const _generateQR = async (canvasRef: HTMLCanvasElement | null) => {
         try {
-            loadingQR.value = true;
-            tokenExpired.value = false;
             errorMsg.value = '';
-
-            // Obtener token real del backend con autenticación
-            const response = await getJson<any>('/api/auth/qr-token', { auth: true });
-            if (!response.success) {
-                throw new Error(response.error || 'Error al obtener token');
-            }
-
-            const qrToken = response.qr_token;
-            const username = response.user.username;
-            const backendUrl = config.public.backendBaseUrl || 'http://localhost:5001';
-            const authUrl = `${backendUrl}/api/auth/mobile/authorize/${qrToken}`;
-            console.log('URL del QR:', authUrl);
-
-            await nextTick();
-            if (canvasRef) {
-                await QRCode.toCanvas(canvasRef, authUrl, {
-                    width: 256,
-                    margin: 2,
-                    color: { dark: '#000000', light: '#FFFFFF' }
-                });
-            }
-
-            qrCodeUrl.value = authUrl;
-
-            // Calcular tiempo restante basado en expires_at del backend
-            const now = Math.floor(Date.now() / 1000);
-            const remaining = response.expires_at - now;
-            startCountdown(remaining > 0 ? remaining : 0);
-
-            // Inicializar socket para escuchar autorización
-            initSocket(username);
-
+            const userSession = await storage.getItem('comfaca_credito_user');
+            if (!userSession) throw new Error('No se encontró sesión de usuario');
+            const { username } = JSON.parse(userSession);
+            await generateQR(username, canvasRef, handleQrConfirm);
         } catch (error: any) {
-            console.error('Error generando QR:', error);
-            errorMsg.value = error.message || 'Error al generar el código QR. Por favor intenta nuevamente.';
-        } finally {
-            loadingQR.value = false;
+            errorMsg.value = error.message || 'Error al generar el código QR';
         }
     };
 
-    // Flow Actions
     const nextToQR = async (canvasRef: HTMLCanvasElement | null) => {
         if (!isBasicFormValid.value) {
             errorMsg.value = 'Por favor completa todos los campos correctamente';
@@ -223,17 +117,13 @@ export function useEntidadDigital() {
 
         errorMsg.value = '';
         currentStep.value = 'qr';
-        await generateQR(canvasRef);
+        await _generateQR(canvasRef);
     };
 
     const goBack = () => {
-        if (countdownInterval) {
-            clearInterval(countdownInterval);
-            countdownInterval = null;
-        }
+        cleanup();
         currentStep.value = 'basic';
-        qrCodeUrl.value = '';
-        tokenExpired.value = false;
+        errorMsg.value = '';
     };
 
     const resetForm = () => {
@@ -255,14 +145,8 @@ export function useEntidadDigital() {
         loading.value = true;
         try {
             const userSession = await storage.getItem('comfaca_credito_user');
-            let username = '';
-
-            if (userSession) {
-                const userData = JSON.parse(userSession);
-                username = userData.username || '';
-            }
-
-            if (!username) throw new Error('No se encontró sesión de usuario activa');
+            if (!userSession) throw new Error('No se encontró sesión de usuario activa');
+            const { username } = JSON.parse(userSession);
 
             const completeData = await storage.getItem('completeVerificationData');
             let documentos = {};
@@ -275,12 +159,12 @@ export function useEntidadDigital() {
             }
 
             result.value = await postJson<any>('/api/entidad-digital/completo', {
-                username: username,
+                username,
                 tipo_identificacion: tipoIdentificacion.value,
                 numero_identificacion: numeroIdentificacion.value,
                 clave: clave.value,
-                documentos: documentos,
-                selfie: selfie
+                documentos,
+                selfie
             });
 
             if (redirectTo.value) {
@@ -294,7 +178,6 @@ export function useEntidadDigital() {
     };
 
     return {
-        // State
         tipoIdentificacion,
         numeroIdentificacion,
         clave,
@@ -309,17 +192,13 @@ export function useEntidadDigital() {
         tokenExpired,
         timeRemaining,
         isCapturasConfirmadas,
-
-        // Computed
         isBasicFormValid,
         timeRemainingClass,
-
-        // Actions
         crear,
         resetForm,
         validateForm,
         formatTimeRemaining,
-        generateQR,
+        generateQR: _generateQR,
         nextToQR,
         goBack
     };

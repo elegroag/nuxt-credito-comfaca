@@ -15,18 +15,17 @@
 
     <div class="rounded-lg border border-zinc-200 bg-white p-4">
       <div class="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:items-end">
-        <div class="sm:col-span-2">
-          <label class="mb-1 block text-sm font-medium text-zinc-900">Nombre del XML</label>
+        <FormField label="Nombre del XML" class="sm:col-span-2">
           <input
             v-model="filename"
             type="text"
             placeholder="solicitud-credito.xml"
             class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-400"
           />
-        </div>
+        </FormField>
 
-        <div class="flex items-center gap-3">
-          <label class="flex items-center gap-2 text-sm text-zinc-900">
+        <div class="flex items-center gap-3 h-full pb-2">
+          <label class="flex items-center gap-2 text-sm text-zinc-900 cursor-pointer">
             <input v-model="validate" type="checkbox" class="h-4 w-4" />
             Validar (XSD)
           </label>
@@ -57,6 +56,7 @@
 </template>
 
 <script setup lang="ts">
+import FormField from '~/components/shared/FormField.vue'
 import { useXmlExtract } from '~/composables/xml/useXmlExtract'
 
 definePageMeta({

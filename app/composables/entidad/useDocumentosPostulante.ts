@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { useApi } from '~/composables/useApi'
+import type { DocumentosPostulante, DocumentosRequestPayload, SelfieRequestPayload, ProcesoCompletoRequestPayload } from '~/shared/types/entidad'
 
 export function useDocumentosPostulante() {
     const { postJson } = useApi()
@@ -8,7 +9,7 @@ export function useDocumentosPostulante() {
     const errorMsg = ref('')
     const result = ref<any | null>(null)
 
-    const guardarDocumentos = async (documentos: { front: string; back: string }, datosBasicos: any) => {
+    const guardarDocumentos = async (documentos: DocumentosPostulante, datosBasicos: { tipoIdentificacion: string, numeroIdentificacion: string }) => {
         loading.value = true
         errorMsg.value = ''
         result.value = null
@@ -35,14 +36,14 @@ export function useDocumentosPostulante() {
                 }
             }
 
-            const payload = {
+            const payload: DocumentosRequestPayload = {
                 postulante_id: datosBasicos.numeroIdentificacion,
                 tipo_identificacion: datosBasicos.tipoIdentificacion,
                 numero_identificacion: datosBasicos.numeroIdentificacion,
                 documentos: documentosBase64
             }
 
-            result.value = await postJson('/api/entidad-digital/documentos', payload)
+            result.value = await postJson<any>('/api/entidad-digital/documentos', payload)
 
             return result.value
         } catch (error: any) {
@@ -53,7 +54,7 @@ export function useDocumentosPostulante() {
         }
     }
 
-    const guardarSelfie = async (selfie: string, datosBasicos: any) => {
+    const guardarSelfie = async (selfie: string, datosBasicos: { tipoIdentificacion: string, numeroIdentificacion: string }) => {
         loading.value = true
         errorMsg.value = ''
         result.value = null
@@ -71,14 +72,14 @@ export function useDocumentosPostulante() {
                 })
             }
 
-            const payload = {
+            const payload: SelfieRequestPayload = {
                 postulante_id: datosBasicos.numeroIdentificacion,
                 tipo_identificacion: datosBasicos.tipoIdentificacion,
                 numero_identificacion: datosBasicos.numeroIdentificacion,
                 selfie: selfieBase64
             }
 
-            result.value = await postJson('/api/entidad-digital/selfie', payload)
+            result.value = await postJson<any>('/api/entidad-digital/selfie', payload)
 
             return result.value
         } catch (error: any) {
@@ -89,7 +90,7 @@ export function useDocumentosPostulante() {
         }
     }
 
-    const guardarProcesoCompleto = async (documentos: { front: string; back: string }, selfie: string, datosBasicos: any) => {
+    const guardarProcesoCompleto = async (documentos: DocumentosPostulante, selfie: string, datosBasicos: { tipoIdentificacion: string, numeroIdentificacion: string }) => {
         loading.value = true
         errorMsg.value = ''
         result.value = null
@@ -125,7 +126,7 @@ export function useDocumentosPostulante() {
                 })
             }
 
-            const payload = {
+            const payload: ProcesoCompletoRequestPayload = {
                 postulante_id: datosBasicos.numeroIdentificacion,
                 tipo_identificacion: datosBasicos.tipoIdentificacion,
                 numero_identificacion: datosBasicos.numeroIdentificacion,
@@ -133,7 +134,7 @@ export function useDocumentosPostulante() {
                 selfie: selfieBase64
             }
 
-            result.value = await postJson('/api/entidad-digital/completo', payload)
+            result.value = await postJson<any>('/api/entidad-digital/completo', payload)
 
             return result.value
         } catch (error: any) {

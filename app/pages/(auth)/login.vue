@@ -50,55 +50,22 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed } from '#imports'
+import { onMounted } from '#imports'
 import { useLogin } from '~/composables/auth/useLogin'
-import { useApi } from '~/composables/useApi'
+import { useHealthCheck } from '~/composables/useHealthCheck'
 
 definePageMeta({
   layout: 'auth'
 })
 
 const { username, password, loading, errorMsg, login, checkAuthAndRedirect } = useLogin()
-const { getJson, baseUrl } = useApi()
-
-// Estado de conexión
-const isConnected = ref(false)
-const connectionError = ref('')
-const checkingConnection = ref(true)
-
-const connectionMessage = computed(() => {
-  if (checkingConnection.value) return 'Verificando conexión con el servidor...'
-  if (connectionError.value) return `Error de conexión: ${connectionError.value}`
-  if (isConnected.value) return `Conectado`
-  return 'Sin conexión'
-})
-
-const connectionStatusClass = computed(() => {
-  if (checkingConnection.value) return 'bg-blue-50 text-blue-800 border border-blue-200'
-  if (connectionError.value) return 'bg-red-50 text-red-800 border border-red-200'
-  if (isConnected.value) return 'bg-green-50 text-green-800 border border-green-200'
-  return 'bg-gray-50 text-gray-800 border border-gray-200'
-})
-
-const checkConnection = async () => {
-  try {
-    checkingConnection.value = true
-    connectionError.value = ''
-    
-    const response = await fetch(`${baseUrl.value}/api/health`)
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-    }
-    
-    const data = await response.json()
-    isConnected.value = true
-  } catch (error: any) {
-    isConnected.value = false
-    connectionError.value = error?.message || 'No se puede conectar al servidor'
-  } finally {
-    checkingConnection.value = false
-  }
-}
+const { 
+  isConnected, 
+  checkingConnection, 
+  connectionMessage, 
+  connectionStatusClass, 
+  checkConnection 
+} = useHealthCheck()
 
 onMounted(async () => {
   await checkConnection()

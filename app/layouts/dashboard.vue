@@ -126,7 +126,7 @@
               class="inline-flex items-center gap-2 rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-300"
               @click="logout"
             >
-              <ArrowRightOnRectangleIcon class="h-5 w-5" />
+              <ArrowRightStartOnRectangleIcon class="h-5 w-5" />
               <span class="hidden sm:inline">Cerrar sesión</span>
               <span class="sm:hidden">Salir</span>
             </button>
@@ -193,73 +193,25 @@
 </template>
 
 <script setup lang="ts">
-import { computed, navigateTo, ref, useRoute, useSession } from '#imports'
-
+import { useDashboardLayout } from '~/composables/layout/useDashboardLayout'
 import {
   ArrowRightOnRectangleIcon,
   Bars3Icon,
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  CodeBracketSquareIcon,
-  DocumentPlusIcon,
-  HomeIcon,
-  KeyIcon,
-  PencilSquareIcon,
-  CalculatorIcon,
-  DocumentTextIcon,
-  ShareIcon,
-  XMarkIcon,
-  UserIcon
+  XMarkIcon
 } from '@heroicons/vue/24/outline'
 
-const { session, clearSession } = useSession()
-const route = useRoute()
-
-const sidebarOpen = ref(false)
-const sidebarCollapsed = ref(false)
-const userMenuOpen = ref(false)
-
-const _abbr = (label: string) => {
-  const parts = label
-    .split(' ')
-    .map((s) => s.trim())
-    .filter(Boolean)
-
-  const abbr = parts
-    .slice(0, 2)
-    .map((p) => p[0] || '')
-    .join('')
-    .toUpperCase()
-
-  return abbr || (label.trim()[0] || '').toUpperCase() || '·'
-}
-
-const navItems = [
-  { label: 'Inicio', to: '/', abbr: _abbr('Inicio'), icon: HomeIcon },
-  { label: 'Simulador', to: '/simulador', abbr: _abbr('Simulador'), icon: CalculatorIcon },
-  { label: 'Solicitud', to: '/solicitud', abbr: _abbr('Solicitud'), icon: DocumentPlusIcon },
-  { label: 'Documentos', to: '/documentos', abbr: _abbr('Documentos'), icon: DocumentTextIcon },
-  { label: 'Extraer XML', to: '/xml-extract', abbr: _abbr('Extraer XML'), icon: CodeBracketSquareIcon },
-  { label: 'Firmas', to: '/firmas', abbr: _abbr('Firmas'), icon: PencilSquareIcon },
-  { label: 'Compartir firmas', to: '/firmas-compartir', abbr: _abbr('Compartir firmas'), icon: ShareIcon },
-  { label: 'Entidad digital', to: '/entidad-digital', abbr: _abbr('Entidad digital'), icon: KeyIcon },
-  { label: 'Perfil', to: '/perfil', abbr: _abbr('Perfil'), icon: UserIcon }
-]
-
-const isActive = (to: string) => {
-  if (to === '/') return route.path === '/'
-  return route.path.startsWith(to)
-}
-
-const sectionTitle = computed(() => {
-  const hit = navItems.find((x) => isActive(x.to))
-  return hit?.label || 'Dashboard'
-})
-
-const logout = async () => {
-  userMenuOpen.value = false
-  clearSession()
-  await navigateTo('/login')
-}
+const {
+  session,
+  sidebarOpen,
+  sidebarCollapsed,
+  userMenuOpen,
+  navItems,
+  sectionTitle,
+  isActive,
+  logout,
+  _abbr
+} = useDashboardLayout()
 </script>

@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useApi } from '~/composables/useApi';
+import type { RolFirmante, TipoIdentificacionFirma, FirmaShareTokenInfo, FirmaRequestPayload } from '~/shared/types/firmas';
 
 export function useFirmaShareToken() {
     const route = useRoute();
@@ -9,14 +10,14 @@ export function useFirmaShareToken() {
     const token = computed(() => String(route.params.token || ''));
 
     // Token state
-    const tokenInfo = ref<any | null>(null);
+    const tokenInfo = ref<FirmaShareTokenInfo | null>(null);
     const tokenError = ref('');
 
     // Form state
-    const rolFirmante = ref<'solicitante' | 'codeudor' | 'empleador' | 'analista' | 'aprobador' | 'auditor' | 'notario' | 'sistema'>('solicitante');
+    const rolFirmante = ref<RolFirmante>('solicitante');
     const aprobado = ref(true);
     const nombreApellidos = ref('');
-    const tipoIdentificacion = ref<'CC' | 'CE' | 'NIT' | 'PAS'>('CC');
+    const tipoIdentificacion = ref<TipoIdentificacionFirma>('CC');
     const numeroIdentificacion = ref('');
     const claveFirma = ref('');
     const claveFirmaConfirm = ref('');
@@ -53,7 +54,7 @@ export function useFirmaShareToken() {
         tokenError.value = '';
         tokenInfo.value = null;
 
-        tokenInfo.value = await getJson<any>(`/api/solicitud-credito/firmas/share/${encodeURIComponent(token.value)}`);
+        tokenInfo.value = await getJson<FirmaShareTokenInfo>(`/api/solicitud-credito/firmas/share/${encodeURIComponent(token.value)}`);
     };
 
     // Verify digital identity
@@ -91,7 +92,7 @@ export function useFirmaShareToken() {
                 throw new Error('Debes crear tu identidad digital antes de firmar.');
             }
 
-            const body: any = {
+            const body: FirmaRequestPayload = {
                 firma: {
                     rol_firmante: rolFirmante.value,
                     aprobado: aprobado.value,
@@ -105,7 +106,7 @@ export function useFirmaShareToken() {
                 save_xml: true
             };
 
-            xmlText.value = await postJson<string>(`/api/solicitud-credito/firmas/share/${encodeURIComponent(token.value)}/firmar`, body);
+            xmlText.value = await postJson<string>(`/api/solicitud-credito/firmas/share/${encodeURIComponent(token.value)}/firmar`, body as any);
         } catch (e: any) {
             errorMsg.value = e?.message || 'Error firmando';
         } finally {

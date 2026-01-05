@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FormField from '~/components/shared/FormField.vue'
 import { ref } from 'vue'
 import { useEntidadDigital } from '~/composables/entidad/useEntidadDigital'
 
@@ -55,27 +56,26 @@ definePageMeta({
       </div>
 
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div>
-          <label class="mb-1 block text-sm font-medium text-zinc-900">Tipo identificación</label>
+        <FormField label="Tipo identificación">
           <select v-model="tipoIdentificacion" class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm">
             <option value="CC">CC</option>
             <option value="CE">CE</option>
             <option value="NIT">NIT</option>
             <option value="PAS">PAS</option>
           </select>
-        </div>
+        </FormField>
 
-        <div>
-          <label class="mb-1 block text-sm font-medium text-zinc-900">Número identificación</label>
+        <FormField label="Número identificación">
           <input v-model="numeroIdentificacion" class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm" />
-        </div>
+        </FormField>
 
         <div class="sm:col-span-2">
-          <label class="mb-1 block text-sm font-medium text-zinc-900">Notas</label>
-          <p class="text-sm text-zinc-600">
-            Escanea el código QR con la aplicación móvil para autorizar la generación de tu entidad digital.
-            El enlace expirará en 20 minutos por seguridad.
-          </p>
+          <FormField label="Notas">
+            <p class="text-sm text-zinc-600">
+              Escanea el código QR con la aplicación móvil para autorizar la generación de tu entidad digital.
+              El enlace expirará en 20 minutos por seguridad.
+            </p>
+          </FormField>
         </div>
 
         <div class="sm:col-span-2 flex items-center justify-end">

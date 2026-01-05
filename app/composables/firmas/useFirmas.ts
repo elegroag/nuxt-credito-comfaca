@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router';
 import { useSession } from '~/composables/useSession';
 import { useApi } from '~/composables/useApi';
 import { storage } from '~/composables/useStorage';
+import type { RolFirmante, TipoIdentificacionFirma } from '~/shared/types/firmas';
 
 const FIRMA_DEFAULTS_STORAGE_KEY = 'comfaca_credito_firma_defaults';
 
@@ -15,10 +16,10 @@ export function useFirmas() {
     // Form state
     const solicitudFilename = ref('solicitud-credito.xml');
     const firmasFilename = ref('');
-    const rolFirmante = ref<'solicitante' | 'codeudor' | 'empleador' | 'analista' | 'aprobador' | 'auditor' | 'notario' | 'sistema'>('solicitante');
+    const rolFirmante = ref<RolFirmante>('solicitante');
     const aprobado = ref(true);
     const nombreApellidos = ref('');
-    const tipoIdentificacion = ref<'CC' | 'CE' | 'NIT' | 'PAS'>('CC');
+    const tipoIdentificacion = ref<TipoIdentificacionFirma>('CC');
     const numeroIdentificacion = ref('');
     const fechaFirma = ref('');
     const saveXml = ref(true);

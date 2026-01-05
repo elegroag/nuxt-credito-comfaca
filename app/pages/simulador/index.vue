@@ -10,8 +10,7 @@
     <div class="grid gap-6 lg:grid-cols-2">
       <div class="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
         <div class="grid gap-4">
-          <div>
-            <label class="mb-1 block text-sm font-medium text-zinc-900">Monto (COP)</label>
+          <FormField label="Monto (COP)">
             <input
               v-model.number="monto"
               type="number"
@@ -19,11 +18,10 @@
               step="10000"
               class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm"
             />
-          </div>
+          </FormField>
 
           <div class="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label class="mb-1 block text-sm font-medium text-zinc-900">Plazo (meses)</label>
+            <FormField label="Plazo (meses)">
               <input
                 v-model.number="plazoMeses"
                 type="number"
@@ -31,10 +29,9 @@
                 step="1"
                 class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm"
               />
-            </div>
+            </FormField>
 
-            <div>
-              <label class="mb-1 block text-sm font-medium text-zinc-900">Tasa efectiva anual (EA %)</label>
+            <FormField label="Tasa efectiva anual (EA %)">
               <input
                 v-model.number="tasaEfectivaAnual"
                 type="number"
@@ -42,12 +39,11 @@
                 step="0.1"
                 class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm"
               />
-            </div>
+            </FormField>
           </div>
 
           <div class="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label class="mb-1 block text-sm font-medium text-zinc-900">Ingresos mensuales (COP)</label>
+            <FormField label="Ingresos mensuales (COP)">
               <input
                 v-model.number="ingresosMensuales"
                 type="number"
@@ -55,10 +51,9 @@
                 step="10000"
                 class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm"
               />
-            </div>
+            </FormField>
 
-            <div>
-              <label class="mb-1 block text-sm font-medium text-zinc-900">Descuentos mensuales (COP)</label>
+            <FormField label="Descuentos mensuales (COP)">
               <input
                 v-model.number="descuentosMensuales"
                 type="number"
@@ -66,11 +61,10 @@
                 step="10000"
                 class="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm"
               />
-            </div>
+            </FormField>
           </div>
 
-          <div>
-            <label class="mb-1 block text-sm font-medium text-zinc-900">Máximo endeudamiento (%)</label>
+          <FormField label="Máximo endeudamiento (%)">
             <input
               v-model.number="maxEndeudamientoPct"
               type="number"
@@ -82,7 +76,7 @@
             <p class="mt-1 text-xs text-zinc-500">
               Porcentaje de la capacidad disponible que se permite destinar a la cuota.
             </p>
-          </div>
+          </FormField>
         </div>
       </div>
 
@@ -170,6 +164,7 @@
 </template>
 
 <script setup lang="ts">
+import FormField from '~/components/shared/FormField.vue'
 import { useSimulador } from '~/composables/simulador/useSimulador'
 
 definePageMeta({

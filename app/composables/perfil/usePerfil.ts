@@ -3,19 +3,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useSession } from '~/composables/useSession';
 import { useApi } from '~/composables/useApi';
-
-interface Perfil {
-    nombre: string;
-    email: string;
-    telefono?: string;
-    direccion?: string;
-}
-
-interface PasswordData {
-    password_actual: string;
-    nueva_password: string;
-    confirmar_password: string;
-}
+import type { Perfil, PasswordData } from '~/shared/types/perfil';
 
 export function usePerfil() {
     const router = useRouter();
