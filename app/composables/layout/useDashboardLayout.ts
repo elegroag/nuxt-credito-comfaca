@@ -14,14 +14,15 @@ import {
     User
 } from 'lucide-vue-next'
 
+// Estado compartido (singleton)
+const sidebarOpen = ref(false)
+const sidebarCollapsed = ref(false)
+const userMenuOpen = ref(false)
+
 export function useDashboardLayout() {
     const { session, clearSession } = useSession()
     const route = useRoute()
     const router = useRouter()
-
-    const sidebarOpen = ref(false)
-    const sidebarCollapsed = ref(false)
-    const userMenuOpen = ref(false)
 
     const _abbr = (label: string): string => {
         const parts = label
