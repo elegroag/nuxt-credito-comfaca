@@ -1,11 +1,53 @@
 <template>
   <div class="mx-auto max-w-5xl p-4 sm:p-8">
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-foreground mb-2">Simulador de crédito</h1>
-      <p class="text-muted-foreground">Estima la cuota mensual, intereses y capacidad de pago.</p>
+      <div class="flex items-center gap-4 mb-4">
+        <Button variant="ghost" size="sm" @click="navigateToLineas" class="text-muted-foreground">
+          ← Volver a líneas de crédito
+        </Button>
+      </div>
+      <div class="flex items-center gap-4">
+        <div>
+          <h1 class="text-3xl font-bold text-foreground mb-2">Simulador de crédito</h1>
+          <p class="text-muted-foreground">Estima la cuota mensual, intereses y capacidad de pago.</p>
+        </div>
+        <div v-if="lineaSeleccionada" class="ml-auto">
+          <Badge variant="secondary" class="text-sm">
+            {{ lineaSeleccionada.detalle }}
+          </Badge>
+        </div>
+      </div>
     </div>
 
-    <div class="grid gap-6 lg:grid-cols-2">
+    <!-- Estado de carga -->
+    <div v-if="loading" class="flex justify-center items-center min-h-[400px]">
+      <div class="text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+        <p class="text-muted-foreground">Cargando línea de crédito...</p>
+      </div>
+    </div>
+
+    <!-- Mensaje de error -->
+    <div v-else-if="error" class="flex justify-center items-center min-h-[400px]">
+      <Card class="border-destructive/50 bg-destructive/5 max-w-md">
+        <CardContent class="p-6 text-center">
+          <AlertCircle class="h-12 w-12 text-destructive mx-auto mb-4" />
+          <h3 class="text-lg font-semibold mb-2">Error al cargar</h3>
+          <p class="text-muted-foreground">{{ error }}</p>
+          <div class="flex gap-3 mt-4">
+            <Button @click="cargarLineaCredito">
+              Reintentar
+            </Button>
+            <Button variant="outline" @click="navigateToLineas">
+              Volver a líneas
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+
+    <!-- Contenido principal -->
+    <div v-else class="grid gap-6 lg:grid-cols-2">
       <!-- Formulario de entrada -->
       <Card class="border-primary/20">
         <CardHeader>
@@ -252,6 +294,7 @@
 <script setup lang="ts">
 import { AlertCircle, CheckCircle2 } from 'lucide-vue-next'
 import { useSimulador } from '~/composables/simulador/useSimulador'
+import { useApi } from '~/composables/useApi'
 import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
 import Label from '@/components/ui/Label.vue'
@@ -260,11 +303,23 @@ import CardContent from '@/components/ui/CardContent.vue'
 import CardDescription from '@/components/ui/CardDescription.vue'
 import CardHeader from '@/components/ui/CardHeader.vue'
 import CardTitle from '@/components/ui/CardTitle.vue'
+import Badge from '@/components/ui/Badge.vue'
 
 definePageMeta({
   layout: 'dashboard',
   middleware: ['auth']
 })
+
+const route = useRoute()
+const { getJson } = useApi()
+
+const tipcre = computed(() => route.params.tipcre as string)
+const loading = ref(true)
+const error = ref<string | null>(null)
+const lineaSeleccionada = ref<any>(null)
+
+// Cache para líneas de crédito
+const lineasCache = ref<Map<string, any>>(new Map())
 
 const {
   monto,
@@ -300,6 +355,48 @@ const navigateToLineas = () => {
   navigateTo('/simulador/lineas-credito')
 }
 
+// Cargar datos de la línea de crédito
+const cargarLineaCredito = async () => {
+  try {
+    loading.value = true
+    error.value = null
+    
+    // Verificar cache primero
+    if (lineasCache.value.has(tipcre.value)) {
+      lineaSeleccionada.value = lineasCache.value.get(tipcre.value)
+      console.log('Usando cache para línea:', tipcre.value)
+    } else {
+      // Consultar API si no está en cache
+      const response = await getJson<{
+        status: boolean
+        message: string
+        data: any[]
+      }>('/api/lineas_credito/tipo_creditos', { auth: true })
+      
+      if (response.status) {
+        // Guardar todas las líneas en cache
+        response.data.forEach(linea => {
+          lineasCache.value.set(linea.tipcre, linea)
+        })
+        
+        // Obtener la línea específica
+        lineaSeleccionada.value = response.data.find(linea => linea.tipcre === tipcre.value)
+        
+        if (!lineaSeleccionada.value) {
+          error.value = 'Línea de crédito no encontrada'
+        }
+      } else {
+        error.value = response.message || 'Error al cargar la línea de crédito'
+      }
+    }
+  } catch (err) {
+    console.error('Error cargando línea crédito:', err)
+    error.value = 'No se pudo cargar la línea de crédito. Por favor, intenta nuevamente.'
+  } finally {
+    loading.value = false
+  }
+}
+
 // Computed para manejar el v-model del input de tasa
 const tasaInput = computed({
   get: () => tipoTasa.value === 'anual' ? tasaEfectivaAnual.value : tasaMensualInput.value,
@@ -310,5 +407,10 @@ const tasaInput = computed({
       tasaMensualInput.value = value
     }
   }
+})
+
+// Cargar datos al montar el componente
+onMounted(() => {
+  cargarLineaCredito()
 })
 </script>
