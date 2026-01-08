@@ -1,11 +1,13 @@
 import { computed, useState } from '#imports'
 import { storage } from '~/composables/useStorage'
 import type { SessionData, SessionUser } from '~/shared/types/session'
+import type { Trabajador } from '~/shared/types/trabajador'
 
 const STORAGE_KEY_V1 = 'comfaca_credito_session'
 const STORAGE_TOKEN_KEY = 'comfaca_credito_access_token'
 const STORAGE_TOKEN_TYPE_KEY = 'comfaca_credito_token_type'
 const STORAGE_USER_KEY = 'comfaca_credito_user'
+const STORAGE_TRABAJADOR_KEY = 'comfaca_credito_trabajador'
 
 const emptySession = (): SessionData => ({
     accessToken: '',
@@ -27,6 +29,7 @@ export const useSession = () => {
             const token = await storage.getItem(STORAGE_TOKEN_KEY)
             const tokenType = await storage.getItem(STORAGE_TOKEN_TYPE_KEY)
             const userRaw = await storage.getItem(STORAGE_USER_KEY)
+            const trabajadorRaw = await storage.getItem(STORAGE_TRABAJADOR_KEY)
 
             if (typeof token === 'string' && token) {
                 session.value.accessToken = token
@@ -44,7 +47,16 @@ export const useSession = () => {
                         const numero_documento = typeof u.numero_documento === 'string' ? u.numero_documento : ''
                         const nombres = typeof u.nombres === 'string' ? u.nombres : ''
                         const apellidos = typeof u.apellidos === 'string' ? u.apellidos : ''
-                        session.value.user = { username, roles, email, tipo_documento, numero_documento, nombres, apellidos }
+
+                        let trabajador: Trabajador | undefined
+                        if (typeof trabajadorRaw === 'string' && trabajadorRaw) {
+                            const t = JSON.parse(trabajadorRaw)
+                            if (t && typeof t === 'object') {
+                                trabajador = t as Trabajador
+                            }
+                        }
+
+                        session.value.user = { username, roles, email, tipo_documento, numero_documento, nombres, apellidos, trabajador }
                     }
                 }
                 return
@@ -107,9 +119,17 @@ export const useSession = () => {
         }
 
         if (data.user) {
-            await storage.setItem(STORAGE_USER_KEY, JSON.stringify(data.user))
+            const { trabajador, ...userWithoutTrabajador } = data.user
+            await storage.setItem(STORAGE_USER_KEY, JSON.stringify(userWithoutTrabajador))
+
+            if (trabajador) {
+                await storage.setItem(STORAGE_TRABAJADOR_KEY, JSON.stringify(trabajador))
+            } else {
+                await storage.removeItem(STORAGE_TRABAJADOR_KEY)
+            }
         } else {
             await storage.removeItem(STORAGE_USER_KEY)
+            await storage.removeItem(STORAGE_TRABAJADOR_KEY)
         }
     }
 
@@ -119,6 +139,7 @@ export const useSession = () => {
         await storage.removeItem(STORAGE_TOKEN_KEY)
         await storage.removeItem(STORAGE_TOKEN_TYPE_KEY)
         await storage.removeItem(STORAGE_USER_KEY)
+        await storage.removeItem(STORAGE_TRABAJADOR_KEY)
         await storage.removeItem(STORAGE_KEY_V1)
     }
 

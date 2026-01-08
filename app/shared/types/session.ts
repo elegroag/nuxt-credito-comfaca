@@ -1,3 +1,5 @@
+import type { Trabajador } from './trabajador'
+
 export type SessionUser = {
     username: string
     roles: string[]
@@ -6,6 +8,7 @@ export type SessionUser = {
     numero_documento: string
     nombres: string
     apellidos: string
+    trabajador?: Trabajador
 }
 
 export type SessionData = {

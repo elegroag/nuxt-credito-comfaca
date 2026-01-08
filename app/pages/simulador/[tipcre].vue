@@ -7,14 +7,27 @@
         </Button>
       </div>
       <div class="flex items-center gap-4">
-        <div>
+        <div class="flex-1">
           <h1 class="text-3xl font-bold text-foreground mb-2">Simulador de crédito</h1>
           <p class="text-muted-foreground">Estima la cuota mensual, intereses y capacidad de pago.</p>
         </div>
-        <div v-if="lineaSeleccionada" class="ml-auto">
-          <Badge variant="secondary" class="text-sm">
-            {{ lineaSeleccionada.detalle }}
-          </Badge>
+        <div class="flex items-center gap-3 ml-auto">
+          <div v-if="lineaSeleccionada" class="text-right">
+            <Badge 
+              :variant="lineaSeleccionada.estado === 'A' ? 'default' : 'destructive'" 
+              class="text-sm mb-1"
+            >
+              {{ lineaSeleccionada.detalle }}
+            </Badge>
+            <div class="text-sm">
+              <Badge 
+                :variant="lineaSeleccionada.estado === 'A' ? 'secondary' : 'outline'"
+                class="text-xs"
+              >
+                {{ lineaSeleccionada.estado === 'A' ? 'Activo' : 'Inactivo' }}
+              </Badge>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -46,6 +59,21 @@
       </Card>
     </div>
 
+    <!-- Mensaje de línea inactiva -->
+    <div v-else-if="lineaSeleccionada && lineaSeleccionada.estado !== 'A'" class="mb-6">
+      <Card class="border-orange-200 bg-orange-50">
+        <CardContent class="p-4">
+          <div class="flex items-center gap-3">
+            <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
+            <p class="text-sm text-orange-800">
+              <strong>{{ lineaSeleccionada.detalle }}</strong> se encuentra temporalmente inactiva. 
+              No es posible solicitar este crédito en este momento.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+
     <!-- Contenido principal -->
     <div v-else class="grid gap-6 lg:grid-cols-2">
       <!-- Formulario de entrada -->
@@ -64,21 +92,27 @@
               class="text-base"
               step="10000"
               min="0"
+              :disabled="lineaSeleccionada?.estado !== 'A'"
             />
           </div>
 
           <div class="grid gap-4 sm:grid-cols-2">
             <div class="space-y-2">
-              <Label for="plazo">Plazo (meses)</Label>
-              <Input
-                id="plazo"
-                type="number"
-                v-model.number="plazoMeses"
-                class="text-base"
-                step="1"
-                min="1"
-              />
-            </div>
+            <Label for="plazo">Plazo (meses)</Label>
+            <Input
+              id="plazo"
+              type="number"
+              v-model.number="plazoMeses"
+              class="text-base"
+              step="1"
+              min="1"
+              :max="lineaSeleccionada?.numcuo || 999"
+              :disabled="lineaSeleccionada?.estado !== 'A'"
+            />
+            <p class="text-xs text-muted-foreground">
+              Plazo máximo: {{ lineaSeleccionada?.numcuo || 'N/A' }} meses
+            </p>
+          </div>
 
             <div class="space-y-2">
               <Label>Tipo de tasa</Label>
@@ -274,13 +308,26 @@
         </Card>
 
         <div class="flex gap-3">
-          <NuxtLink to="/solicitud" class="flex-1">
+          <NuxtLink 
+            v-if="lineaSeleccionada?.estado === 'A'" 
+            to="/solicitud" 
+            class="flex-1"
+          >
             <Button variant="primary" class="w-full" size="lg">
               Continuar con solicitud
             </Button>
           </NuxtLink>
+          <Button 
+            v-else 
+            variant="secondary" 
+            class="w-full" 
+            size="lg" 
+            disabled
+          >
+            No disponible para solicitud
+          </Button>
           <Button variant="outline" size="lg" @click="navigateToLineas">
-            Ver líneas de crédito
+            Volver
           </Button>
           <Button variant="default" size="lg" @click="reset">
             Restablecer
@@ -293,7 +340,7 @@
 
 <script setup lang="ts">
 import { AlertCircle, CheckCircle2 } from 'lucide-vue-next'
-import { useSimulador } from '~/composables/simulador/useSimulador'
+import { useSimuladorWithLinea } from '~/composables/simulador/useSimuladorWithLinea'
 import { useApi } from '~/composables/useApi'
 import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
@@ -321,6 +368,7 @@ const lineaSeleccionada = ref<any>(null)
 // Cache para líneas de crédito
 const lineasCache = ref<Map<string, any>>(new Map())
 
+// Usar el hook especializado para líneas de crédito
 const {
   monto,
   plazoMeses,
@@ -349,7 +397,7 @@ const {
   fmtPct,
   reset,
   cambiarTipoTasa
-} = useSimulador()
+} = useSimuladorWithLinea(lineaSeleccionada)
 
 const navigateToLineas = () => {
   navigateTo('/simulador/lineas-credito')

@@ -348,4 +348,108 @@
 }
 ```
 
-Ahora dentro de [tipcre].vue es necesario usar los datos asociados a la modalidad de credito y aplicamos el (numcuo) que corresponde al numero de cuotas. Prioriza el no crear conflicto con el hook que posee el simulador/index.vue, si es necesario crea un nuevo hook composable.
+## Lineas de credito y especificaciones
+
+```json
+[
+  {
+    "id": 1,
+    "linea_credito": "EDUCACION SUPERIOR (20 SMLMV)",
+    "monto_maximo_pesos": 23200000,
+    "plazo_maximo": "60 meses",
+    "tasas_interes_anual": {
+      "categoria_a": "10%",
+      "categoria_b": "11%",
+      "categoria_c": "14%"
+    },
+    "requisitos": [
+      "Formulario de solicitud de crédito",
+      "Fotocopia de cédula de ciudadanía al 150% del solicitante",
+      "Desprendible de nómina de los dos últimos meses",
+      "Certificado laboral (no mayor a 30 días)",
+      "Comprobante para pago de matrícula",
+      "Copia de un recibo de servicio público"
+    ]
+  },
+  {
+    "id": 2,
+    "linea_credito": "LIBRE INVERSION (25 SMLMV)",
+    "monto_maximo_pesos": 29000000,
+    "plazo_maximo": "60 meses",
+    "tasas_interes_anual": {
+      "categoria_a": "12%",
+      "categoria_b": "13%",
+      "categoria_c": "15%"
+    },
+    "requisitos": [
+      "Formulario de solicitud de crédito",
+      "Fotocopia de cédula de ciudadanía al 150% del solicitante",
+      "Desprendible de nómina de los dos últimos meses",
+      "Certificado laboral (no mayor a 30 días)",
+      "Copia de un recibo de servicio público"
+    ]
+  },
+  {
+    "id": 3,
+    "linea_credito": "VIVIENDA REMODELACIÓN (30 SMLMV)",
+    "monto_maximo_pesos": 34800000,
+    "plazo_maximo": "84 meses",
+    "tasas_interes_anual": {
+      "categoria_a": "9%",
+      "categoria_b": "10%",
+      "categoria_c": "11%"
+    },
+    "requisitos": [
+      "Formulario de solicitud de crédito",
+      "Fotocopia de cédula de ciudadanía al 150% del solicitante",
+      "Desprendible de nómina de los dos últimos meses",
+      "Certificado laboral (no mayor a 30 días)",
+      "Presupuesto de inversión en obra civil",
+      "Certificado de libertad y tradición",
+      "Certificado de riesgo no mitigable",
+      "Copia de un recibo de servicio público"
+    ]
+  },
+  {
+    "id": 4,
+    "linea_credito": "SALUD (15 SMLMV)",
+    "monto_maximo_pesos": 17400000,
+    "plazo_maximo": "48 meses",
+    "tasas_interes_anual": {
+      "categoria_a": "8%",
+      "categoria_b": "9%",
+      "categoria_c": "11%"
+    },
+    "requisitos": [
+      "Formulario de solicitud de crédito",
+      "Fotocopia de cédula de ciudadanía al 150% del solicitante",
+      "Desprendible de nómina de los dos últimos meses",
+      "Certificado laboral (no mayor a 30 días)",
+      "Cotización del servicio médico o procedimiento",
+      "Copia de un recibo de servicio público"
+    ]
+  },
+  {
+    "id": 5,
+    "linea_credito": "TURISMO (10 SMLMV)",
+    "monto_maximo_pesos": 11600000,
+    "plazo_maximo": "36 meses",
+    "tasas_interes_anual": {
+      "categoria_a": "11%",
+      "categoria_b": "12%",
+      "categoria_c": "14%"
+    },
+    "requisitos": [
+      "Formulario de solicitud de crédito",
+      "Fotocopia de cédula de ciudadanía al 150% del solicitante",
+      "Desprendible de nómina de los dos últimos meses",
+      "Certificado laboral (no mayor a 30 días)",
+      "Cotización del plan turístico o tiquetes",
+      "Copia de un recibo de servicio público"
+    ]
+  }
+]
+```
+
+- En los datos de sesion de local storage, tenemos los datos de trabajador de allí tenemos disponible la categoria (codigo_categoria) y el salario del mismo, con ello ya podemos establecer los ingresos mensuales
+- y con la categoria podemos de los datos consultados del backend API, tipo_creditos, la modalidad de credito que se tiene en el simulador posee el atributo categorias, que es una colleccion de categorias con los datos como el % de financiamiento o tasa maxima efectiva anual.

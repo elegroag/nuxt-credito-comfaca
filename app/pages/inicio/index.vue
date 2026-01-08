@@ -23,7 +23,7 @@
                 Nueva solicitud
               </Button>
             </NuxtLink>
-            <NuxtLink to="/simulador">
+            <NuxtLink to="/simulador/lineas-credito">
               <Button variant="outline" class="border-border bg-transparent">
                 <Calculator class="h-5 w-5 mr-2" />
                 Simular
@@ -153,7 +153,7 @@
     <!-- Action Cards Grid -->
     <div class="grid gap-4 sm:grid-cols-2">
       <NuxtLink
-        to="/simulador"
+        to="/simulador/lineas-credito"
         class="group block rounded-xl border border-border bg-card p-5 shadow-sm transition-colors hover:border-primary/50 hover:bg-card/80"
       >
         <div class="flex items-start justify-between gap-3">

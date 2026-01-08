@@ -41,7 +41,7 @@ export function useDashboardLayout() {
 
     const navItems: NavItem[] = [
         { label: 'Inicio', to: '/', abbr: _abbr('Inicio'), icon: Home },
-        { label: 'Simulador', to: '/simulador', abbr: _abbr('Simulador'), icon: Calculator },
+        { label: 'Simulador', to: '/simulador/lineas-credito', abbr: _abbr('Simulador'), icon: Calculator },
         { label: 'Solicitud', to: '/solicitud', abbr: _abbr('Solicitud'), icon: FilePlus },
         { label: 'Documentos', to: '/documentos', abbr: _abbr('Documentos'), icon: FileText },
         { label: 'Extraer XML', to: '/xml-extract', abbr: _abbr('Extraer XML'), icon: FileCode },
