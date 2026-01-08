@@ -37,8 +37,8 @@ export function useSolicitudXmlActions() {
                             numero_identificacion: String(form.solicitante?.numero_identificacion || '')
                         })
                     )
-                } catch {
-                    // noop
+                } catch (e: any) {
+                    console.log("Error guardando firma defaults", e);
                 }
             }
             return true

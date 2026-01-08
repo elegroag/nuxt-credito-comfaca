@@ -42,7 +42,7 @@
               type="button"
             >
               <FileCode class="mr-2 h-4 w-4" />
-              Generar XML
+              Solicitud electrónica <small>(Generar XML)</small>
             </Button>
             <Button
               size="sm"

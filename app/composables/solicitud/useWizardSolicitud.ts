@@ -25,7 +25,7 @@ export function useWizardSolicitud() {
         savedFilename,
         createdSolicitudId,
         errorMsg,
-        generarXml: _generarXml,
+        generarXml,
         downloadXml
     } = useSolicitudXmlActions();
 
@@ -77,8 +77,8 @@ export function useWizardSolicitud() {
     };
 
     // XML generation
-    const generarXml = async (saveXml: boolean) => {
-        const success = await _generarXml(form.value, saveXml);
+    const generarXmlEvent = async (saveXml: boolean) => {
+        const success = await generarXml(form.value, saveXml);
         if (success && saveXml) {
             successModalOpen.value = true;
         }
@@ -122,7 +122,7 @@ export function useWizardSolicitud() {
         goToFirmas,
 
         // XML operations
-        generarXml,
+        generarXml: generarXmlEvent,
         downloadXml
     };
 }
