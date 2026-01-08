@@ -31,7 +31,6 @@ export function useWizardSolicitud() {
 
     // Steps configuration
     const steps: WizardStep[] = [
-        { key: 'encabezado', title: 'Encabezado', short: 'Encabezado' },
         { key: 'solicitud', title: 'Solicitud', short: 'Solicitud' },
         { key: 'producto', title: 'Producto solicitado', short: 'Producto' },
         { key: 'solicitante', title: 'Datos del solicitante', short: 'Solicitante' },

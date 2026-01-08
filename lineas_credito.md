@@ -450,6 +450,3 @@
   }
 ]
 ```
-
-- En los datos de sesion de local storage, tenemos los datos de trabajador de allí tenemos disponible la categoria (codigo_categoria) y el salario del mismo, con ello ya podemos establecer los ingresos mensuales
-- y con la categoria podemos de los datos consultados del backend API, tipo_creditos, la modalidad de credito que se tiene en el simulador posee el atributo categorias, que es una colleccion de categorias con los datos como el % de financiamiento o tasa maxima efectiva anual.

@@ -156,7 +156,12 @@
               v-model.number="tasaInput"
               class="text-base"
               min="0"
+              :readonly="trabajador?.codigo_categoria && lineaSeleccionada?.categorias ? true : false"
+              :placeholder="trabajador?.codigo_categoria ? `Tasa según categoría ${String(trabajador.codigo_categoria)}` : ''"
             />
+            <p v-if="trabajador?.codigo_categoria && lineaSeleccionada?.categorias" class="text-xs text-muted-foreground">
+              💡 Tasa aplicada automáticamente según categoría del trabajador
+            </p>
           </div>
 
             <div class="grid gap-4 sm:grid-cols-2">
@@ -169,7 +174,12 @@
                 class="text-base"
                 step="10000"
                 min="0"
+                :readonly="trabajador?.salario ? true : false"
+                :placeholder="trabajador?.salario ? `Salario: ${fmt(trabajador.salario)}` : ''"
               />
+              <p v-if="trabajador?.salario" class="text-xs text-muted-foreground">
+                💡 Salario del trabajador cargado automáticamente
+              </p>
               <p class="text-xs text-muted-foreground">
                 Ingreso neto (92%): {{ fmt(ingresosSan) }}
               </p>
@@ -339,9 +349,12 @@
 </template>
 
 <script setup lang="ts">
-import { AlertCircle, CheckCircle2 } from 'lucide-vue-next'
+import { onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { useSimuladorCore } from '~/composables/simulador/useSimuladorCore'
 import { useSimuladorWithLinea } from '~/composables/simulador/useSimuladorWithLinea'
-import { useApi } from '~/composables/useApi'
+import { useTrabajador } from '~/composables/useTrabajador'
+import { useSimuladorStorage } from '~/composables/useSimuladorStorage'
 import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
 import Label from '@/components/ui/Label.vue'
@@ -359,6 +372,8 @@ definePageMeta({
 
 const route = useRoute()
 const { getJson } = useApi()
+const { trabajador, salario } = useTrabajador()
+const { saveSimuladorDataSilent, updateSimuladorData } = useSimuladorStorage()
 
 const tipcre = computed(() => route.params.tipcre as string)
 const loading = ref(true)
@@ -437,6 +452,26 @@ const cargarLineaCredito = async () => {
         error.value = response.message || 'Error al cargar la línea de crédito'
       }
     }
+    
+    // Establecer ingresos mensuales del trabajador si está disponible
+    if (trabajador.value && trabajador.value.salario) {
+      ingresosMensuales.value = trabajador.value.salario
+    }
+    
+    // Establecer descuentos mensuales por defecto en 0
+    descuentosMensuales.value = 0
+    
+    // Establecer tasa según categoría del trabajador
+    if (trabajador.value?.codigo_categoria && lineaSeleccionada.value?.categorias) {
+      const categoriaTrabajador = String(trabajador.value.codigo_categoria).toLowerCase()
+      const categoriaLinea = lineaSeleccionada.value.categorias.find(
+        (cat: any) => cat && cat.codcat && String(cat.codcat).toLowerCase() === categoriaTrabajador
+      )
+      
+      if (categoriaLinea && categoriaLinea.facfin) {
+        tasaEfectivaAnual.value = parseFloat(categoriaLinea.facfin)
+      }
+    }
   } catch (err) {
     console.error('Error cargando línea crédito:', err)
     error.value = 'No se pudo cargar la línea de crédito. Por favor, intenta nuevamente.'
@@ -456,6 +491,49 @@ const tasaInput = computed({
     }
   }
 })
+
+// Watch para guardar datos cuando cambien los valores del simulador (con debounce para evitar recursión)
+let saveTimeout: NodeJS.Timeout | null = null
+
+watch(
+  [
+    monto,
+    plazoMeses,
+    tasaEfectivaAnual,
+    ingresosMensuales,
+    descuentosMensuales,
+    cuotaMensual,
+    totalPagar,
+    intereses,
+    lineaSeleccionada
+  ],
+  () => {
+    if (saveTimeout) {
+      clearTimeout(saveTimeout)
+    }
+    
+    saveTimeout = setTimeout(() => {
+      if (lineaSeleccionada.value && monto.value > 0) {
+        saveSimuladorDataSilent({
+          lineaCredito: lineaSeleccionada.value,
+          monto: monto.value,
+          montoCredito: monto.value,
+          plazoMeses: plazoMeses.value,
+          tasaEfectivaAnual: tasaEfectivaAnual.value,
+          ingresosMensuales: ingresosMensuales.value,
+          descuentosMensuales: descuentosMensuales.value,
+          maxEndeudamientoPct: maxEndeudamientoPct.value,
+          tasaInteresAnual: tasaEfectivaAnual.value,
+          cuotaMensual: cuotaMensual.value,
+          totalIntereses: intereses.value,
+          totalPagar: totalPagar.value,
+          fechaSimulacion: new Date().toISOString()
+        })
+      }
+    }, 500) // 500ms de debounce
+  },
+  { deep: true }
+)
 
 // Cargar datos al montar el componente
 onMounted(() => {

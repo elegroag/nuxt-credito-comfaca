@@ -75,14 +75,14 @@
 
     <CardContent class="p-4 sm:p-6">
       <form class="grid gap-4" @submit.prevent>
-        <template v-if="steps[step]?.key === 'encabezado'">
-          <FormField label="Fecha radicado">
-            <Input v-model="form.encabezado.fecha_radicado" type="date" />
-          </FormField>
-        </template>
-
-        <template v-else-if="steps[step]?.key === 'solicitud'">
+        <template v-if="steps[step]?.key === 'solicitud'">
           <div class="grid gap-4 sm:grid-cols-2">
+            <!-- Fecha radicado -->
+            <FormField label="Fecha radicado" class="sm:col-span-2">
+              <Input :model-value="fechaRadicado" type="date" readonly />
+            </FormField>
+            
+            <!-- Campos de solicitud -->
             <FormField label="Número solicitud">
               <Input v-model="form.solicitud.numero_solicitud" />
             </FormField>
@@ -712,6 +712,7 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -736,6 +737,18 @@ import CardTitle from '@/components/ui/CardTitle.vue'
 import CardDescription from '@/components/ui/CardDescription.vue'
 import CardContent from '@/components/ui/CardContent.vue'
 import { useWizardSolicitud } from '~/composables/solicitud/useWizardSolicitud'
+import { useSimuladorStorage } from '~/composables/useSimuladorStorage'
+
+// Props
+interface Props {
+  parametros?: any
+  fechaRadicado: string
+}
+
+const props = defineProps<Props>()
+
+// Obtener datos del simulador
+const { hasSimuladorData, getDatosParaSolicitud } = useSimuladorStorage()
 
 const {
   form,
@@ -765,4 +778,27 @@ const {
   generarXml,
   downloadXml
 } = useWizardSolicitud()
+
+// Cargar datos del simulador si existen
+onMounted(() => {
+  if (hasSimuladorData()) {
+    const datosSimulador = getDatosParaSolicitud()
+    if (datosSimulador && form.value.solicitud) {
+      // Prellenar campos del formulario con datos del simulador
+      form.value.solicitud.valor_solicitud = datosSimulador.valorSolicitud
+      form.value.solicitud.valor_solicitado = datosSimulador.valorSolicitud
+      form.value.solicitud.plazo_meses = datosSimulador.plazoMeses
+      
+      // Opcional: podrías almacenar la categoría o línea de crédito en el formulario
+      if (datosSimulador.lineaCredito?.detalle) {
+        form.value.solicitud.categoria = datosSimulador.lineaCredito.detalle
+      }
+    }
+  }
+})
+
+// Asignar fecha de radicado al formulario
+if (form.value.encabezado && props.fechaRadicado) {
+  form.value.encabezado.fecha_radicado = props.fechaRadicado
+}
 </script>
