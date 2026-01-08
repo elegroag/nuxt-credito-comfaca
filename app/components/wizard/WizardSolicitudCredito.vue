@@ -145,63 +145,15 @@
     </CardContent>
   </Card>
 
-  <Teleport to="body">
-    <div v-if="successModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div class="absolute inset-0 bg-background/80 backdrop-blur-sm" @click="closeSuccessModal" />
-      <Card class="relative w-full max-w-md shadow-2xl border-primary/20 animate-in zoom-in-95 duration-200" @click.stop>
-        <CardHeader class="text-center pb-2">
-          <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-secondary/20 text-secondary">
-            <CheckCircle2 class="h-6 w-6" />
-          </div>
-          <CardTitle class="text-xl font-bold text-foreground">Solicitud creada con éxito</CardTitle>
-          <CardDescription>
-            Tu solicitud fue enviada y quedó en estado
-            <span class="font-bold text-secondary-foreground bg-secondary/30 px-1.5 py-0.5 rounded">Postulado</span>.
-          </CardDescription>
-        </CardHeader>
-        
-        <CardContent class="space-y-4">
-          <div v-if="createdSolicitudId" class="rounded-lg bg-muted p-3 space-y-1">
-            <div class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">ID de Solicitud</div>
-            <div class="font-mono text-sm break-all text-foreground">{{ createdSolicitudId }}</div>
-          </div>
-          
-          <div v-if="savedFilename" class="rounded-lg bg-muted p-3 space-y-1">
-            <div class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Archivo XML</div>
-            <div class="text-sm text-foreground break-all">{{ savedFilename }}</div>
-          </div>
-
-          <div class="grid grid-cols-1 gap-2 pt-2">
-            <Button
-              variant="secondary"
-              class="w-full"
-              @click="goToHome"
-            >
-              <ClipboardList class="mr-2 h-4 w-4" />
-              Ver mis solicitudes
-            </Button>
-            
-            <Button
-              v-if="savedFilename"
-              class="w-full bg-primary hover:bg-primary/90"
-              @click="goToFirmas"
-            >
-              <PenTool class="mr-2 h-4 w-4" />
-              Firmar ahora
-            </Button>
-            
-            <Button
-              variant="ghost"
-              class="w-full text-muted-foreground hover:text-foreground"
-              @click="closeSuccessModal"
-            >
-              Cerrar
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  </Teleport>
+  <!-- Modal de éxito -->
+  <SuccessModal
+    :is-open="successModalOpen"
+    :solicitud-id="createdSolicitudId"
+    :filename="savedFilename"
+    @close="closeSuccessModal"
+    @view-solicitudes="goToHome"
+    @go-to-firmas="goToFirmas"
+  />
 </template>
 
 <script setup lang="ts">
@@ -210,30 +162,28 @@ import {
   ChevronLeft, 
   ChevronRight, 
   FileCode, 
-  Send, 
-  CheckCircle2, 
-  ClipboardList,
-  PenTool
+  Send
 } from 'lucide-vue-next'
-import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
 import CardHeader from '@/components/ui/CardHeader.vue'
 import CardTitle from '@/components/ui/CardTitle.vue'
-import CardDescription from '@/components/ui/CardDescription.vue'
 import CardContent from '@/components/ui/CardContent.vue'
-// Importar componentes destructurados de steps
-import {
-  SolicitudStep,
-  SolicitanteStep,
-  ConyugeStep,
-  LaboralStep,
-  IngresosStep,
-  EconomicaStep,
-  PropiedadesStep,
-  DeudasStep,
-  ReferenciasStep,
-  RevisionStep
-} from './steps'
+import Button from '@/components/ui/Button.vue'
+import SuccessModal from '@/components/shared/SuccessModal.vue'
+
+// Importar componentes de pasos
+import SolicitudStep from './steps/SolicitudStep.vue'
+import SolicitanteStep from './steps/SolicitanteStep.vue'
+import ConyugeStep from './steps/ConyugeStep.vue'
+import LaboralStep from './steps/LaboralStep.vue'
+import IngresosStep from './steps/IngresosStep.vue'
+import EconomicaStep from './steps/EconomicaStep.vue'
+import PropiedadesStep from './steps/PropiedadesStep.vue'
+import DeudasStep from './steps/DeudasStep.vue'
+import ReferenciasStep from './steps/ReferenciasStep.vue'
+import RevisionStep from './steps/RevisionStep.vue'
+
+// Importar composables
 import { useWizardSolicitud } from '~/composables/solicitud/useWizardSolicitud'
 import { useSimuladorStorage } from '~/composables/useSimuladorStorage'
 import { useSession } from '~/composables/useSession'
