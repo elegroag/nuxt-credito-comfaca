@@ -2,10 +2,12 @@ import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useSolicitudCreditoForm } from '~/composables/useSolicitudCreditoForm';
 import { useSolicitudXmlActions } from './useSolicitudXmlActions';
+import { useSimuladorStorage } from '~/composables/useSimuladorStorage';
 import type { WizardStep } from '~/shared/types/solicitud-credito';
 
 export function useWizardSolicitud() {
     const router = useRouter();
+    const simuladorStorage = useSimuladorStorage();
     const {
         form,
         toggleConyuge,
@@ -76,6 +78,13 @@ export function useWizardSolicitud() {
         await router.push({ path: '/firmas', query: { solicitud_filename: filename } });
     };
 
+    const goToDocumentos = async () => {
+        const id = createdSolicitudId.value;
+        if (!id) return;
+        successModalOpen.value = false;
+        await router.push(`/documentos/${id}`);
+    };
+
     // XML generation
     const generarXmlEvent = async (saveXml: boolean) => {
         const success = await generarXml(form.value, saveXml);
@@ -120,6 +129,7 @@ export function useWizardSolicitud() {
         closeSuccessModal,
         goToHome,
         goToFirmas,
+        goToDocumentos,
 
         // XML operations
         generarXml: generarXmlEvent,

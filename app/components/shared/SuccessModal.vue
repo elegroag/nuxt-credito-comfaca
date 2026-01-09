@@ -36,12 +36,12 @@
             </Button>
             
             <Button
-              v-if="filename"
+              v-if="solicitudId"
               class="w-full bg-primary hover:bg-primary/90"
-              @click="$emit('goToFirmas')"
+              @click="$emit('goToDocumentos')"
             >
-              <PenTool class="mr-2 h-4 w-4" />
-              Firmar ahora
+              <FileText class="mr-2 h-4 w-4" />
+              Continuar a Carga de Documentos
             </Button>
             
             <Button
@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { CheckCircle2, ClipboardList, PenTool } from 'lucide-vue-next'
+import { CheckCircle2, ClipboardList, FileText } from 'lucide-vue-next'
 import Card from '@/components/ui/Card.vue'
 import CardHeader from '@/components/ui/CardHeader.vue'
 import CardTitle from '@/components/ui/CardTitle.vue'
@@ -78,6 +78,6 @@ defineProps<Props>()
 defineEmits<{
   close: []
   viewSolicitudes: []
-  goToFirmas: []
+  goToDocumentos: []
 }>()
 </script>

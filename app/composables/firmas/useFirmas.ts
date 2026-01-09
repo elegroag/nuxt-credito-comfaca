@@ -11,7 +11,7 @@ const FIRMA_DEFAULTS_STORAGE_KEY = 'comfaca_credito_firma_defaults';
 export function useFirmas() {
     const { authHeader } = useSession();
     const route = useRoute();
-    const { postJson } = useApi();
+    const { postJson, urlFor } = useApi();
 
     // Form state
     const solicitudFilename = ref('solicitud-credito.xml');
@@ -131,7 +131,19 @@ export function useFirmas() {
                 body.firmas_filename = firmasFilename.value;
             }
 
-            xmlText.value = await postJson<string>('/api/solicitud-credito/firmas', body, { auth: true });
+            const response = await $fetch.raw<string>(urlFor('/api/solicitud-credito/firmas'), {
+                method: 'POST',
+                body,
+                headers: {
+                    ...authHeader.value as any
+                }
+            });
+
+            xmlText.value = response._data || '';
+            const savedFileHeader = response.headers.get('X-Saved-Filename');
+            if (savedFileHeader) {
+                savedFilename.value = savedFileHeader;
+            }
         } catch (e: any) {
             errorMsg.value = e?.data?.error || e?.message || 'Error firmando';
         } finally {

@@ -152,7 +152,7 @@
     :filename="savedFilename"
     @close="closeSuccessModal"
     @view-solicitudes="goToHome"
-    @go-to-firmas="goToFirmas"
+    @go-to-documentos="goToDocumentos"
   />
 </template>
 
@@ -280,6 +280,7 @@ const {
   closeSuccessModal,
   goToHome,
   goToFirmas,
+  goToDocumentos,
   generarXml,
   downloadXml
 } = useWizardSolicitud()

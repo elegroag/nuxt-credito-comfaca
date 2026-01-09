@@ -1,3 +1,5 @@
+import type { FirmaData } from './firmas'
+
 export type Moneda = 'COP'
 
 export type RolEnSolicitud = 'solicitante' | 'codeudor'
@@ -161,4 +163,38 @@ export interface SolicitudCreditoPayload {
             celular: string
         }>
     }
+}
+
+export interface DocumentoRequerido {
+    id: string;
+    nombre: string;
+    tipo: string;
+    obligatorio: boolean;
+    descripcion?: string;
+}
+
+export interface DocumentoCargado {
+    id: string;
+    documentoRequeridoId: string;
+    filename: string;
+    url: string;
+    size: number;
+    uploadedAt: string;
+}
+
+export type EstadoSolicitud = 'formulario' | 'documentos' | 'firmado' | 'completado';
+
+export interface SolicitudCredito {
+    id: string;
+    lineaCredito: {
+        id: string;
+        nombre: string;
+        documentos: DocumentoRequerido[];
+    };
+    formData: SolicitudCreditoPayload;
+    xmlGenerado?: string;
+    xml_filename?: string;
+    documentosCargados: DocumentoCargado[];
+    firmaDigital?: FirmaData;
+    estado: EstadoSolicitud;
 }

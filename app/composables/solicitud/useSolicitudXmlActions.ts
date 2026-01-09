@@ -1,11 +1,13 @@
 import { ref } from 'vue'
 import { useApi } from '~/composables/useApi'
+import { useSession } from '~/composables/useSession'
 import type { SolicitudCreditoPayload } from '~/shared/types/solicitud-credito'
 
 const FIRMA_DEFAULTS_STORAGE_KEY = 'comfaca_credito_firma_defaults'
 
 export function useSolicitudXmlActions() {
-    const { postJson } = useApi()
+    const { urlFor } = useApi()
+    const { authHeader } = useSession()
 
     const loadingXml = ref(false)
     const xmlText = ref('')
@@ -20,25 +22,39 @@ export function useSolicitudXmlActions() {
         createdSolicitudId.value = ''
 
         try {
-            const response = await postJson<string>('/api/solicitud-credito/xml', {
-                ...form,
-                save_xml: saveXml
-            }, { auth: true })
+            const response = await $fetch.raw<string>(urlFor('/api/solicitud-credito/xml'), {
+                method: 'POST',
+                body: {
+                    ...form,
+                    save_xml: saveXml
+                },
+                headers: {
+                    ...authHeader.value as any
+                }
+            })
 
-            xmlText.value = response
+            xmlText.value = response._data || ''
 
-            if (saveXml && process.client) {
-                try {
-                    localStorage.setItem(
-                        FIRMA_DEFAULTS_STORAGE_KEY,
-                        JSON.stringify({
-                            nombre_apellidos: String(form.solicitante?.nombres_apellidos || ''),
-                            tipo_identificacion: String(form.solicitante?.tipo_identificacion || ''),
-                            numero_identificacion: String(form.solicitante?.numero_identificacion || '')
-                        })
-                    )
-                } catch (e: any) {
-                    console.log("Error guardando firma defaults", e);
+            if (saveXml) {
+                const filename = response.headers.get('X-Saved-Filename')
+                const solicitudId = response.headers.get('X-Solicitud-Id')
+
+                if (filename) savedFilename.value = filename
+                if (solicitudId) createdSolicitudId.value = solicitudId
+
+                if (process.client) {
+                    try {
+                        localStorage.setItem(
+                            FIRMA_DEFAULTS_STORAGE_KEY,
+                            JSON.stringify({
+                                nombre_apellidos: String(form.solicitante?.nombres_apellidos || ''),
+                                tipo_identificacion: String(form.solicitante?.tipo_identificacion || ''),
+                                numero_identificacion: String(form.solicitante?.numero_identificacion || '')
+                            })
+                        )
+                    } catch (e: any) {
+                        console.log("Error guardando firma defaults", e);
+                    }
                 }
             }
             return true
