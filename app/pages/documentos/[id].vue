@@ -26,7 +26,7 @@
         <div>
           <h3 class="font-medium text-blue-900 mb-1">Documentos Requeridos</h3>
           <p class="text-sm text-blue-800">
-            Para continuar con su solicitud de crédito <strong>{{ solicitud.lineaCredito.nombre }}</strong>, 
+            Para continuar con su solicitud de crédito<strong>{{ solicitud?.lineaCredito?.nombre || '' }}</strong>, 
             por favor cargue los documentos listados a continuación. 
             Asegúrese de que sean legibles y estén en formato PDF, JPG o PNG.
           </p>
@@ -99,6 +99,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useApi } from '~/composables/useApi'
+import { useSession } from '~/composables/useSession'
 import { useDocumentos } from '~/composables/documentos/useDocumentos'
 import type { SolicitudCredito, DocumentoCargado } from '~/shared/types/solicitud-credito'
 import DocumentosUpload from '~/components/documentos/DocumentosUpload.vue'
@@ -106,6 +107,7 @@ import DocumentosUpload from '~/components/documentos/DocumentosUpload.vue'
 const route = useRoute()
 const router = useRouter()
 const { getJson } = useApi()
+const { ready } = useSession()
 
 const solicitudId = route.params.id as string
 const { 
@@ -123,7 +125,7 @@ const errorSolicitud = ref<string | null>(null)
 const cargandoId = ref<string | null>(null)
 
 const documentosRequeridos = computed(() => {
-  return solicitud.value?.lineaCredito.documentos || []
+  return solicitud.value?.lineaCredito?.documentos || []
 })
 
 const getDocumentoCargado = (reqId: string) => {
@@ -140,6 +142,7 @@ const cargarSolicitud = async () => {
   loadingSolicitud.value = true
   errorSolicitud.value = null
   try {
+    await ready
     // Cargar datos de la solicitud
     solicitud.value = await getJson<SolicitudCredito>(`/api/solicitudes-credito/${solicitudId}`, { auth: true })
     

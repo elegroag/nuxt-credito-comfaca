@@ -13,7 +13,7 @@
       <!-- Pasos -->
       <div 
         v-for="(step, index) in steps" 
-        :key={step.key}
+        :key="step.key"
         class="flex flex-col items-center group cursor-default"
         :class="{ 'cursor-pointer': canNavigateTo(index) }"
         @click="canNavigateTo(index) && $emit('navigate', step.key)"

@@ -163,6 +163,7 @@ import type { SolicitudCredito } from '~/shared/types/solicitud-credito'
 const route = useRoute()
 const router = useRouter()
 const { getJson, postJson, urlFor } = useApi() // Asegurar que tenemos acceso a fetch si es necesario, aunque useApi devuelve wrappers
+const { ready } = useSession()
 const solicitudId = route.params.id as string
 
 const solicitud = ref<SolicitudCredito | null>(null)
