@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { useApi } from '~/composables/useApi'
 import { useSession } from '~/composables/useSession'
+import { useSimuladorStorage } from '~/composables/useSimuladorStorage'
 import type { SolicitudCreditoPayload } from '~/shared/types/solicitud-credito'
 
 const FIRMA_DEFAULTS_STORAGE_KEY = 'comfaca_credito_firma_defaults'
@@ -8,6 +9,7 @@ const FIRMA_DEFAULTS_STORAGE_KEY = 'comfaca_credito_firma_defaults'
 export function useSolicitudXmlActions() {
     const { urlFor } = useApi()
     const { authHeader } = useSession()
+    const simuladorStorage = useSimuladorStorage()
 
     const loadingXml = ref(false)
     const xmlText = ref('')
@@ -22,12 +24,25 @@ export function useSolicitudXmlActions() {
         createdSolicitudId.value = ''
 
         try {
+            // Obtener datos del simulador desde localStorage
+            const simuladorData = simuladorStorage.loadSimuladorData()
+
+            // Preparar el payload con los datos del simulador
+            const payload = {
+                ...form,
+                save_xml: saveXml,
+                // Agregar datos del simulador si están disponibles
+                ...(simuladorData?.lineaCredito && {
+                    tipcre: simuladorData.lineaCredito.tipcre,
+                    modxml4: simuladorData.lineaCredito.modxml4
+                })
+            }
+
+            console.log('Payload enviado al backend:', payload)
+
             const response = await $fetch.raw<string>(urlFor('/api/solicitud-credito/xml'), {
                 method: 'POST',
-                body: {
-                    ...form,
-                    save_xml: saveXml
-                },
+                body: payload,
                 headers: {
                     ...authHeader.value as any
                 }

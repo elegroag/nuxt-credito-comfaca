@@ -109,10 +109,10 @@ export const useApi = () => {
 
     return {
         baseUrl,
-        urlFor,
-        postJson,
         getJson,
+        postJson,
         putJson,
-        deleteJson
+        deleteJson,
+        urlFor
     }
 }

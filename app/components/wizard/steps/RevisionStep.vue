@@ -15,7 +15,7 @@
             <h4 class="font-semibold text-indigo-700 mb-2">Encabezado</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
               <div v-for="(value, key) in getResumenEncabezado()" :key="String(key)">
-                <span class="font-medium">{{ formatKey(key) }}:</span> {{ formatValue(value) }}
+                <span class="font-medium">{{ formatKey(String(key)) }}:</span> {{ formatValue(value) }}
               </div>
             </div>
           </div>
@@ -25,7 +25,7 @@
             <h4 class="font-semibold text-green-700 mb-2">Solicitud</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
               <div v-for="(value, key) in getResumenSolicitud()" :key="String(key)">
-                <span class="font-medium">{{ formatKey(key) }}:</span> {{ formatValue(value) }}
+                <span class="font-medium">{{ formatKey(String(key)) }}:</span> {{ formatValue(value) }}
               </div>
             </div>
           </div>
@@ -35,7 +35,17 @@
             <h4 class="font-semibold text-blue-700 mb-2">Datos del Solicitante</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
               <div v-for="(value, key) in getResumenSolicitante()" :key="String(key)">
-                <span class="font-medium">{{ formatKey(key) }}:</span> {{ formatValue(value) }}
+                <span class="font-medium">{{ formatKey(String(key)) }}:</span> {{ formatValue(value) }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Datos del Simulador -->
+          <div v-if="getResumenSimulador()" class="border-l-4 border-orange-200 pl-4">
+            <h4 class="font-semibold text-orange-700 mb-2">Datos del Simulador</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+              <div v-for="(value, key) in getResumenSimulador()" :key="String(key)">
+                <span class="font-medium">{{ formatKey(String(key)) }}:</span> {{ formatValue(value) }}
               </div>
             </div>
           </div>
@@ -45,7 +55,7 @@
             <h4 class="font-semibold text-purple-700 mb-2">Datos del Cónyuge</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
               <div v-for="(value, key) in getResumenConyuge()" :key="String(key)">
-                <span class="font-medium">{{ formatKey(key) }}:</span> {{ formatValue(value) }}
+                <span class="font-medium">{{ formatKey(String(key)) }}:</span> {{ formatValue(value) }}
               </div>
             </div>
           </div>
@@ -55,7 +65,7 @@
             <h4 class="font-semibold text-orange-700 mb-2">Información Laboral</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
               <div v-for="(value, key) in getResumenLaboral()" :key="String(key)">
-                <span class="font-medium">{{ formatKey(key) }}:</span> {{ formatValue(value) }}
+                <span class="font-medium">{{ formatKey(String(key)) }}:</span> {{ formatValue(value) }}
               </div>
             </div>
           </div>
@@ -65,7 +75,7 @@
             <h4 class="font-semibold text-teal-700 mb-2">Ingresos y Descuentos</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
               <div v-for="(value, key) in getResumenIngresos()" :key="String(key)">
-                <span class="font-medium">{{ formatKey(key) }}:</span> {{ formatValue(value) }}
+                <span class="font-medium">{{ formatKey(String(key)) }}:</span> {{ formatValue(value) }}
               </div>
             </div>
           </div>
@@ -75,7 +85,7 @@
             <h4 class="font-semibold text-cyan-700 mb-2">Información Económica</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
               <div v-for="(value, key) in getResumenEconomica()" :key="String(key)">
-                <span class="font-medium">{{ formatKey(key) }}:</span> {{ formatValue(value) }}
+                <span class="font-medium">{{ formatKey(String(key)) }}:</span> {{ formatValue(value) }}
               </div>
             </div>
           </div>
@@ -87,7 +97,7 @@
               <div class="text-xs font-medium text-lime-600 mb-1">Propiedad {{ formatIndex(index) }}</div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs ml-2">
                 <div v-for="(value, key) in propiedad" :key="String(key)">
-                  <span class="font-medium">{{ formatKey(key) }}:</span> {{ formatValue(value) }}
+                  <span class="font-medium">{{ formatKey(String(key)) }}:</span> {{ formatValue(value) }}
                 </div>
               </div>
             </div>
@@ -100,7 +110,7 @@
               <div class="text-xs font-medium text-rose-600 mb-1">Deuda {{ formatIndex(index) }}</div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs ml-2">
                 <div v-for="(value, key) in deuda" :key="String(key)">
-                  <span class="font-medium">{{ formatKey(key) }}:</span> {{ formatValue(value) }}
+                  <span class="font-medium">{{ formatKey(String(key)) }}:</span> {{ formatValue(value) }}
                 </div>
               </div>
             </div>
@@ -113,7 +123,7 @@
               <div class="text-xs font-medium text-amber-600 mb-1">Referencia {{ formatIndex(index) }}</div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs ml-2">
                 <div v-for="(value, key) in referencia" :key="String(key)">
-                  <span class="font-medium">{{ formatKey(key) }}:</span> {{ formatValue(value) }}
+                  <span class="font-medium">{{ formatKey(String(key)) }}:</span> {{ formatValue(value) }}
                 </div>
               </div>
             </div>
@@ -126,7 +136,7 @@
               <div class="text-xs font-medium text-violet-600 mb-1">Referencia {{ formatIndex(index) }}</div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs ml-2">
                 <div v-for="(value, key) in referencia" :key="String(key)">
-                  <span class="font-medium">{{ formatKey(key) }}:</span> {{ formatValue(value) }}
+                  <span class="font-medium">{{ formatKey(String(key)) }}:</span> {{ formatValue(value) }}
                 </div>
               </div>
             </div>
@@ -247,6 +257,52 @@ const getResumenSolicitante = () => {
   return data.solicitante || {}
 }
 
+const getResumenSimulador = () => {
+  if (typeof window === 'undefined') return null
+  
+  try {
+    const simuladorData = localStorage.getItem('simulador_data')
+    if (!simuladorData) return null
+    
+    // Decodificar los datos para corregir problemas de codificación
+    const decodedData = decodeURIComponent(simuladorData)
+    const parsed = JSON.parse(decodedData)
+    const lineaCredito = parsed.lineaCredito
+    
+    if (!lineaCredito) return null
+    
+    // Función para corregir texto
+    const corregirTexto = (texto: string | undefined) => {
+      if (!texto) return ''
+      try {
+        // Decodificar caracteres especiales
+        return decodeURIComponent(texto)
+      } catch {
+        return texto
+      }
+    }
+    
+    // Extraer campos relevantes del simulador con corrección de codificación
+    return {
+      'linea_credito': corregirTexto(lineaCredito.detalle),
+      'tipo_credito': lineaCredito.tipcre || '',
+      'modelo_xml4': lineaCredito.modxml4 || '',
+      'codigo_cre': lineaCredito.codcre || '',
+      'codigo_cap': lineaCredito.codcap || '',
+      'codigo_ser': lineaCredito.codser || '',
+      'numero_cuotas': lineaCredito.numcuo || '',
+      'estado': lineaCredito.estado || '',
+      'monto_simulado': parsed.monto ? `$${parsed.monto.toLocaleString('es-CO')}` : '',
+      'plazo_meses': parsed.plazoMeses || '',
+      'tasa_anual': parsed.tasaInteresAnual ? `${parsed.tasaInteresAnual}%` : '',
+      'cuota_mensual': parsed.cuotaMensual ? `$${parsed.cuotaMensual.toLocaleString('es-CO')}` : ''
+    }
+  } catch (error) {
+    console.error('Error obteniendo datos del simulador:', error)
+    return null
+  }
+}
+
 const getResumenConyuge = () => {
   const data = parsePayload()
   return data.conyuge || null
@@ -293,14 +349,43 @@ const formatIndex = (index: number | string) => {
   return String(numIndex + 1)
 }
 
-// Función para formatear nombres de claves
-const formatKey = (key: string | number) => {
-  const keyStr = String(key)
-  return keyStr
-    .replace(/_/g, ' ')
-    .replace(/\b\w/g, l => l.toUpperCase())
-    .replace(/([A-Z])/g, ' $1')
-    .trim()
+// Función para formatear las claves
+const formatKey = (key: string) => {
+  // Mapeo de claves a nombres legibles en español
+  const keyMap: Record<string, string> = {
+    'linea_credito': 'Línea de Crédito',
+    'tipo_credito': 'Tipo Crédito',
+    'modelo_xml4': 'Modelo XML4',
+    'codigo_cre': 'Código Cre',
+    'codigo_cap': 'Código Cap',
+    'codigo_ser': 'Código Ser',
+    'numero_cuotas': 'Número Cuotas',
+    'estado': 'Estado',
+    'monto_simulado': 'Monto Simulado',
+    'plazo_meses': 'Plazo Meses',
+    'tasa_anual': 'Tasa Anual',
+    'cuota_mensual': 'Cuota Mensual',
+    'fecha_radicado': 'Fecha Radicado',
+    'valor_solicitud': 'Valor Solicitud',
+    'categoria': 'Categoría',
+    'nombres_apellidos': 'Nombres y Apellidos',
+    'tipo_identificacion': 'Tipo Identificación',
+    'numero_identificacion': 'Número Identificación',
+    'fecha_nacimiento': 'Fecha Nacimiento',
+    'telefono_movil': 'Teléfono',
+    'email': 'Email',
+    'barrio_residencia': 'Dirección',
+    'ciudad_residencia': 'Ciudad Residencia',
+    'empresa_razon_social': 'Empresa',
+    'empresa_nit': 'NIT',
+    'cargo': 'Cargo',
+    'fecha_ingreso': 'Fecha Ingreso',
+    'salario_basico_mensual': 'Salario Básico',
+    'subsidio_transporte': 'Subsidio Transporte',
+    'salud_pension': 'Salud y Pensión'
+  }
+  
+  return keyMap[key] || key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
 }
 
 // Función para formatear valores

@@ -126,6 +126,7 @@
                   <th class="px-4 py-3">Plazo</th>
                   <th class="px-4 py-3">Estado</th>
                   <th class="px-4 py-3">Creación</th>
+                  <th class="px-4 py-3">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -142,6 +143,14 @@
                     </div>
                   </td>
                   <td class="px-4 py-3 text-foreground">{{ fmtDate(s.created_at) }}</td>
+                  <td class="px-4 py-3">
+                    <NuxtLink :to="`/solicitudes/${s.id}`">
+                      <Button variant="outline" size="sm" class="gap-1">
+                        <Eye class="h-4 w-4" />
+                        Ver
+                      </Button>
+                    </NuxtLink>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -270,6 +279,7 @@ import {
   RefreshCw,
   ClipboardList,
   FilePlus,
+  Eye,
 } from 'lucide-vue-next'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
