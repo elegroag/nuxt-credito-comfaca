@@ -7,7 +7,7 @@ Aplicación móvil para el sistema de postulación a créditos de Comfaca, desar
 - Aplicación móvil híbrida con Nuxt 4 + Capacitor
 - Autenticación de usuarios y gestión de sesiones
 - Captura de documentos con cámara
-- Almacenamiento local con SQLite
+- Almacenamiento local con Capacitor Data Local Storage
 - Generación y compartición de códigos QR
 - Simulador de créditos
 - Gestión de firmas digitales
@@ -19,15 +19,12 @@ Aplicación móvil para el sistema de postulación a créditos de Comfaca, desar
 - **Gestor de paquetes**: pnpm
 - **Estilos**: TailwindCSS + DaisyUI
 - **Iconos**: Heroicons
-- **Base de datos local**: Capacitor Data Storage SQLite
-- **Móvil**: Capacitor (iOS/Android)
+- **Base de datos local**: Capacitor Data Local Storage
 
 ## Requisitos Previos
 
 - Node.js 18+
 - pnpm
-- Android Studio (para desarrollo Android)
-- Xcode (para desarrollo iOS)
 
 ## Instalación
 
@@ -49,15 +46,6 @@ cp .env-example .env
 ```bash
 # Iniciar servidor de desarrollo
 pnpm dev
-
-# Ejecutar en dispositivo Android (USB)
-pnpm cap:android:usb
-
-# Ejecutar en emulador Android
-pnpm cap:android:emulator
-
-# Ejecutar en dispositivo iOS
-pnpm cap:run:ios
 ```
 
 ## Scripts Disponibles
@@ -65,16 +53,13 @@ pnpm cap:run:ios
 - `pnpm dev` - Servidor de desarrollo
 - `pnpm build` - Construcción para producción
 - `pnpm preview` - Vista previa de producción
-- `pnpm cap:sync` - Sincronizar con Capacitor
-- `pnpm cap:run:android` - Ejecutar en Android
-- `pnpm cap:run:ios` - Ejecutar en iOS
 
 ## Características
 
 - Aplicación móvil híbrida con Nuxt 4 + Capacitor
 - Autenticación de usuarios y gestión de sesiones
 - Captura de documentos con cámara
-- Almacenamiento local con SQLite
+- Almacenamiento local con Capacitor Data Local Storage
 - Generación y compartición de códigos QR
 - Simulador de créditos
 - Gestión de firmas digitales
@@ -86,15 +71,12 @@ pnpm cap:run:ios
 - **Gestor de paquetes**: pnpm
 - **Estilos**: TailwindCSS + DaisyUI
 - **Iconos**: Heroicons
-- **Base de datos local**: Capacitor Data Storage SQLite
-- **Móvil**: Capacitor (iOS/Android)
+- **Base de datos local**: Capacitor Data Local Storage
 
 ## Requisitos Previos
 
 - Node.js 18+
 - pnpm
-- Android Studio (para desarrollo Android)
-- Xcode (para desarrollo iOS)
 
 ## Instalación
 
@@ -116,15 +98,6 @@ cp .env-example .env
 ```bash
 # Iniciar servidor de desarrollo
 pnpm dev
-
-# Ejecutar en dispositivo Android (USB)
-pnpm cap:android:usb
-
-# Ejecutar en emulador Android
-pnpm cap:android:emulator
-
-# Ejecutar en dispositivo iOS
-pnpm cap:run:ios
 ```
 
 ## Scripts Disponibles
@@ -132,9 +105,6 @@ pnpm cap:run:ios
 - `pnpm dev` - Servidor de desarrollo
 - `pnpm build` - Construcción para producción
 - `pnpm preview` - Vista previa de producción
-- `pnpm cap:sync` - Sincronizar con Capacitor
-- `pnpm cap:run:android` - Ejecutar en Android
-- `pnpm cap:run:ios` - Ejecutar en iOS
 
 ## Configuración
 

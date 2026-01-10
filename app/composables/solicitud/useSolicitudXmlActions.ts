@@ -33,8 +33,25 @@ export function useSolicitudXmlActions() {
                 save_xml: saveXml,
                 // Agregar datos del simulador si están disponibles
                 ...(simuladorData?.lineaCredito && {
-                    tipcre: simuladorData.lineaCredito.tipcre,
-                    modxml4: simuladorData.lineaCredito.modxml4
+                    linea_credito: {
+                        tipcre: simuladorData.lineaCredito.tipcre,
+                        modxml4: simuladorData.lineaCredito.modxml4,
+                        detalle_modalidad: simuladorData.lineaCredito.detalle,
+                        codigo_cre: simuladorData.lineaCredito.codcre,
+                        codigo_cap: simuladorData.lineaCredito.codcap,
+                        codigo_ser: simuladorData.lineaCredito.codser,
+                        codigo_int: simuladorData.lineaCredito.codint,
+                        codigo_mor: simuladorData.lineaCredito.codmor,
+                        codigo_con: simuladorData.lineaCredito.codcon,
+                        codigo_cen: simuladorData.lineaCredito.codcen,
+                        numero_cuotas: simuladorData.lineaCredito.numcuo,
+                        estado: simuladorData.lineaCredito.estado,
+                        auxest: simuladorData.lineaCredito.auxest,
+                        estcre: simuladorData.lineaCredito.estcre,
+                        pagseg: simuladorData.lineaCredito.pagseg,
+                        repdcr: simuladorData.lineaCredito.repdcr,
+                        tipfin: simuladorData.lineaCredito.tipfin
+                    }
                 })
             }
 

@@ -296,9 +296,11 @@ onMounted(() => {
       form.value.solicitud.valor_solicitado = datosSimulador.valorSolicitud
       form.value.solicitud.plazo_meses = datosSimulador.plazoMeses
       
-      // Opcional: podrías almacenar la categoría o línea de crédito en el formulario
-      if (datosSimulador.lineaCredito?.detalle) {
-        form.value.solicitud.categoria = datosSimulador.lineaCredito.detalle
+      // Guardar datos importantes de la línea de crédito
+      if (datosSimulador.lineaCredito) {
+        form.value.solicitud.tipcre = datosSimulador.lineaCredito.tipcre || ''
+        form.value.solicitud.modxml4 = datosSimulador.lineaCredito.modxml4 || ''
+        form.value.solicitud.detalle_modalidad = datosSimulador.lineaCredito.detalle || ''
       }
     }
   }
@@ -306,6 +308,11 @@ onMounted(() => {
   // Cargar datos del trabajador desde la sesión
   if (session.value?.user?.trabajador && form.value.solicitante) {
     const trabajador = session.value.user.trabajador
+    
+    // Asignar la categoría del trabajador
+    if (trabajador.codigo_categoria) {
+      form.value.solicitud.categoria = trabajador.codigo_categoria
+    }
     
     // Mapear campos del trabajador al formulario del solicitante
     form.value.solicitante.fecha_vinculacion = trabajador.fecha_afiliacion || ''

@@ -57,6 +57,9 @@ export interface SolicitudCreditoPayload {
         valor_solicitado: number
         plazo_meses: number
         moneda: Moneda
+        tipcre?: string
+        modxml4?: number
+        detalle_modalidad?: string
         foto_documento?: {
             url: string
         }

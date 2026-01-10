@@ -24,6 +24,9 @@ export const useSolicitudCreditoForm = () => {
             valor_solicitado: 0,
             plazo_meses: 0,
             moneda: 'COP',
+            tipcre: '',
+            modxml4: 0,
+            detalle_modalidad: '',
             foto_documento: { url: '' }
         },
         producto_solicitado: {
