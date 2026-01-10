@@ -11,6 +11,7 @@ export const useDocumentos = (solicitudId: string) => {
     const error = ref<string | null>(null)
     const progreso = ref(0)
     const documentosCargados = ref<DocumentoCargado[]>([])
+    const documentosRequeridos = ref<DocumentoRequerido[]>([])
 
     const validarArchivo = (file: File): string | null => {
         const MAX_SIZE = 5 * 1024 * 1024 // 5MB
@@ -25,6 +26,51 @@ export const useDocumentos = (solicitudId: string) => {
         }
 
         return null
+    }
+
+    const cargarDocumentos = async () => {
+        cargando.value = true
+        try {
+            const response = await $fetch(urlFor(`/api/solicitudes-credito/${solicitudId}/documentos`), {
+                method: 'GET',
+                headers: {
+                    ...authHeader.value as any
+                }
+            })
+
+            // Procesar la respuesta para ambos propósitos
+            if (response && typeof response === 'object' && 'data' in response) {
+                const documentosApi = response.data as any[]
+
+                // Cargar documentos requeridos (desde la API externa)
+                documentosRequeridos.value = documentosApi.map(doc => ({
+                    id: doc.tipdoc, // Usar tipdoc como id
+                    nombre: doc.detalle,
+                    descripcion: doc.detalle,
+                    tipo: 'documento', // Agregar propiedad tipo requerida
+                    obligatorio: doc.obliga === 'S',
+                    formatos: ['PDF', 'JPG', 'PNG']
+                }))
+
+                // Para documentos cargados, necesitamos otra estructura o endpoint
+                // Por ahora, dejamos documentosCargados vacío ya que el endpoint actual
+                // devuelve los documentos requeridos, no los cargados
+                documentosCargados.value = []
+            } else if (Array.isArray(response)) {
+                // Si viene un array directo, asumimos que son documentos cargados
+                documentosCargados.value = response
+                documentosRequeridos.value = []
+            } else {
+                documentosRequeridos.value = []
+                documentosCargados.value = []
+            }
+        } catch (e: any) {
+            console.error('Error cargando documentos', e)
+            documentosRequeridos.value = []
+            documentosCargados.value = []
+        } finally {
+            cargando.value = false
+        }
     }
 
     const subirDocumento = async (file: File, documentoRequeridoId: string) => {
@@ -47,11 +93,6 @@ export const useDocumentos = (solicitudId: string) => {
                 body: formData,
                 headers: {
                     ...authHeader.value as any
-                },
-                onUploadProgress: (progressEvent) => {
-                    if (progressEvent.total) {
-                        progreso.value = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-                    }
                 }
             })
 
@@ -94,32 +135,15 @@ export const useDocumentos = (solicitudId: string) => {
         }
     }
 
-    const cargarDocumentosExistentes = async () => {
-        cargando.value = true
-        try {
-            const response = await $fetch<DocumentoCargado[]>(urlFor(`/api/solicitudes-credito/${solicitudId}/documentos`), {
-                method: 'GET',
-                headers: {
-                    ...authHeader.value as any
-                }
-            })
-            documentosCargados.value = response
-        } catch (e: any) {
-            console.error('Error cargando documentos existentes', e)
-            // No bloqueamos si falla la carga inicial, pero logueamos
-        } finally {
-            cargando.value = false
-        }
-    }
-
     return {
         cargando,
         error,
         progreso,
         documentosCargados,
+        documentosRequeridos,
         subirDocumento,
         eliminarDocumento,
-        cargarDocumentosExistentes,
+        cargarDocumentos,
         validarArchivo
     }
 }
