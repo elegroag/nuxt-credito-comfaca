@@ -22,10 +22,11 @@ export function useLogin() {
         errorMsg.value = '';
 
         try {
-            const data = await postJson<any>('/api/auth/login', {
+            const response = await postJson<any>('/api/auth/login', {
                 username: username.value,
                 password: password.value
             });
+            const data = response.data;
 
             const accessToken = String(data?.access_token || '');
             const tokenType = String(data?.token_type || 'bearer');

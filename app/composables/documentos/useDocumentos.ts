@@ -3,6 +3,7 @@ import { useApi } from '../useApi'
 import { useSession } from '../useSession'
 import type { DocumentoRequerido, DocumentoCargado } from '../../shared/types/solicitud-credito'
 
+
 export const useDocumentos = (solicitudId: string) => {
     const { urlFor } = useApi()
     const { authHeader } = useSession()
@@ -30,12 +31,10 @@ export const useDocumentos = (solicitudId: string) => {
 
     const cargarDocumentos = async () => {
         cargando.value = true
+        const { getJson } = useApi();
         try {
-            const response = await $fetch(urlFor(`/api/solicitudes-credito/${solicitudId}/documentos`), {
-                method: 'GET',
-                headers: {
-                    ...authHeader.value as any
-                }
+            const response = await getJson<any>(`/api/solicitudes-credito/${solicitudId}/documentos`, {
+                auth: true
             })
 
             // Procesar la respuesta para ambos propósitos

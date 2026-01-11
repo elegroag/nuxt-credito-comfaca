@@ -468,8 +468,6 @@ const getCiudadDescripcion = (ciudad: string | undefined) => {
     '66001': 'Pereira - Risaralda',
     '68001': 'Manizales - Caldas',
     '70001': 'Popayán - Cauca',
-    '73001': 'Bogotá D.C.',
-    '76001': 'Cali - Valle del Cauca',
     '77001': 'Sincelejo - Sucre',
     '78001': 'Montería - Córdoba',
     '80001': 'Barranquilla - Atlántico',

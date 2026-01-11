@@ -84,8 +84,9 @@ export function useInicio() {
         loadingSolicitudes.value = true;
         solicitudesError.value = '';
         try {
-            const data = await getJson<any>('/api/solicitudes-credito', { auth: true });
-            solicitudes.value = Array.isArray(data?.items) ? data.items : [];
+            const response = await getJson<any>('/api/solicitudes-credito', { auth: true });
+            const data = response.data;
+            solicitudes.value = Array.isArray(data) ? data : [];
         } catch (e: any) {
             solicitudes.value = [];
             solicitudesError.value = e?.message || 'No fue posible cargar las solicitudes';
