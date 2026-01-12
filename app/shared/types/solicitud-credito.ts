@@ -64,13 +64,32 @@ export interface SolicitudCreditoPayload {
             url: string
         }
     }
+    linea_credito: {
+        auxest: string
+        codigo_cap: string
+        codigo_cen: string
+        codigo_con: string
+        codigo_cre: string
+        codigo_int: string
+        codigo_mor: string
+        codigo_ser: string
+        detalle_modalidad: string
+        estado: string
+        estcre: number
+        modxml4: number
+        numero_cuotas: number
+        pagseg: string
+        repdcr: string
+        tipcre: string
+        tipfin: string
+    }
     producto_solicitado: {
         tipo: ProductoTipo
         ha_tenido_credito_comfaca: boolean
     }
     solicitante: {
         fecha_vinculacion: string
-        tipo_identificacion: TipoIdentificacion
+        tipo_identificacion: string // Cambiado de TipoIdentificacion a string para aceptar '1', '2', etc.
         numero_identificacion: string
         fecha_nacimiento: string
         pais_nacimiento: string
@@ -178,26 +197,40 @@ export interface DocumentoRequerido {
 
 export interface DocumentoCargado {
     id: string;
-    documentoRequeridoId: string;
-    filename: string;
-    url: string;
-    size: number;
-    uploadedAt: string;
+    nombre_original: string;
+    created_at: string;
+    documento_requerido_id?: string; // Para relacionar con el documento requerido (snake_case como en el backend)
+    saved_filename?: string;
+    tamano_bytes?: number;
+    tipo_mime?: string;
 }
 
-export type EstadoSolicitud = 'formulario' | 'documentos' | 'firmado' | 'completado';
+export type EstadoSolicitud = 'Postulado' | 'Documentos cargados' | 'Firmado' | 'Aprobado' | 'Rechazado';
+
+export interface SolicitanteBasic {
+    email: string;
+    nombres_apellidos: string;
+    numero_identificacion: string;
+    telefono_movil: string;
+    tipo_identificacion: string;
+}
 
 export interface SolicitudCredito {
     id: string;
-    lineaCredito: {
-        id: string;
-        nombre: string;
-        documentos: DocumentoRequerido[];
-    };
-    formData: SolicitudCreditoPayload;
-    xmlGenerado?: string;
-    xml_filename?: string;
-    documentosCargados: DocumentoCargado[];
-    firmaDigital?: FirmaData;
+    created_at: string;
+    updated_at: string;
     estado: EstadoSolicitud;
+    monto_solicitado: number;
+    plazo_meses: number;
+    numero_solicitud: string;
+    owner_username: string;
+    xml_filename?: string;
+    payload: SolicitudCreditoPayload;
+    solicitante: SolicitanteBasic;
+    documentos: DocumentoCargado[];
+    timeline: Array<{
+        estado: EstadoSolicitud;
+        fecha: string;
+        detalle: string;
+    }>;
 }

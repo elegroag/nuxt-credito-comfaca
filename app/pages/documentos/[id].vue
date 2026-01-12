@@ -1,17 +1,16 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+  <div class="min-h-screen from-blue-50 via-white to-indigo-50">
     <!-- Header -->
-    <div class="bg-white border-b border-gray-200 shadow-sm">
-      <div class="container mx-auto px-4 py-6 max-w-6xl">
-        <div class="flex items-center justify-between">
-          <div>
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Carga de Documentos</h1>
-            <p class="text-gray-600">Complete los documentos requeridos para su solicitud de crédito</p>
-          </div>
-          <div class="flex items-center gap-2 text-sm text-gray-500">
-            <Icon name="lucide:file-text" class="w-4 h-4" />
-            <span>{{ documentosRequeridos?.length || 0 }} documentos requeridos</span>
-          </div>
+
+    <div class="container mx-auto px-4 py-6 max-w-6xl">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 mb-2">Carga de Documentos</h1>
+          <p class="text-gray-600">Complete los documentos requeridos para su solicitud de crédito</p>
+        </div>
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+          <Icon name="lucide:file-text" class="w-4 h-4" />
+          <span>{{ documentosRequeridos?.length || 0 }} documentos requeridos</span>
         </div>
       </div>
     </div>
@@ -62,7 +61,7 @@
             <div class="flex-1">
               <h2 class="text-2xl font-bold mb-3">Documentos Requeridos</h2>
               <p class="text-blue-100 text-lg leading-relaxed">
-                Para continuar con su solicitud de crédito<strong>{{ solicitud?.lineaCredito?.nombre || '' }}</strong>, 
+                Para continuar con su solicitud de crédito<strong> {{ solicitud?.payload?.linea_credito?.detalle_modalidad || '' }}</strong>, 
                 por favor cargue los documentos listados a continuación.
               </p>
               <div class="mt-4 flex items-center gap-6 text-sm">
@@ -84,17 +83,17 @@
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-gray-900">Progreso de carga</h3>
             <span class="text-sm text-gray-500">
-              {{ documentosCargados?.length || 0 }} de {{ documentosRequeridos?.length || 0 }} documentos
+              {{ documentosCargadosCount }} de {{ documentosRequeridos?.length || 0 }} documentos
             </span>
           </div>
           <div class="w-full bg-gray-200 rounded-full h-3">
             <div 
               class="bg-gradient-to-r from-blue-500 to-indigo-600 h-3 rounded-full transition-all duration-500"
-              :style="{ width: `${Math.round(((documentosCargados?.length || 0) / (documentosRequeridos?.length || 1)) * 100)}%` }"
+              :style="{ width: `${progresoDocumentos}%` }"
             ></div>
           </div>
           <p class="text-sm text-gray-600 mt-2">
-            {{ Math.round(((documentosCargados?.length || 0) / (documentosRequeridos?.length || 1)) * 100) }}% completado
+            {{ progresoDocumentos }}% completado
           </p>
         </div>
 
@@ -165,12 +164,12 @@
         </div>
 
         <!-- Action Buttons -->
-        <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+        <div class="p-8">
           <div class="flex flex-col md:flex-row items-center justify-between gap-6">
             <UiButton 
               variant="outline" 
               @click="handleBack" 
-              class="w-full md:w-auto gap-2 h-12 px-6"
+              class="w-full md:w-auto gap-2 h-12 px-6 bg-gray-300"
             >
               <Icon name="lucide:arrow-left" class="w-4 h-4" />
               Volver a la Solicitud
@@ -238,13 +237,13 @@ const {
 const solicitud = ref<SolicitudCredito | null>(null)
 const loadingSolicitud = ref(true)
 const errorSolicitud = ref<string | null>(null)
-const cargandoId = ref<string | null>(null)
+const cargandoId = ref<string | null | undefined>(null)
 
 const getDocumentoCargado = (reqId: string) => {
   if (!documentosCargados.value || !Array.isArray(documentosCargados.value)) {
     return undefined
   }
-  return documentosCargados.value.find(d => d.documentoRequeridoId === reqId)
+  return documentosCargados.value.find(d => d.documento_requerido_id === reqId)
 }
 
 const puedeContinuar = computed(() => {
@@ -253,13 +252,31 @@ const puedeContinuar = computed(() => {
   return obligatorios.every(req => getDocumentoCargado(req.id))
 })
 
+const progresoDocumentos = computed(() => {
+  if (!documentosRequeridos.value || !Array.isArray(documentosRequeridos.value)) return 0
+  
+  // Contar cuántos documentos requeridos están cargados
+  const cargados = documentosRequeridos.value.filter(req => getDocumentoCargado(req.id)).length
+  const total = documentosRequeridos.value.length
+  
+  return total > 0 ? Math.round((cargados / total) * 100) : 0
+})
+
+const documentosCargadosCount = computed(() => {
+  if (!documentosRequeridos.value || !Array.isArray(documentosRequeridos.value)) return 0
+  
+  // Contar cuántos documentos requeridos están cargados
+  return documentosRequeridos.value.filter(req => getDocumentoCargado(req.id)).length
+})
+
 const cargarSolicitud = async () => {
   loadingSolicitud.value = true
   errorSolicitud.value = null
   try {
     await ready
     // Cargar datos de la solicitud
-    solicitud.value = await getJson<SolicitudCredito>(`/api/solicitudes-credito/${solicitudId}`, { auth: true })
+    const response = await getJson<{success: boolean, data: SolicitudCredito}>(`/api/solicitudes-credito/${solicitudId}`, { auth: true })
+    solicitud.value = response.data
     
     // Cargar documentos requeridos y existentes con una sola llamada
     await cargarDocumentos()
@@ -287,7 +304,7 @@ const handleDelete = async (docCargadoId: string) => {
   // Aunque eliminar es rápido, podemos mostrar loading global o local
   const doc = documentosCargados.value.find(d => d.id === docCargadoId)
   if (doc) {
-    cargandoId.value = doc.documentoRequeridoId
+    cargandoId.value = doc.documento_requerido_id
   }
   
   try {

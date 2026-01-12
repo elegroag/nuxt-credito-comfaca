@@ -24,7 +24,7 @@
       
       <div class="bg-white border rounded-lg shadow-sm overflow-hidden">
         <div class="p-6 border-b bg-gray-50">
-          <h2 class="text-lg font-semibold text-gray-900">Firmar Solicitud #{{ solicitud.formData.solicitud.numero_solicitud }}</h2>
+          <h2 class="text-lg font-semibold text-gray-900">Firmar Solicitud #{{ solicitud.payload.solicitud.numero_solicitud }}</h2>
           <p class="text-sm text-gray-500 mt-1">
             Por favor revise el documento y proceda con la firma digital.
           </p>
@@ -204,11 +204,12 @@ const cargarSolicitud = async () => {
   loadingSolicitud.value = true
   errorSolicitud.value = null
   try {
-    solicitud.value = await getJson<SolicitudCredito>(`/api/solicitudes-credito/${solicitudId}`, { auth: true })
+    const response = await getJson<{success: boolean, data: SolicitudCredito}>(`/api/solicitudes-credito/${solicitudId}`, { auth: true })
+    solicitud.value = response.data
     
     if (solicitud.value) {
         // Pre-llenar datos del firmante desde la solicitud
-        const solicitante = solicitud.value.formData.solicitante
+        const solicitante = solicitud.value.payload.solicitante
         
         // Asignar valores al composable de firmas
         nombreApellidos.value = solicitante.nombres_apellidos
@@ -295,5 +296,10 @@ onMounted(() => {
         errorSolicitud.value = 'ID de solicitud no válido'
         loadingSolicitud.value = false
     }
+})
+
+definePageMeta({
+  layout: 'dashboard',
+  middleware: ['auth']
 })
 </script>

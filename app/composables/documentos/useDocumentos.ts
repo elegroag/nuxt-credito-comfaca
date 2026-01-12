@@ -1,8 +1,7 @@
-import { ref } from 'vue'
-import { useApi } from '../useApi'
-import { useSession } from '../useSession'
-import type { DocumentoRequerido, DocumentoCargado } from '../../shared/types/solicitud-credito'
-
+import { ref, computed } from 'vue'
+import { useApi } from '~/composables/useApi'
+import { useSession } from '~/composables/useSession'
+import type { DocumentoRequerido, DocumentoCargado, SolicitudCredito } from '~/shared/types/solicitud-credito'
 
 export const useDocumentos = (solicitudId: string) => {
     const { urlFor } = useApi()
@@ -33,36 +32,30 @@ export const useDocumentos = (solicitudId: string) => {
         cargando.value = true
         const { getJson } = useApi();
         try {
-            const response = await getJson<any>(`/api/solicitudes-credito/${solicitudId}/documentos`, {
+            // Cargar documentos cargados desde el endpoint actual
+            const responseCargados = await getJson<{ success: boolean, data: DocumentoCargado[], count: number }>(`/api/solicitudes-credito/${solicitudId}/documentos`, {
                 auth: true
             })
 
-            // Procesar la respuesta para ambos propósitos
-            if (response && typeof response === 'object' && 'data' in response) {
-                const documentosApi = response.data as any[]
-
-                // Cargar documentos requeridos (desde la API externa)
-                documentosRequeridos.value = documentosApi.map(doc => ({
-                    id: doc.tipdoc, // Usar tipdoc como id
-                    nombre: doc.detalle,
-                    descripcion: doc.detalle,
-                    tipo: 'documento', // Agregar propiedad tipo requerida
-                    obligatorio: doc.obliga === 'S',
-                    formatos: ['PDF', 'JPG', 'PNG']
-                }))
-
-                // Para documentos cargados, necesitamos otra estructura o endpoint
-                // Por ahora, dejamos documentosCargados vacío ya que el endpoint actual
-                // devuelve los documentos requeridos, no los cargados
-                documentosCargados.value = []
-            } else if (Array.isArray(response)) {
-                // Si viene un array directo, asumimos que son documentos cargados
-                documentosCargados.value = response
-                documentosRequeridos.value = []
+            // Procesar documentos cargados
+            if (responseCargados && responseCargados.success && Array.isArray(responseCargados.data)) {
+                documentosCargados.value = responseCargados.data
             } else {
-                documentosRequeridos.value = []
                 documentosCargados.value = []
             }
+
+            // Cargar documentos requeridos desde el nuevo endpoint
+            const responseRequeridos = await getJson<{ success: boolean, data: DocumentoRequerido[], count: number }>(`/api/solicitudes-credito/${solicitudId}/documentos/requeridos`, {
+                auth: true
+            })
+
+            // Procesar documentos requeridos
+            if (responseRequeridos && responseRequeridos.success && Array.isArray(responseRequeridos.data)) {
+                documentosRequeridos.value = responseRequeridos.data
+            } else {
+                documentosRequeridos.value = []
+            }
+
         } catch (e: any) {
             console.error('Error cargando documentos', e)
             documentosRequeridos.value = []
@@ -84,10 +77,10 @@ export const useDocumentos = (solicitudId: string) => {
             }
 
             const formData = new FormData()
-            formData.append('file', file)
+            formData.append('documento', file)  // Cambiado de 'file' a 'documento'
             formData.append('documento_requerido_id', documentoRequeridoId)
 
-            const response = await $fetch<DocumentoCargado>(urlFor(`/api/solicitudes-credito/${solicitudId}/documentos`), {
+            const response = await $fetch<{ success: boolean, data: SolicitudCredito, message: string }>(urlFor(`/api/solicitudes-credito/${solicitudId}/documentos`), {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -95,13 +88,13 @@ export const useDocumentos = (solicitudId: string) => {
                 }
             })
 
-            // Actualizar la lista local o reemplazar si ya existe
-            const index = documentosCargados.value.findIndex(d => d.documentoRequeridoId === documentoRequeridoId)
-            if (index !== -1) {
-                documentosCargados.value[index] = response
-            } else {
-                documentosCargados.value.push(response)
+            // Actualizar la lista de documentos cargados desde la respuesta del backend
+            if (response && response.success && response.data && response.data.documentos) {
+                documentosCargados.value = response.data.documentos
             }
+
+            // Forzar un refresh de los documentos para asegurar sincronización
+            await cargarDocumentos()
 
             return response
         } catch (e: any) {
@@ -125,7 +118,8 @@ export const useDocumentos = (solicitudId: string) => {
                 }
             })
 
-            documentosCargados.value = documentosCargados.value.filter(d => d.id !== documentoCargadoId)
+            // Forzar refresh de documentos después de eliminar
+            await cargarDocumentos()
         } catch (e: any) {
             error.value = e.message || 'Error al eliminar el documento'
             throw e
