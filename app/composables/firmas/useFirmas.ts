@@ -131,7 +131,12 @@ export function useFirmas() {
                 body.firmas_filename = firmasFilename.value;
             }
 
-            const response = await $fetch.raw<string>(urlFor('/api/solicitud-credito/firmas'), {
+            const response = await $fetch<{
+                success: boolean;
+                message: string;
+                saved_filename?: string;
+                error?: string;
+            }>(urlFor('/api/solicitud-credito/firmas'), {
                 method: 'POST',
                 body,
                 headers: {
@@ -139,10 +144,11 @@ export function useFirmas() {
                 }
             });
 
-            xmlText.value = response._data || '';
-            const savedFileHeader = response.headers.get('X-Saved-Filename');
-            if (savedFileHeader) {
-                savedFilename.value = savedFileHeader;
+            // Manejar respuesta JSON del endpoint actualizado
+            if (response.success && response.saved_filename) {
+                savedFilename.value = response.saved_filename;
+            } else {
+                throw new Error(response.error || 'Error en la respuesta del servidor');
             }
         } catch (e: any) {
             errorMsg.value = e?.data?.error || e?.message || 'Error firmando';

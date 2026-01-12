@@ -173,7 +173,6 @@ const errorSolicitud = ref<string | null>(null)
 // Usamos el composable existente de firmas
 const {
   solicitudFilename,
-  firmasFilename,
   rolFirmante,
   aprobado,
   nombreApellidos,
@@ -184,9 +183,7 @@ const {
   loading,
   errorMsg,
   savedFilename,
-  firmar,
-  resetForm,
-  validateForm
+  firmar
 } = useFirmas()
 
 const hasXmlFilename = computed(() => {
@@ -241,44 +238,29 @@ const handleFirmar = async () => {
     if (!canSign.value) return
     
     await firmar()
-    
-    if (savedFilename.value) {
-        // Si la firma fue exitosa, actualizamos el estado de la solicitud y el archivo XML asociado
-        try {
-             const { authHeader } = useSession()
-             
-             // 1. Actualizar el nombre del archivo XML en la solicitud
-             await $fetch(urlFor(`/api/solicitudes-credito/${solicitudId}`), {
-                method: 'PATCH',
-                body: {
-                    xml_filename: savedFilename.value
-                },
-                headers: {
-                    ...authHeader.value as any
-                }
-             })
-
-             // 2. Actualizar el estado a "Firmado"
-             await $fetch(urlFor(`/api/solicitudes-credito/${solicitudId}/estado`), {
-                method: 'PATCH',
-                body: {
-                    estado: 'Firmado',
-                    detalle: 'Firma digital aplicada exitosamente'
-                },
-                headers: {
-                    ...authHeader.value as any
-                }
-             })
-             
-        } catch (e) {
-            console.error('Error actualizando solicitud tras firma', e)
-            // No bloqueamos el éxito visual de la firma, pero logueamos
-        }
-    }
 }
 
-const finalizarProceso = () => {
-    router.push('/solicitudes') // O a una página de éxito final
+const finalizarProceso = async () => {
+    try {
+        // Llamar al endpoint para finalizar el proceso
+        const { authHeader } = useSession()
+        const { urlFor } = useApi()
+        
+        await $fetch(urlFor(`/api/solicitudes-credito/${solicitudId}/finalizar`), {
+            method: 'POST',
+            headers: {
+                ...authHeader.value as any
+            }
+        })
+        
+        // Redirigir a la página de inicio del sistema
+        await router.push('/')
+        
+    } catch (error) {
+        console.error('Error finalizando proceso:', error)
+        // Si hay error, igual redirigir al inicio
+        await router.push('/')
+    }
 }
 
 const handleBack = () => {
