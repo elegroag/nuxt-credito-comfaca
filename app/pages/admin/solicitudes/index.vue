@@ -5,10 +5,10 @@
       <div class="header-content">
         <h1>Administración de Solicitudes</h1>
         <div class="header-actions">
-          <button @click="abrirFiltrosModal" class="btn btn-secondary" :disabled="loading">
+          <NuxtLink to="/admin/solicitudes/buscar" class="btn btn-secondary">
             <FunnelIcon class="h-5 w-5 mr-2" />
-            Filtros Avanzados
-          </button>
+            Buscar
+          </NuxtLink>
           <button @click="exportarCSV" class="btn btn-secondary" :disabled="loading">
             <ArrowDownTrayIcon class="h-5 w-5 mr-2" />
             Exportar CSV
@@ -55,82 +55,6 @@
       </div>
     </div>
 
-    <!-- Modal de Filtros Avanzados -->
-    <div v-if="showFiltrosModal" class="modal-overlay" @click="cerrarFiltrosModal">
-      <div class="modal-content" @click.stop>
-        <div class="modal-header">
-          <h2>Filtros Avanzados</h2>
-          <button @click="cerrarFiltrosModal" class="btn btn-outline">
-            <XMarkIcon class="h-5 w-5" />
-          </button>
-        </div>
-        <div class="modal-body">
-          <form @submit.prevent="aplicarFiltrosForm" class="filtros-form">
-            <div class="filtros-grid">
-              <!-- Filtros de usuario -->
-              <div class="form-group">
-                <label>Número de Documento</label>
-                <input
-                  v-model="filtrosForm.numero_documento"
-                  type="text"
-                  placeholder="Buscar por documento..."
-                  class="form-control"
-                />
-              </div>
-              <div class="form-group">
-                <label>Nombre de Usuario</label>
-                <input
-                  v-model="filtrosForm.nombre_usuario"
-                  type="text"
-                  placeholder="Buscar por nombre..."
-                  class="form-control"
-                />
-              </div>
-
-              <!-- Filtros de solicitud -->
-              <div class="form-group">
-                <label>Número de Solicitud</label>
-                <input
-                  v-model="filtrosForm.numero_solicitud"
-                  type="text"
-                  placeholder="Buscar solicitud..."
-                  class="form-control"
-                />
-              </div>
-              <div class="form-group">
-                <label>Estados</label>
-                <select v-model="filtrosForm.estados" multiple class="form-control">
-                  <option v-for="estado in ESTADOS_DISPONIBLES" :key="estado" :value="estado">
-                    {{ estado }}
-                  </option>
-                </select>
-              </div>
-            </div>
-
-            <div class="filtros-actions">
-              <button type="submit" class="btn btn-primary" :disabled="loading">
-                <MagnifyingGlassIcon class="h-5 w-5 mr-2" />
-                Aplicar Filtros
-              </button>
-              <button type="button" @click="limpiarFiltrosForm" class="btn btn-outline">
-                <XMarkIcon class="h-5 w-5 mr-2" />
-                Limpiar Filtros
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <!-- Alerta de filtros activos -->
-    <div v-if="tieneFiltrosActivos" class="filtros-activos-alert">
-      <FunnelIcon class="h-5 w-5 mr-2" />
-      Hay filtros activos aplicados
-      <button @click="limpiarFiltros" class="btn btn-sm btn-outline ml-2">
-        Limpiar todos
-      </button>
-    </div>
-
     <!-- Tabla de solicitudes -->
     <div class="table-section">
       <div class="table-header">
@@ -164,8 +88,6 @@
         <table class="solicitudes-table">
           <thead>
             <tr>
-              <th>Número Solicitud</th>
-              <th>Usuario</th>
               <th>Solicitante</th>
               <th>Documento</th>
               <th>Estado</th>
@@ -177,12 +99,6 @@
           </thead>
           <tbody>
             <tr v-for="solicitud in solicitudes" :key="solicitud.id">
-              <td>
-                <span class="solicitud-number">{{ solicitud.numero_solicitud || solicitud.payload?.solicitud?.numero_solicitud || 'N/A' }}</span>
-              </td>
-              <td>
-                <span class="username">{{ solicitud.owner_username }}</span>
-              </td>
               <td>
                 <div class="solicitante-info">
                   <div class="nombre">{{ solicitud.solicitante?.nombres_apellidos || solicitud.payload?.solicitante?.nombres_apellidos || 'N/A' }}</div>
@@ -208,9 +124,13 @@
               </td>
               <td>
                 <div class="acciones">
-                  <button @click="verDetalles(solicitud.id)" class="btn btn-sm btn-outline" title="Ver detalles">
+                  <NuxtLink
+                    :to="`/admin/solicitudes/show/${solicitud.id}`"
+                    class="btn btn-sm btn-outline"
+                    title="Ver detalles"
+                  >
                     <EyeIcon class="h-4 w-4" />
-                  </button>
+                  </NuxtLink>
                   <button @click="cambiarEstado(solicitud)" class="btn btn-sm btn-outline" title="Cambiar estado">
                     <PencilIcon class="h-4 w-4" />
                   </button>
@@ -299,15 +219,15 @@
 </template>
 
 <script setup lang="ts">
-import type { FiltrosSolicitudes, SolicitudAdmin } from '~/shared/types/admin-solicitudes'
-import { ESTADOS_DISPONIBLES, OPCIONES_ORDENAMIENTO } from '~/shared/types/admin-solicitudes'
+import type { SolicitudAdmin } from '~/shared/types/admin-solicitudes'
+import { ESTADOS_DISPONIBLES } from '~/shared/types/admin-solicitudes'
+import { formatCurrency, formatDate } from '~/shared/formatters'
 import { useAdminSolicitudes } from '~/composables/admin/useAdminSolicitudes'
 import {
   FunnelIcon,
   ArrowDownTrayIcon,
   ArrowPathIcon,
   XMarkIcon,
-  MagnifyingGlassIcon,
   ExclamationTriangleIcon,
   InboxIcon,
   EyeIcon,
@@ -328,85 +248,30 @@ const {
   estadosCount,
   estadosDisponibles,
   loadingEstados,
-  tieneFiltrosActivos,
   totalPaginas,
   paginaActual,
   cargarSolicitudes,
   cargarEstadosCount,
   cargarEstadosDisponibles,
-  aplicarFiltros,
-  limpiarFiltros,
+  aplicarFiltroPaginacion,
   cambiarPagina,
   cambiarLimite,
   actualizarEstado,
-  obtenerSolicitud,
   eliminarSolicitud,
   exportarCSV
 } = useAdminSolicitudes()
 
 // Estado local
-const showFiltrosModal = ref(false)
 const showEstadoModal = ref(false)
 const solicitudSeleccionada = ref<SolicitudAdmin | null>(null)
 const nuevoEstado = ref('')
 const estadoDescripcion = ref('')
 const loadingEstado = ref(false)
 
-// Formulario de filtros
-const filtrosForm = ref({
-  numero_documento: '',
-  nombre_usuario: '',
-  owner_username: '',
-  estados: [] as string[],
-  numero_solicitud: ''
-})
-
-// Métodos
-const abrirFiltrosModal = () => {
-  showFiltrosModal.value = true
-}
-
-const cerrarFiltrosModal = () => {
-  showFiltrosModal.value = false
-}
-
-const limpiarFiltrosForm = () => {
-  filtrosForm.value = {
-    numero_documento: '',
-    nombre_usuario: '',
-    owner_username: '',
-    estados: [] as string[],
-    numero_solicitud: ''
-  }
-}
-
-const aplicarFiltrosForm = () => {
-  // Limpiar arrays vacíos
-  const filtrosLimpios: Partial<FiltrosSolicitudes> = { ...filtrosForm.value }
-  if (!filtrosLimpios.estados?.length) {
-    const { estados, ...resto } = filtrosLimpios
-    aplicarFiltros(resto)
-  } else {
-    aplicarFiltros(filtrosLimpios)
-  }
-  
-  cerrarFiltrosModal() // Cerrar modal después de aplicar filtros
-}
-
 const recargarDatos = () => {
   cargarEstadosDisponibles()
   cargarEstadosCount()
   cargarSolicitudes()
-}
-
-const verDetalles = async (solicitudId: string) => {
-  try {
-    const solicitud = await obtenerSolicitud(solicitudId)
-    // Aquí podrías abrir un modal con los detalles completos
-    console.log('Ver detalles:', solicitud)
-  } catch (err) {
-    console.error('Error obteniendo detalles:', err)
-  }
 }
 
 const cambiarEstado = (solicitud: SolicitudAdmin | any) => {
@@ -449,15 +314,6 @@ const eliminarSolicitudConfirm = (solicitud: SolicitudAdmin | any) => {
   }
 }
 
-// Utilidades
-const formatCurrency = (value: number): string => {
-  return value.toLocaleString('es-CO')
-}
-
-const formatDate = (dateString: string): string => {
-  return new Date(dateString).toLocaleDateString('es-CO')
-}
-
 // Funciones para el resumen por estados
 const getTotalSolicitudes = computed(() => {
   return Object.values(estadosCount.value).reduce((total, count) => total + count, 0)
@@ -475,17 +331,11 @@ const filtrarPorEstado = (estado: string) => {
   const estadoId = estadoData?.id || estado
   
   // Aplicar filtro por estado específico usando el ID del estado
-  aplicarFiltros({
+  aplicarFiltroPaginacion({
     estados: [estadoId],
     skip: 0 // Reiniciar paginación
   })
 }
-
-// Cargar datos iniciales
-onMounted(() => {
-  // Sincronizar filtros form con filtros activos
-  Object.assign(filtrosForm.value, filtrosActivos.value)
-})
 
 definePageMeta({
   layout: 'dashboard',

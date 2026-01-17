@@ -85,25 +85,6 @@ export const useAdminSolicitudes = () => {
         }
     }
 
-    /**
-     * Carga todas las solicitudes sin paginación (para exportar, etc.)
-     */
-    const cargarSolicitudesFilter = async (): Promise<SolicitudAdmin[]> => {
-        try {
-            const payload = {
-                ...filtrosActivos.value
-            }
-            const response = await postJson<any>(
-                '/api/solicitudes-credito/filter',
-                payload,
-                { auth: true },
-            )
-            return handleApiResponse(response, [])
-        } catch (err) {
-            console.error('Error cargando todas las solicitudes:', err)
-            throw new Error('Error al cargar todas las solicitudes')
-        }
-    }
 
     /**
      * Carga los estados disponibles desde la API
@@ -153,24 +134,6 @@ export const useAdminSolicitudes = () => {
         }
     }
 
-    /**
-     * Aplica filtros y recarga los datos
-     */
-    const aplicarFiltros = (nuevosFiltros: Partial<FiltrosSolicitudes>) => {
-        filtrosActivos.value = { ...filtrosActivos.value, ...nuevosFiltros, skip: 0 }
-        cargarSolicitudes()
-    }
-
-    /**
-     * Limpia todos los filtros
-     */
-    const limpiarFiltros = () => {
-        filtrosActivos.value = {
-            skip: 0,
-            limit: 20
-        }
-        cargarSolicitudes()
-    }
 
     /**
      * Cambia la página
@@ -281,6 +244,14 @@ export const useAdminSolicitudes = () => {
         return paginaActual.value > 1
     })
 
+    /**
+    * Aplica filtros y recarga los datos
+    */
+    const aplicarFiltroPaginacion = (nuevosFiltros: Partial<FiltrosSolicitudes>) => {
+        filtrosActivos.value = { ...filtrosActivos.value, ...nuevosFiltros, skip: 0 }
+        cargarSolicitudes()
+    }
+
     // Cargar datos iniciales
     onMounted(async () => {
         await cargarEstadosDisponibles()
@@ -309,16 +280,14 @@ export const useAdminSolicitudes = () => {
 
         // Métodos
         cargarSolicitudes,
-        cargarSolicitudesFilter,
         cargarEstadosCount,
         cargarEstadosDisponibles,
-        aplicarFiltros,
-        limpiarFiltros,
         cambiarPagina,
         cambiarLimite,
         actualizarEstado,
         obtenerSolicitud,
         eliminarSolicitud,
-        exportarCSV
+        exportarCSV,
+        aplicarFiltroPaginacion
     }
 }
