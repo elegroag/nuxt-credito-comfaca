@@ -8,8 +8,7 @@ export const AUTH_EXCLUDED_PAGES = [
     '/login',
     '/register',
     '/forgot-password',
-    '/reset-password',
-    '/verify-email'
+    '/reset-password'
 ] as const
 
 // Páginas que siempre requieren autenticación
@@ -17,7 +16,8 @@ export const AUTH_REQUIRED_PAGES = [
     '/dashboard',
     '/profile',
     '/settings',
-    '/admin'
+    '/admin',
+    '/verify-email'
 ] as const
 
 // Patrones de rutas que requieren autenticación

@@ -1,0 +1,280 @@
+/**
+ * Composable para administración de solicitudes
+ * Maneja la lógica de filtros, paginación y operaciones CRUD
+ */
+
+import type {
+    FiltrosSolicitudes,
+    SolicitudAdmin,
+    EstadosCount,
+    OpcionesFiltro
+} from '~/shared/types/admin-solicitudes'
+
+export const useAdminSolicitudes = () => {
+    const { getJson, postJson, putJson, deleteJson } = useApi()
+
+    // Estado reactivo
+    const solicitudes = ref<SolicitudAdmin[]>([])
+    const loading = ref(false)
+    const error = ref<string | null>(null)
+    const totalItems = ref(0)
+
+    // Filtros activos
+    const filtrosActivos = ref<FiltrosSolicitudes>({
+        skip: 0,
+        limit: 20
+    })
+
+    // Opciones para filtros
+    const opcionesFiltro = ref<OpcionesFiltro>({
+        estados: [],
+        usuarios: []
+    })
+
+    // Conteo por estados
+    const estadosCount = ref<EstadosCount>({})
+
+    /**
+     * Maneja la respuesta del backend de forma estandarizada
+     */
+    const handleApiResponse = (response: any, defaultValue: any = null) => {
+        if (response && response.success) {
+            return response.data || defaultValue
+        } else {
+            throw new Error(response?.message || 'Error en la respuesta del servidor')
+        }
+    }
+    /**
+     * Carga las solicitudes con los filtros aplicados
+     */
+    const cargarSolicitudes = async () => {
+        loading.value = true
+        error.value = null
+
+        try {
+            let url = '/api/solicitudes-credito/paginado/' + filtrosActivos.value.limit + '/' + filtrosActivos.value.skip;
+
+            // Agregar estado a la URL solo si está definido
+            const estado = filtrosActivos.value.estados?.[0];
+            if (estado) {
+                url += '?estado=' + estado;
+            }
+
+            const response = await getJson<any>(
+                url,
+                { auth: true }
+            )
+
+            // Usar el manejador de respuestas estandarizado
+            const data = handleApiResponse(response, { collection: [], pagination: { total: 0 } })
+            solicitudes.value = data.collection || []
+            totalItems.value = data.pagination?.total || 0
+
+        } catch (err) {
+            console.error('Error cargando solicitudes:', err)
+            error.value = 'Error al cargar las solicitudes'
+        } finally {
+            loading.value = false
+        }
+    }
+
+    /**
+     * Carga todas las solicitudes sin paginación (para exportar, etc.)
+     */
+    const cargarSolicitudesFilter = async (): Promise<SolicitudAdmin[]> => {
+        try {
+            const payload = {
+                ...filtrosActivos.value
+            }
+            const response = await postJson<any>(
+                '/api/solicitudes-credito/filter',
+                payload,
+                { auth: true },
+            )
+            return handleApiResponse(response, [])
+        } catch (err) {
+            console.error('Error cargando todas las solicitudes:', err)
+            throw new Error('Error al cargar todas las solicitudes')
+        }
+    }
+
+    /**
+     * Carga el conteo de solicitudes por estado
+     */
+    const cargarEstadosCount = async () => {
+        try {
+            const response = await getJson<any>(
+                '/api/solicitudes-credito/estados/count',
+                { auth: true }
+            )
+            estadosCount.value = handleApiResponse(response, {})
+        } catch (err) {
+            console.error('Error cargando conteo por estados:', err)
+        }
+    }
+
+    /**
+     * Aplica filtros y recarga los datos
+     */
+    const aplicarFiltros = (nuevosFiltros: Partial<FiltrosSolicitudes>) => {
+        filtrosActivos.value = { ...filtrosActivos.value, ...nuevosFiltros, skip: 0 }
+        cargarSolicitudes()
+    }
+
+    /**
+     * Limpia todos los filtros
+     */
+    const limpiarFiltros = () => {
+        filtrosActivos.value = {
+            skip: 0,
+            limit: 20
+        }
+        cargarSolicitudes()
+    }
+
+    /**
+     * Cambia la página
+     */
+    const cambiarPagina = (pagina: number) => {
+        const skip = (pagina - 1) * (filtrosActivos.value.limit || 20)
+        filtrosActivos.value.skip = skip
+        cargarSolicitudes()
+    }
+
+    /**
+     * Cambia el límite de resultados por página
+     */
+    const cambiarLimite = (limite: number) => {
+        filtrosActivos.value.limit = limite
+        filtrosActivos.value.skip = 0
+        cargarSolicitudes()
+    }
+
+    /**
+     * Actualiza el estado de una solicitud
+     */
+    const actualizarEstado = async (solicitudId: string, estado: string, descripcion?: string) => {
+        try {
+            const response = await putJson<any>(
+                `/api/solicitudes-credito/${solicitudId}/estado`,
+                { estado, descripcion },
+                { auth: true }
+            )
+
+            // Recargar los datos
+            await cargarSolicitudes()
+            await cargarEstadosCount()
+            return handleApiResponse(response, null)
+        } catch (err) {
+            console.error('Error actualizando estado:', err)
+            throw new Error('Error al actualizar el estado de la solicitud')
+        }
+    }
+
+    /**
+     * Obtiene una solicitud específica
+     */
+    const obtenerSolicitud = async (solicitudId: string): Promise<SolicitudAdmin> => {
+        try {
+            const response = await getJson<any>(
+                `/api/solicitudes-credito/${solicitudId}`,
+                { auth: true }
+            )
+            return handleApiResponse(response, null)
+        } catch (err) {
+            console.error('Error obteniendo solicitud:', err)
+            throw new Error('Error al obtener la solicitud')
+        }
+    }
+
+    /**
+     * Elimina una solicitud
+     */
+    const eliminarSolicitud = async (solicitudId: string) => {
+        try {
+            await deleteJson(`/api/solicitudes-credito/${solicitudId}`, { auth: true })
+
+            // Recargar los datos
+            await cargarSolicitudes()
+            await cargarEstadosCount()
+        } catch (err) {
+            console.error('Error eliminando solicitud:', err)
+            throw new Error('Error al eliminar la solicitud')
+        }
+    }
+
+    /**
+     * Exporta las solicitudes a CSV
+     */
+    const exportarCSV = async () => {
+        //pendiente
+    }
+
+    // Computed properties
+    const tieneFiltrosActivos = computed(() => {
+        const f = filtrosActivos.value
+        return !!(
+            f.numero_documento ||
+            f.nombre_usuario ||
+            f.owner_username ||
+            f.numero_solicitud ||
+            (f.estados && f.estados.length > 0)
+        )
+    })
+
+    const totalPaginas = computed(() => {
+        const limite = filtrosActivos.value.limit || 20
+        return Math.ceil(totalItems.value / limite)
+    })
+
+    const paginaActual = computed(() => {
+        const skip = filtrosActivos.value.skip || 0
+        const limite = filtrosActivos.value.limit || 20
+        return Math.floor(skip / limite) + 1
+    })
+
+    const tieneSiguientePagina = computed(() => {
+        return paginaActual.value < totalPaginas.value
+    })
+
+    const tienePaginaAnterior = computed(() => {
+        return paginaActual.value > 1
+    })
+
+    // Cargar datos iniciales
+    onMounted(() => {
+        cargarSolicitudes()
+        cargarEstadosCount()
+    })
+
+    return {
+        // Estado
+        solicitudes: readonly(solicitudes),
+        loading: readonly(loading),
+        error: readonly(error),
+        totalItems: readonly(totalItems),
+        filtrosActivos: readonly(filtrosActivos),
+        opcionesFiltro: readonly(opcionesFiltro),
+        estadosCount: readonly(estadosCount),
+
+        // Computed
+        tieneFiltrosActivos,
+        totalPaginas,
+        paginaActual,
+        tieneSiguientePagina,
+        tienePaginaAnterior,
+
+        // Métodos
+        cargarSolicitudes,
+        cargarSolicitudesFilter,
+        cargarEstadosCount,
+        aplicarFiltros,
+        limpiarFiltros,
+        cambiarPagina,
+        cambiarLimite,
+        actualizarEstado,
+        obtenerSolicitud,
+        eliminarSolicitud,
+        exportarCSV
+    }
+}

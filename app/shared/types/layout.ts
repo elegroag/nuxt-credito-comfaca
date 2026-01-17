@@ -5,6 +5,8 @@ export interface NavItem {
     to: string
     abbr: string
     icon: Component
+    adminOnly?: boolean
+    category?: 'user' | 'admin'
 }
 
 export interface HealthStatus {

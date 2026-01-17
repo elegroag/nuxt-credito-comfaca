@@ -9,12 +9,13 @@
     </div>
 
     <nav class="flex-1 overflow-y-auto px-3 py-4">
-      <div v-show="!sidebarCollapsed" class="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/60">
-        MENÚ
+    <template v-for="(group, categoryName) in groupedNavItems" :key="categoryName">
+      <div v-show="!sidebarCollapsed && group.length > 0" class="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/60">
+        {{ categoryName === 'admin' ? 'ADMINISTRACIÓN' : 'MENÚ' }}
       </div>
       <div class="space-y-1">
         <NuxtLink
-          v-for="item in navItems"
+          v-for="item in group"
           :key="item.to"
           :to="item.to"
           :class="getMenuItemClasses(item.to)"
@@ -24,7 +25,8 @@
           <span v-show="!sidebarCollapsed">{{ item.label }}</span>
         </NuxtLink>
       </div>
-    </nav>
+    </template>
+  </nav>
 
     <div class="border-t border-sidebar-border p-4">
       <div class="flex items-center gap-3 rounded-lg bg-sidebar-accent/50 px-3 py-2.5">
@@ -61,21 +63,23 @@
     </div>
 
     <nav class="overflow-y-auto px-3 py-4">
-      <div class="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/60">
-        MENÚ
-      </div>
-      <div class="space-y-1">
-        <NuxtLink
-          v-for="item in navItems"
-          :key="item.to"
-          :to="item.to"
-          @click="sidebarOpen = false"
-          :class="getMobileMenuItemClasses(item.to)"
-        >
-          <component :is="item.icon" class="h-5 w-5" />
-          {{ item.label }}
-        </NuxtLink>
-      </div>
+      <template v-for="(group, categoryName) in groupedNavItems" :key="categoryName">
+        <div v-show="group.length > 0" class="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/60">
+          {{ categoryName === 'admin' ? 'ADMINISTRACIÓN' : 'MENÚ' }}
+        </div>
+        <div class="space-y-1">
+          <NuxtLink
+            v-for="item in group"
+            :key="item.to"
+            :to="item.to"
+            @click="sidebarOpen = false"
+            :class="getMobileMenuItemClasses(item.to)"
+          >
+            <component :is="item.icon" class="h-5 w-5" />
+            {{ item.label }}
+          </NuxtLink>
+        </div>
+      </template>
     </nav>
   </aside>
 </template>
@@ -92,6 +96,7 @@ const {
   sidebarOpen,
   sidebarCollapsed,
   navItems,
+  groupedNavItems,
   isActive,
   _abbr
 } = useDashboardLayout()

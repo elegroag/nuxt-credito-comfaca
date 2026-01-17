@@ -11,7 +11,8 @@ import {
     PenTool,
     Share2,
     Key,
-    User
+    User,
+    List
 } from 'lucide-vue-next'
 
 // Estado compartido (singleton)
@@ -48,6 +49,7 @@ export function useDashboardLayout() {
         { label: 'Firmas', to: '/firmas', abbr: _abbr('Firmas'), icon: PenTool },
         { label: 'Compartir firmas', to: '/firmas-compartir', abbr: _abbr('Compartir firmas'), icon: Share2 },
         { label: 'Entidad digital', to: '/entidad-digital', abbr: _abbr('Entidad digital'), icon: Key },
+        { label: 'Solicitudes', to: '/admin/solicitudes', abbr: _abbr('Solicitudes'), icon: List, adminOnly: true, category: 'admin' },
         { label: 'Perfil', to: '/perfil', abbr: _abbr('Perfil'), icon: User }
     ]
 
@@ -56,8 +58,41 @@ export function useDashboardLayout() {
         return route.path.startsWith(to)
     }
 
+    // Filtrar items de navegación según el rol del usuario
+    const filteredNavItems = computed(() => {
+        const userRoles = session.value?.user?.roles || []
+        const isAdmin = userRoles.includes('admin') || userRoles.includes('administrator')
+
+        return navItems.filter(item => {
+            // Si el item es solo para admin y el usuario no es admin, ocultarlo
+            if (item.adminOnly && !isAdmin) {
+                return false
+            }
+            return true
+        })
+    })
+
+    // Agrupar items por categoría para mostrar separadores
+    const groupedNavItems = computed(() => {
+        const items = filteredNavItems.value
+        const grouped: { [key: string]: NavItem[] } = {
+            user: [],
+            admin: []
+        }
+
+        items.forEach(item => {
+            const category = item.category || 'user'
+            if (!grouped[category]) {
+                grouped[category] = []
+            }
+            grouped[category].push(item)
+        })
+
+        return grouped
+    })
+
     const sectionTitle = computed(() => {
-        const hit = navItems.find((x) => isActive(x.to))
+        const hit = filteredNavItems.value.find((x) => isActive(x.to))
         return hit?.label || 'Dashboard'
     })
 
@@ -72,7 +107,8 @@ export function useDashboardLayout() {
         sidebarOpen,
         sidebarCollapsed,
         userMenuOpen,
-        navItems,
+        navItems: filteredNavItems,
+        groupedNavItems,
         sectionTitle,
         isActive,
         logout,
