@@ -261,7 +261,7 @@ const getResumenSimulador = () => {
   if (typeof window === 'undefined') return null
   
   try {
-    const simuladorData = localStorage.getItem('simulador_data')
+    const simuladorData = localStorage.getItem('comfaca_simulador_data')
     if (!simuladorData) return null
     
     // Decodificar los datos para corregir problemas de codificación

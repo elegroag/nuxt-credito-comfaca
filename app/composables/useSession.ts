@@ -8,6 +8,8 @@ const STORAGE_TOKEN_KEY = 'comfaca_credito_access_token'
 const STORAGE_TOKEN_TYPE_KEY = 'comfaca_credito_token_type'
 const STORAGE_USER_KEY = 'comfaca_credito_user'
 const STORAGE_TRABAJADOR_KEY = 'comfaca_credito_trabajador'
+const TOKEN_VALIDATION_KEY = 'comfaca_token_validation'
+const VALIDATION_TTL = 5 * 60 * 1000 // 5 minutos
 
 const emptySession = (): SessionData => ({
     accessToken: '',
@@ -141,6 +143,56 @@ export const useSession = () => {
         await storage.removeItem(STORAGE_USER_KEY)
         await storage.removeItem(STORAGE_TRABAJADOR_KEY)
         await storage.removeItem(STORAGE_KEY_V1)
+        await storage.removeItem(TOKEN_VALIDATION_KEY)
+    }
+
+    const validateToken = async (force: boolean = false): Promise<boolean> => {
+        if (!process.client || !session.value.accessToken) return false
+
+        try {
+            // Si no se fuerza, verificar cache primero
+            if (!force) {
+                const cached = await storage.getItem(TOKEN_VALIDATION_KEY)
+                if (cached) {
+                    const { timestamp, valid } = JSON.parse(cached)
+                    if (Date.now() - timestamp < VALIDATION_TTL && valid) {
+                        return true
+                    }
+                }
+            }
+
+            // Validar con backend
+            const { useApi } = await import('~/composables/useApi')
+            const api = useApi()
+
+            const response = await api.getJson<{
+                success: boolean
+                data: { valid: boolean; user: any }
+            }>('/api/auth/verify', { auth: true })
+
+            const isValid = response.success && response.data.valid
+
+            // Guardar en cache
+            await storage.setItem(TOKEN_VALIDATION_KEY, JSON.stringify({
+                timestamp: Date.now(),
+                valid: isValid
+            }))
+
+            if (!isValid) {
+                await clearSession()
+            }
+
+            return isValid
+
+        } catch (error) {
+            console.error('Error validando token:', error)
+            await clearSession()
+            return false
+        }
+    }
+
+    const validateTokenForce = async (): Promise<boolean> => {
+        return await validateToken(true)
     }
 
     const authHeader = computed(() => {
@@ -155,6 +207,8 @@ export const useSession = () => {
         isAuthenticated,
         setSession,
         clearSession,
+        validateToken,
+        validateTokenForce,
         authHeader,
         ready: hydrationPromise.value || Promise.resolve()
     }

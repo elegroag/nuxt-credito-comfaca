@@ -1,7 +1,7 @@
 import { ref, watch, readonly } from 'vue'
 import type { SimuladorStorageData } from '~/shared/types/simulador'
 
-const STORAGE_KEY = 'simulador_data'
+const STORAGE_KEY = 'comfaca_simulador_data'
 
 // Estado reactivo para los datos del simulador
 const simuladorData = ref<SimuladorStorageData | null>(null)
