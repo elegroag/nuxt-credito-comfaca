@@ -9,6 +9,7 @@ import type {
     EstadosCount,
     OpcionesFiltro
 } from '~/shared/types/admin-solicitudes'
+import type { EstadoSolicitudData } from '~/shared/types/inicio'
 
 export const useAdminSolicitudes = () => {
     const { getJson, postJson, putJson, deleteJson } = useApi()
@@ -34,6 +35,10 @@ export const useAdminSolicitudes = () => {
     // Conteo por estados
     const estadosCount = ref<EstadosCount>({})
 
+    // Estados disponibles desde la API
+    const estadosDisponibles = ref<EstadoSolicitudData[]>([])
+    const loadingEstados = ref(false)
+
     /**
      * Maneja la respuesta del backend de forma estandarizada
      */
@@ -57,7 +62,9 @@ export const useAdminSolicitudes = () => {
             // Agregar estado a la URL solo si está definido
             const estado = filtrosActivos.value.estados?.[0];
             if (estado) {
-                url += '?estado=' + estado;
+                url += '/' + estado;
+            } else {
+                url += '/@';
             }
 
             const response = await getJson<any>(
@@ -99,6 +106,25 @@ export const useAdminSolicitudes = () => {
     }
 
     /**
+     * Carga los estados disponibles desde la API
+     */
+    const cargarEstadosDisponibles = async () => {
+        loadingEstados.value = true
+        try {
+            const response = await getJson<{ data: EstadoSolicitudData[] }>(
+                '/api/estados-solicitud',
+                { auth: true }
+            )
+            const data = handleApiResponse(response, [])
+            estadosDisponibles.value = Array.isArray(data) ? data : []
+        } catch (err) {
+            console.error('Error cargando estados disponibles:', err)
+        } finally {
+            loadingEstados.value = false
+        }
+    }
+
+    /**
      * Carga el conteo de solicitudes por estado
      */
     const cargarEstadosCount = async () => {
@@ -107,7 +133,21 @@ export const useAdminSolicitudes = () => {
                 '/api/solicitudes-credito/estados/count',
                 { auth: true }
             )
-            estadosCount.value = handleApiResponse(response, {})
+            const conteo = handleApiResponse(response, {})
+
+            // Si ya tenemos los estados disponibles, combinamos con el conteo
+            if (estadosDisponibles.value.length > 0) {
+                const conteoCompleto: EstadosCount = {}
+                estadosDisponibles.value.forEach(estado => {
+                    // Buscar el conteo por ID o por nombre
+                    const countPorId = conteo[estado.id] || 0
+                    const countPorNombre = conteo[estado.nombre] || 0
+                    conteoCompleto[estado.nombre] = countPorId || countPorNombre || 0
+                })
+                estadosCount.value = conteoCompleto
+            } else {
+                estadosCount.value = conteo
+            }
         } catch (err) {
             console.error('Error cargando conteo por estados:', err)
         }
@@ -242,9 +282,10 @@ export const useAdminSolicitudes = () => {
     })
 
     // Cargar datos iniciales
-    onMounted(() => {
+    onMounted(async () => {
+        await cargarEstadosDisponibles()
+        await cargarEstadosCount()
         cargarSolicitudes()
-        cargarEstadosCount()
     })
 
     return {
@@ -256,6 +297,8 @@ export const useAdminSolicitudes = () => {
         filtrosActivos: readonly(filtrosActivos),
         opcionesFiltro: readonly(opcionesFiltro),
         estadosCount: readonly(estadosCount),
+        estadosDisponibles: readonly(estadosDisponibles),
+        loadingEstados: readonly(loadingEstados),
 
         // Computed
         tieneFiltrosActivos,
@@ -268,6 +311,7 @@ export const useAdminSolicitudes = () => {
         cargarSolicitudes,
         cargarSolicitudesFilter,
         cargarEstadosCount,
+        cargarEstadosDisponibles,
         aplicarFiltros,
         limpiarFiltros,
         cambiarPagina,

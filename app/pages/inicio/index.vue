@@ -54,11 +54,33 @@
 
               <div class="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
                 <span class="font-semibold text-foreground">Flujo:</span>
-                <template v-for="(estado, i) in flujoAprobacion" :key="estado">
-                  <div class="flex items-center gap-1.5">
-                    <span>{{ estado }}</span>
-                    <ChevronRight v-if="i < flujoAprobacion.length - 1" class="h-3.5 w-3.5 text-muted-foreground/40" />
-                  </div>
+                <div v-if="loadingEstados" class="text-muted-foreground">Cargando estados...</div>
+                <template v-else-if="estadosError" class="text-destructive">
+                  <span>{{ estadosError }}</span>
+                  <Button variant="ghost" size="sm" @click="cargarEstados" class="ml-1 p-0 h-auto text-xs">
+                    Reintentar
+                  </Button>
+                </template>
+                <template v-else>
+                  <template v-for="(estado, i) in estadosConColores" :key="estado.nombre">
+                    <div class="flex items-center gap-1.5">
+                      <div 
+                        class="flex items-center gap-1 px-2 py-1 rounded-md border"
+                        :style="{
+                          borderColor: estado.color + '40',
+                          backgroundColor: estado.color + '20',
+                          color: estado.color
+                        }"
+                      >
+                        <div 
+                          class="w-2 h-2 rounded-full"
+                          :style="{ backgroundColor: estado.color }"
+                        ></div>
+                        <span class="font-medium">{{ estado.nombre }}</span>
+                      </div>
+                      <ChevronRight v-if="i < estadosConColores.length - 1" class="h-3.5 w-3.5 text-muted-foreground/40" />
+                    </div>
+                  </template>
                 </template>
               </div>
 
@@ -83,16 +105,7 @@
                   </div>
                 </div>
 
-                <div class="mt-3 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
-                  <span class="font-semibold text-foreground">Paso actual:</span>
-                  <template v-for="(estado, i) in flujoAprobacion" :key="estado">
-                    <div class="flex items-center gap-1.5">
-                      <span :class="i === estadoIndexUltima ? 'font-semibold text-foreground' : ''">{{ estado }}</span>
-                      <ChevronRight v-if="i < flujoAprobacion.length - 1" class="h-3.5 w-3.5 text-muted-foreground/40" />
-                    </div>
-                  </template>
                 </div>
-              </div>
             </div>
           </div>
 
@@ -267,6 +280,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useSession } from '~/composables/useSession'
 import { useInicio } from '~/composables/inicio/useInicio'
 import {
@@ -299,12 +313,28 @@ const {
   loadingSolicitudes,
   solicitudesError,
   flujoAprobacion,
+  estadosData,
+  loadingEstados,
+  estadosError,
   fmtMoney,
   fmtDate,
   estadoProgressPercent,
+  estadoProgressClass,
   estadoBadgeClass,
+  getEstadoData,
+  getEstadoColor,
   ultimaSolicitud,
   estadoIndexUltima,
+  cargarEstados,
   cargarSolicitudes
 } = useInicio()
+
+// Estados con colores para mostrar en la UI
+const estadosConColores = computed(() => {
+  return flujoAprobacion.value.map(estado => ({
+    nombre: estado,
+    color: getEstadoColor(estado),
+    data: getEstadoData(estado)
+  }))
+})
 </script>

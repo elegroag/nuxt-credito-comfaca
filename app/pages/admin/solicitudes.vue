@@ -30,13 +30,16 @@
           <span class="total-count">{{ getTotalSolicitudes }}</span>
         </div>
       </div>
-      <div v-if="Object.keys(estadosCount).length > 0" class="estados-grid">
+      <div v-if="loadingEstados" class="estados-loading">
+        <div class="loading-spinner"></div>
+        <p>Cargando estados...</p>
+      </div>
+      <div v-else-if="Object.keys(estadosCount).length > 0" class="estados-grid">
         <div 
           v-for="(count, estado) in estadosCount" 
           :key="estado" 
-          class="estado-card"
+          class="estado-card clickable"
           @click="filtrarPorEstado(estado)"
-          :class="{ 'clickable': true }"
           :title="`Hacer clic para filtrar solicitudes en estado: ${estado}`"
         >
           <div class="estado-count">{{ count }}</div>
@@ -323,11 +326,14 @@ const {
   totalItems,
   filtrosActivos,
   estadosCount,
+  estadosDisponibles,
+  loadingEstados,
   tieneFiltrosActivos,
   totalPaginas,
   paginaActual,
   cargarSolicitudes,
   cargarEstadosCount,
+  cargarEstadosDisponibles,
   aplicarFiltros,
   limpiarFiltros,
   cambiarPagina,
@@ -388,8 +394,9 @@ const aplicarFiltrosForm = () => {
 }
 
 const recargarDatos = () => {
-  cargarSolicitudes()
+  cargarEstadosDisponibles()
   cargarEstadosCount()
+  cargarSolicitudes()
 }
 
 const verDetalles = async (solicitudId: string) => {
@@ -463,14 +470,15 @@ const getEstadoPercentage = (count: number): string => {
 }
 
 const filtrarPorEstado = (estado: string) => {
-  // Aplicar filtro por estado específico
+  // Buscar el estado por nombre para obtener su ID
+  const estadoData = estadosDisponibles.value.find(e => e.nombre === estado)
+  const estadoId = estadoData?.id || estado
+  
+  // Aplicar filtro por estado específico usando el ID del estado
   aplicarFiltros({
-    estados: [estado],
+    estados: [estadoId],
     skip: 0 // Reiniciar paginación
   })
-  
-  // Opcional: mostrar notificación o scroll a la tabla
-  // Los filtros ahora están en modal, no se necesita mostrar
 }
 
 // Cargar datos iniciales

@@ -1,11 +1,14 @@
-export type EstadoSolicitud =
-    | 'Postulado'
-    | 'En validación'
-    | 'Aprobado'
-    | 'Desembolsado'
-    | 'Activo'
-    | 'Finalizado'
-    | 'Desiste';
+export interface EstadoSolicitudData {
+    _id: string;
+    activo: boolean;
+    color: string;
+    descripcion: string;
+    id: string;
+    nombre: string;
+    orden: number;
+}
+
+export type EstadoSolicitud = string;
 
 export interface SolicitudResumen {
     id: string;
