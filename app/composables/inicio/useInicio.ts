@@ -84,7 +84,7 @@ export function useInicio() {
         loadingSolicitudes.value = true;
         solicitudesError.value = '';
         try {
-            const response = await getJson<any>('/api/solicitudes-credito', { auth: true });
+            const response = await getJson<any>('/api/solicitudes-credito/all-user', { auth: true });
             const data = response.data;
             solicitudes.value = Array.isArray(data) ? data : [];
         } catch (e: any) {

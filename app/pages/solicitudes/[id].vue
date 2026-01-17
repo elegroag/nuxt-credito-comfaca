@@ -642,7 +642,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from '@/components/ui/dialog/exports';
 
 definePageMeta({
   layout: 'dashboard',

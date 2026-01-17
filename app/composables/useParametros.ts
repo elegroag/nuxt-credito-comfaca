@@ -2,7 +2,7 @@ import { ref, computed, readonly } from 'vue'
 import { useApi } from '~/composables/useApi'
 import type { ParametrosResponse } from '~/shared/types/parametros'
 
-const parametrosCache = ref<ParametrosResponse | null>(null)
+const parametrosCache = ref<ParametrosResponse['data'] | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
 
@@ -20,8 +20,8 @@ export const useParametros = () => {
 
             const response = await getJson<ParametrosResponse>('/api/lineas_credito/parametros', { auth: true })
 
-            if (response.status) {
-                parametrosCache.value = response
+            if (response.success) {
+                parametrosCache.value = response.data
                 return response
             } else {
                 throw new Error(response.message || 'Error al cargar parámetros')
@@ -36,83 +36,83 @@ export const useParametros = () => {
     }
 
     const getAuxiliaresContables = computed(() => {
-        return parametrosCache.value?.data.auxiliares_contables || []
+        return parametrosCache.value?.auxiliares_contables || []
     })
 
     const getCentrosCostos = computed(() => {
-        return parametrosCache.value?.data.centros_de_costos || []
+        return parametrosCache.value?.centros_de_costos || []
     })
 
     const getDatosGeneralesCredito = computed(() => {
-        return parametrosCache.value?.data.datos_generales_del_creditos[0] || null
+        return parametrosCache.value?.datos_generales_del_creditos[0] || null
     })
 
     const getFormasPago = computed(() => {
-        return parametrosCache.value?.data.formas_de_pago || []
+        return parametrosCache.value?.formas_de_pago || []
     })
 
     const getGarantiasPago = computed(() => {
-        return parametrosCache.value?.data.garantia_de_pagos || []
+        return parametrosCache.value?.garantia_de_pagos || []
     })
 
     const getTiposCreditoVigencia = computed(() => {
-        return parametrosCache.value?.data.tipos_de_credito_en_vigencia || []
+        return parametrosCache.value?.tipos_de_credito_en_vigencia || []
     })
 
     const getTiposInversion = computed(() => {
-        return parametrosCache.value?.data.tipos_de_inversion || []
+        return parametrosCache.value?.tipos_de_inversion || []
     })
 
     const getTiposDocumentosRequeridos = computed(() => {
-        return parametrosCache.value?.data.tipos_documentos_requeridos || []
+        return parametrosCache.value?.tipos_documentos_requeridos || []
     })
 
     const getMotivosRechazo = computed(() => {
-        return parametrosCache.value?.data.motivos_de_rechazos || []
+        return parametrosCache.value?.motivos_de_rechazos || []
     })
 
     const getOficinasCredito = computed(() => {
-        return parametrosCache.value?.data.oficinas_de_credito || []
+        return parametrosCache.value?.oficinas_de_credito || []
     })
 
     const getPeriodosPago = computed(() => {
-        return parametrosCache.value?.data.periodos_de_pago || []
+        return parametrosCache.value?.periodos_de_pago || []
     })
 
     const getPeriodosPagoDesembolsos = computed(() => {
-        return parametrosCache.value?.data.periodos_de_pago_desembolsos || []
+        return parametrosCache.value?.periodos_de_pago_desembolsos || []
     })
 
     const getEmpresasSeguros = computed(() => {
-        return parametrosCache.value?.data.empresa_de_seguros || []
+        return parametrosCache.value?.empresa_de_seguros || []
     })
 
     const getMarcasRecibosCaja = computed(() => {
-        return parametrosCache.value?.data.marcas_de_recibos_de_caja || []
+        return parametrosCache.value?.marcas_de_recibos_de_caja || []
     })
 
     const getTiposDistribucion = computed(() => {
-        return parametrosCache.value?.data.tipos_de_distribucion || []
+        return parametrosCache.value?.tipos_de_distribucion || []
     })
 
     const getFondosCreditoSocial = computed(() => {
-        return parametrosCache.value?.data.fondos_de_credito_social || []
+        return parametrosCache.value?.fondos_de_credito_social || []
     })
 
     const getFormasPagoTesoreria = computed(() => {
-        return parametrosCache.value?.data.formas_de_pagos_tesoreria || []
+        return parametrosCache.value?.formas_de_pagos_tesoreria || []
     })
 
     const getTiposTerceros = computed(() => {
-        return parametrosCache.value?.data.tipos_de_terceros || []
+        return parametrosCache.value?.tipos_de_terceros || []
     })
 
     const getDatosPeriodos = computed(() => {
-        return parametrosCache.value?.data.datos_de_periodos || []
+        return parametrosCache.value?.datos_de_periodos || []
     })
 
     const getOficinasAfiliacionUsuario = computed(() => {
-        return parametrosCache.value?.data.oficinas_de_afiliacion_por_usuario || []
+        return parametrosCache.value?.oficinas_de_afiliacion_por_usuario || []
     })
 
     // Función para obtener auxiliar por código

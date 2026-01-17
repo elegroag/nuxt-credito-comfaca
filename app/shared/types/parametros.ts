@@ -210,5 +210,5 @@ export type ParametrosResponse = {
         tipos_documentos_requeridos: TipoDocumentoRequerido[]
     }
     message: string
-    status: boolean
+    success: boolean
 }

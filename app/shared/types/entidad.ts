@@ -26,11 +26,14 @@ export interface EntidadDigitalVerificationData {
 
 export interface QrTokenResponse {
     success: boolean;
-    qr_token: string;
-    expires_at: number;
-    user: {
-        username: string;
-    };
+    data: {
+        qr_token: string,
+        expires_at: number,
+        user: {
+            username: string;
+        };
+    },
+    timestamp?: string,
     error?: string;
 }
 

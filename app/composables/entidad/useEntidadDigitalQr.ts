@@ -77,7 +77,7 @@ export function useEntidadDigitalQr() {
             const response = await getJson<QrTokenResponse>('/api/auth/qr-token', { auth: true })
             if (!response.success) throw new Error(response.error || 'Error al obtener token')
 
-            const qrToken = response.qr_token
+            const qrToken = response.data?.qr_token
             const backendUrl = config.public.backendBaseUrl || 'http://localhost:5001'
             const authUrl = `${backendUrl}/api/auth/mobile/authorize/${qrToken}`
 
@@ -92,7 +92,7 @@ export function useEntidadDigitalQr() {
 
             qrCodeUrl.value = authUrl
             const now = Math.floor(Date.now() / 1000)
-            const remaining = response.expires_at - now
+            const remaining = response.data.expires_at - now
             startCountdown(remaining > 0 ? remaining : 0)
 
             initSocket(username, onConfirm)

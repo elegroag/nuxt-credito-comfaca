@@ -431,12 +431,12 @@ const cargarLineaCredito = async () => {
     } else {
       // Consultar API si no está en cache
       const response = await getJson<{
-        status: boolean
+        success: boolean
         message: string
         data: any[]
       }>('/api/lineas_credito/tipo_creditos', { auth: true })
       
-      if (response.status) {
+      if (response.success) {
         // Guardar todas las líneas en cache
         response.data.forEach(linea => {
           lineasCache.value.set(linea.tipcre, linea)

@@ -153,25 +153,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useApi } from '~/composables/useApi'
-import { useSession } from '~/composables/useSession'
-import { useFirmas } from '~/composables/firmas/useFirmas'
-import type { SolicitudCredito } from '~/shared/types/solicitud-credito'
+import { onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { useFirmado } from '~/composables/firmado/useFirmado'
 
 const route = useRoute()
-const router = useRouter()
-const { getJson, postJson, urlFor } = useApi() // Asegurar que tenemos acceso a fetch si es necesario, aunque useApi devuelve wrappers
-const { ready } = useSession()
 const solicitudId = route.params.id as string
 
-const solicitud = ref<SolicitudCredito | null>(null)
-const loadingSolicitud = ref(true)
-const errorSolicitud = ref<string | null>(null)
-
-// Usamos el composable existente de firmas
 const {
+  solicitud,
+  loadingSolicitud,
+  errorSolicitud,
+  hasXmlFilename,
+  canSign,
   solicitudFilename,
   rolFirmante,
   aprobado,
@@ -183,101 +177,15 @@ const {
   loading,
   errorMsg,
   savedFilename,
-  firmar
-} = useFirmas()
-
-const hasXmlFilename = computed(() => {
-  return !!solicitud.value?.xml_filename
-})
-
-const canSign = computed(() => {
-  return claveFirma.value.length >= 10 && 
-         claveFirma.value === claveFirmaConfirm.value && 
-         aprobado.value &&
-         !loading.value
-})
-
-const cargarSolicitud = async () => {
-  loadingSolicitud.value = true
-  errorSolicitud.value = null
-  try {
-    const response = await getJson<{success: boolean, data: SolicitudCredito}>(`/api/solicitudes-credito/${solicitudId}`, { auth: true })
-    solicitud.value = response.data
-    
-    if (solicitud.value) {
-        // Pre-llenar datos del firmante desde la solicitud
-        const solicitante = solicitud.value.payload.solicitante
-        
-        // Asignar valores al composable de firmas
-        nombreApellidos.value = solicitante.nombres_apellidos
-        tipoIdentificacion.value = solicitante.tipo_identificacion as any
-        numeroIdentificacion.value = solicitante.numero_identificacion
-        
-        // Si hay nombre de archivo XML, lo asignamos
-        if (solicitud.value.xml_filename) {
-            solicitudFilename.value = solicitud.value.xml_filename
-        }
-        
-        // Resetear otros campos
-        claveFirma.value = ''
-        claveFirmaConfirm.value = ''
-        aprobado.value = true
-        errorMsg.value = ''
-        savedFilename.value = ''
-    }
-
-  } catch (e: any) {
-    console.error(e)
-    errorSolicitud.value = e.message || 'No se pudo cargar la información de la solicitud.'
-  } finally {
-    loadingSolicitud.value = false
-  }
-}
-
-const handleFirmar = async () => {
-    if (!canSign.value) return
-    
-    await firmar()
-}
-
-const finalizarProceso = async () => {
-    try {
-        // Llamar al endpoint para finalizar el proceso
-        const { authHeader } = useSession()
-        const { urlFor } = useApi()
-        
-        await $fetch(urlFor(`/api/solicitudes-credito/${solicitudId}/finalizar`), {
-            method: 'POST',
-            headers: {
-                ...authHeader.value as any
-            }
-        })
-        
-        // Redirigir a la página de inicio del sistema
-        await router.push('/')
-        
-    } catch (error) {
-        console.error('Error finalizando proceso:', error)
-        // Si hay error, igual redirigir al inicio
-        await router.push('/')
-    }
-}
-
-const handleBack = () => {
-    router.push(`/documentos/${solicitudId}`)
-}
-
-const handleNavigation = (step: string) => {
-    // Lógica de navegación del wizard
-}
+  handleFirmar,
+  finalizarProceso,
+  handleBack,
+  handleNavigation,
+  initialize
+} = useFirmado(solicitudId)
 
 onMounted(() => {
-    if (solicitudId) {
-        cargarSolicitud()
-    } else {
-        errorSolicitud.value = 'ID de solicitud no válido'
-        loadingSolicitud.value = false
-    }
+  initialize()
 })
 
 definePageMeta({

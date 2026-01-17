@@ -131,22 +131,20 @@ export function useFirmas() {
                 body.firmas_filename = firmasFilename.value;
             }
 
-            const response = await $fetch<{
+            const response = await postJson<{
                 success: boolean;
                 message: string;
-                saved_filename?: string;
+                data: {
+                    saved_filename?: string;
+                },
                 error?: string;
-            }>(urlFor('/api/solicitud-credito/firmas'), {
-                method: 'POST',
-                body,
-                headers: {
-                    ...authHeader.value as any
-                }
-            });
+            }>('/api/solicitud-credito/firmas', body, { auth: true });
 
             // Manejar respuesta JSON del endpoint actualizado
-            if (response.success && response.saved_filename) {
-                savedFilename.value = response.saved_filename;
+            if (response.success) {
+                if (response.data.saved_filename) {
+                    savedFilename.value = response.data.saved_filename;
+                }
             } else {
                 throw new Error(response.error || 'Error en la respuesta del servidor');
             }

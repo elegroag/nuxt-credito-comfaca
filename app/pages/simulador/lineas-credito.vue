@@ -237,12 +237,12 @@ const fetchLineasCredito = async () => {
     error.value = null
     
     const response = await getJson<{
-      status: boolean
+      success: boolean
       message: string
       data: LineaCredito[]
     }>('/api/lineas_credito/tipo_creditos', { auth: true })
     
-    if (response.status) {
+    if (response.success) {
       lineasCredito.value = response.data
     } else {
       error.value = response.message || 'Error al cargar las líneas de crédito'
