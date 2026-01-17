@@ -137,3 +137,14 @@ export const ESTADOS_DISPONIBLES = [
     'Enviado',
     'Desiste'
 ] as const
+
+
+export interface UseSolicitudesBuscar {
+    loading: Readonly<Ref<boolean>>
+    error: Readonly<Ref<string | null>>
+    solicitudes: Readonly<ComputedRef<SolicitudAdmin[]>>
+    totalItems: Readonly<Ref<number>>
+    tieneFiltrosActivos: ComputedRef<boolean>
+    aplicarFiltros: (nuevosFiltros: Partial<FiltrosSolicitudes>) => void
+    limpiarFiltros: () => void
+}

@@ -6,30 +6,19 @@
 import type {
     FiltrosSolicitudes,
     OpcionesFiltro,
-    SolicitudAdmin
+    SolicitudAdmin,
+    UseSolicitudesBuscar
 } from '~/shared/types/admin-solicitudes'
 
-type FiltrosSolicitudesReadonly = Omit<FiltrosSolicitudes, 'estados'> & {
-    estados?: readonly string[]
-}
+import { computed, onMounted, ref } from 'vue'
 
-interface UseSolicitudesBuscar {
-    loading: Readonly<Ref<boolean>>
-    filtrosActivos: Readonly<Ref<FiltrosSolicitudesReadonly>>
-    tieneFiltrosActivos: ComputedRef<boolean>
-    aplicarFiltros: (nuevosFiltros: Partial<FiltrosSolicitudes>) => void
-    limpiarFiltros: () => void
-}
-
-export const useSolicitudesBuscar = (): UseSolicitudesBuscar => {
-
-    const { getJson, postJson, putJson, deleteJson } = useApi()
+export const useSolicitudesBuscar = (props: { filtrosActivos: any }): UseSolicitudesBuscar => {
+    const { postJson } = useApi()
     const loading = ref(false)
-    // Filtros activos
-    const filtrosActivos = ref<FiltrosSolicitudes>({
-        skip: 0,
-        limit: 20
-    })
+    const error = ref<string | null>(null)
+    const solicitudesCache = ref<SolicitudAdmin[]>([])
+    const totalItems = ref(0)
+
 
     // Opciones para filtros
     const opcionesFiltro = ref<OpcionesFiltro>({
@@ -39,7 +28,7 @@ export const useSolicitudesBuscar = (): UseSolicitudesBuscar => {
 
     // Computed properties
     const tieneFiltrosActivos = computed(() => {
-        const f = filtrosActivos.value
+        const f = props.filtrosActivos.value
         return !!(
             f.numero_documento ||
             f.nombre_usuario ||
@@ -64,20 +53,28 @@ export const useSolicitudesBuscar = (): UseSolicitudesBuscar => {
     /**
      * Carga todas las solicitudes sin paginación (para exportar, etc.)
      */
-    const cargarSolicitudesFilter = async (): Promise<SolicitudAdmin[]> => {
+    const cargarSolicitudesFilter = async (): Promise<void> => {
+        loading.value = true
+        error.value = null
         try {
             const payload = {
-                ...filtrosActivos.value
+                filters: props.filtrosActivos.value
             }
             const response = await postJson<any>(
                 '/api/solicitudes-credito/filter',
                 payload,
                 { auth: true },
             )
-            return handleApiResponse(response, [])
+            const data = handleApiResponse(response, [])
+            solicitudesCache.value = Array.isArray(data) ? data : []
+            totalItems.value = solicitudesCache.value.length
         } catch (err) {
             console.error('Error cargando todas las solicitudes:', err)
-            throw new Error('Error al cargar todas las solicitudes')
+            error.value = 'Error al cargar las solicitudes'
+            solicitudesCache.value = []
+            totalItems.value = 0
+        } finally {
+            loading.value = false
         }
     }
 
@@ -85,7 +82,7 @@ export const useSolicitudesBuscar = (): UseSolicitudesBuscar => {
      * Aplica filtros y recarga los datos
      */
     const aplicarFiltros = (nuevosFiltros: Partial<FiltrosSolicitudes>) => {
-        filtrosActivos.value = { ...filtrosActivos.value, ...nuevosFiltros, skip: 0 }
+        props.filtrosActivos.value = { ...props.filtrosActivos.value, ...nuevosFiltros, skip: 0 }
         cargarSolicitudesFilter()
     }
 
@@ -93,18 +90,28 @@ export const useSolicitudesBuscar = (): UseSolicitudesBuscar => {
      * Limpia todos los filtros
  */
     const limpiarFiltros = () => {
-        filtrosActivos.value = {
+        props.filtrosActivos.value = {
             skip: 0,
             limit: 20
         }
         cargarSolicitudesFilter()
     }
 
+    const solicitudes = computed(() => {
+        return solicitudesCache.value
+    })
+
+    onMounted(() => {
+        cargarSolicitudesFilter()
+    })
+
 
 
     return {
         loading,
-        filtrosActivos,
+        error,
+        solicitudes,
+        totalItems,
         tieneFiltrosActivos,
         aplicarFiltros,
         limpiarFiltros
