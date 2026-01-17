@@ -56,9 +56,9 @@
 
             <!-- Filtros de solicitud -->
             <div class="form-group">
-              <label>Número de Solicitud</label>
+              <label>Radicado de Solicitud</label>
               <input
-                v-model="filtrosForm.numero_solicitud"
+                v-model="filtrosForm.id"
                 type="text"
                 placeholder="Buscar solicitud..."
                 class="form-control"
@@ -77,6 +77,16 @@
               <input
                 v-model="filtrosForm.fecha_hasta"
                 type="date"
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <label>Límite (máx. 1000)</label>
+              <input
+                v-model.number="filtrosForm.limit"
+                type="number"
+                min="1"
+                max="1000"
                 class="form-control"
               />
             </div>
@@ -133,6 +143,7 @@ import { computed, onMounted, ref } from 'vue'
 import DataTable from 'datatables.net-vue3'
 import DataTablesCore from 'datatables.net-dt'
 import 'datatables.net-dt/css/dataTables.dataTables.css'
+import '~/assets/css/data-table.css';
 import type { FiltrosSolicitudes, SolicitudAdmin } from '~/shared/types/admin-solicitudes'
 import { ESTADOS_DISPONIBLES } from '~/shared/types/admin-solicitudes'
 import { formatCurrency, formatDate } from '~/shared/formatters'
@@ -172,10 +183,22 @@ interface DataTableOptions {
   language: DataTableLanguage
 }
 
+const getDefaultDateFilters = () => {
+  const hoy = new Date()
+  const fecha_hasta = hoy.toISOString().slice(0, 10)
+  const fechaDesdeDate = new Date(hoy)
+  fechaDesdeDate.setDate(hoy.getDate() - 5)
+  const fecha_desde = fechaDesdeDate.toISOString().slice(0, 10)
+  return { fecha_desde, fecha_hasta }
+}
+
 // Filtros activos
+const { fecha_desde, fecha_hasta } = getDefaultDateFilters()
 const filtrosActivos = ref<FiltrosSolicitudes>({
-    skip: 0,
-    limit: 20
+  skip: 0,
+  limit: 1000,
+  fecha_desde,
+  fecha_hasta
 })
 
 const {
@@ -268,25 +291,15 @@ const datatableOpciones = computed<DataTableOptions>(() => ({
   }
 }))
 
-const getDefaultDateFilters = () => {
-  const hoy = new Date()
-  const fechaHasta = hoy.toISOString().slice(0, 10)
-  const fechaDesdeDate = new Date(hoy)
-  fechaDesdeDate.setDate(hoy.getDate() - 5)
-  const fechaDesde = fechaDesdeDate.toISOString().slice(0, 10)
-  return { fechaDesde, fechaHasta }
-}
-
-const { fechaDesde, fechaHasta } = getDefaultDateFilters()
-
 const filtrosForm = ref({
   numero_documento: '',
   nombre_usuario: '',
   owner_username: '',
   estado: '',
-  numero_solicitud: '',
-  fecha_desde: fechaDesde,
-  fecha_hasta: fechaHasta
+  id: '',
+  limit: 1000,
+  fecha_desde,
+  fecha_hasta
 })
 
 const limpiarFiltrosForm = () => {
@@ -296,15 +309,18 @@ const limpiarFiltrosForm = () => {
     nombre_usuario: '',
     owner_username: '',
     estado: '',
-    numero_solicitud: '',
-    fecha_desde: defaults.fechaDesde,
-    fecha_hasta: defaults.fechaHasta
+    id: '',
+    limit: 1000,
+    fecha_desde: defaults.fecha_desde,
+    fecha_hasta: defaults.fecha_hasta
   }
 }
 
 const aplicarFiltrosForm = () => {
+  const limiteSeguro = Math.min(Math.max(filtrosForm.value.limit || 1, 1), 1000)
   const filtrosLimpios: Partial<FiltrosSolicitudes> = {
     ...filtrosForm.value,
+    limit: limiteSeguro,
     estados: filtrosForm.value.estado ? [filtrosForm.value.estado] : undefined
   }
   const { estado, ...resto } = filtrosLimpios as Partial<FiltrosSolicitudes> & { estado?: string }
@@ -326,7 +342,54 @@ definePageMeta({
 })
 </script>
 
-<style>
+<style scoped>
+/* Los estilos ahora están en assets/css/admin-solicitudes.css */
 @import '~/assets/css/admin-solicitudes.css';
-@import '~/assets/css/data-table.css';
+
+.filtros-section {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
+.filtros-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding:1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.filtros-header h2 {
+  font-size: 1.25rem;
+  color: #374151;
+}
+
+.filtros-content {
+  padding: 1rem;
+}
+
+.filtros-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.filtros-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.filtros-activos-alert {
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  color: #92400e;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
 </style>

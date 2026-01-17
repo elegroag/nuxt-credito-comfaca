@@ -57,9 +57,7 @@ export const useSolicitudesBuscar = (props: { filtrosActivos: any }): UseSolicit
         loading.value = true
         error.value = null
         try {
-            const payload = {
-                filters: props.filtrosActivos.value
-            }
+            const payload = props.filtrosActivos.value;
             const response = await postJson<any>(
                 '/api/solicitudes-credito/filter',
                 payload,

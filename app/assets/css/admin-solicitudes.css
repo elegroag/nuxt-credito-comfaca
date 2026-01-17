@@ -117,36 +117,6 @@
   border: 1px dashed #d1d5db;
 }
 
-.filtros-section {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
-}
-
-.filtros-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.filtros-header h2 {
-  font-size: 1.25rem;
-  color: #374151;
-}
-
-.filtros-content {
-  padding: 1.5rem;
-}
-
-.filtros-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
 
 .form-group {
   display: flex;
@@ -178,22 +148,6 @@
   border-radius: 4px;
   font-size: 0.875rem;
   background: white;
-}
-
-.filtros-actions {
-  display: flex;
-  gap: 1rem;
-}
-
-.filtros-activos-alert {
-  background: #fef3c7;
-  border: 1px solid #fcd34d;
-  color: #92400e;
-  padding: 1rem;
-  border-radius: 4px;
-  margin-bottom: 2rem;
-  display: flex;
-  align-items: center;
 }
 
 .table-section {
