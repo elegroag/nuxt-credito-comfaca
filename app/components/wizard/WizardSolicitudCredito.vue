@@ -279,7 +279,6 @@ const {
   removeReferencia,
   closeSuccessModal,
   goToHome,
-  goToFirmas,
   goToDocumentos,
   generarXml,
   downloadXml
@@ -331,6 +330,12 @@ onMounted(() => {
     form.value.solicitante.telefono_fijo = trabajador.telefono || ''
     form.value.solicitante.telefono_movil = trabajador.telefono || ''
     form.value.solicitante.email = trabajador.email || ''
+    
+    // Agregar campos adicionales del solicitante
+    form.value.solicitante.codigo_categoria = trabajador.codigo_categoria || ''
+    form.value.solicitante.salario = trabajador.salario || 0
+    form.value.solicitante.empresa_nit = trabajador.empresa?.nit || ''
+    form.value.solicitante.empresa_razon_social = trabajador.empresa?.razon_social || ''
     
     // Cargar datos de la empresa en información laboral
     if (trabajador.empresa && form.value.informacion_laboral) {

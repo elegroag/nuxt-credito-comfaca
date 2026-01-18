@@ -202,6 +202,38 @@
                 {{ solicitud?.payload?.solicitante?.personas_a_cargo || 0 }}
               </p>
             </div>
+            <div>
+              <label class="text-sm font-medium text-gray-500"
+                >Categoría</label
+              >
+              <p class="text-lg">
+                {{ solicitud?.payload?.solicitante?.codigo_categoria || '-' }}
+              </p>
+            </div>
+            <div>
+              <label class="text-sm font-medium text-gray-500"
+                >Salario</label
+              >
+              <p class="text-lg font-semibold">
+                {{ fmtMoney(solicitud?.payload?.solicitante?.salario || 0) }}
+              </p>
+            </div>
+            <div>
+              <label class="text-sm font-medium text-gray-500"
+                >NIT Empresa</label
+              >
+              <p class="text-lg">
+                {{ solicitud?.payload?.solicitante?.empresa_nit || '-' }}
+              </p>
+            </div>
+            <div>
+              <label class="text-sm font-medium text-gray-500"
+                >Razón Social Empresa</label
+              >
+              <p class="text-lg">
+                {{ solicitud?.payload?.solicitante?.empresa_razon_social || '-' }}
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>

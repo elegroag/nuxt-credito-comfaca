@@ -107,6 +107,10 @@ export interface SolicitudCreditoPayload {
         tipo_vivienda: TipoVivienda
         vive_con_nucleo_familiar: boolean
         personas_a_cargo: number
+        codigo_categoria?: string
+        salario?: number
+        empresa_nit?: string
+        empresa_razon_social?: string
     }
     conyuge?: {
         identificacion: string

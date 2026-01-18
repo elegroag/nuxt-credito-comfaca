@@ -29,6 +29,25 @@ export const useSolicitudCreditoForm = () => {
             detalle_modalidad: '',
             foto_documento: { url: '' }
         },
+        linea_credito: {
+            auxest: '',
+            codigo_cap: '',
+            codigo_cen: '',
+            codigo_con: '',
+            codigo_cre: '',
+            codigo_int: '',
+            codigo_mor: '',
+            codigo_ser: '',
+            detalle_modalidad: '',
+            estado: '',
+            estcre: 0,
+            modxml4: 0,
+            numero_cuotas: 0,
+            pagseg: '',
+            repdcr: '',
+            tipcre: '',
+            tipfin: ''
+        },
         producto_solicitado: {
             tipo: 'vivienda',
             ha_tenido_credito_comfaca: false
@@ -201,6 +220,25 @@ export const useSolicitudCreditoForm = () => {
                 moneda: 'COP',
                 foto_documento: { url: '' }
             },
+            linea_credito: {
+                auxest: '',
+                codigo_cap: '',
+                codigo_cen: '',
+                codigo_con: '',
+                codigo_cre: '',
+                codigo_int: '',
+                codigo_mor: '',
+                codigo_ser: '',
+                detalle_modalidad: '',
+                estado: '',
+                estcre: 0,
+                modxml4: 0,
+                numero_cuotas: 0,
+                pagseg: '',
+                repdcr: '',
+                tipcre: '',
+                tipfin: ''
+            },
             producto_solicitado: {
                 tipo: 'vivienda',
                 ha_tenido_credito_comfaca: false
@@ -224,7 +262,11 @@ export const useSolicitudCreditoForm = () => {
                 email: '',
                 tipo_vivienda: 'propia',
                 vive_con_nucleo_familiar: true,
-                personas_a_cargo: 0
+                personas_a_cargo: 0,
+                codigo_categoria: '',
+                salario: 0,
+                empresa_nit: '',
+                empresa_razon_social: ''
             },
             conyuge: undefined,
             informacion_laboral: {
