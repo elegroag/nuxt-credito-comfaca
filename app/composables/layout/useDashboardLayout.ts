@@ -12,6 +12,7 @@ import {
     Share2,
     Key,
     User,
+    Users,
     List
 } from 'lucide-vue-next'
 
@@ -50,6 +51,7 @@ export function useDashboardLayout() {
         { label: 'Compartir firmas', to: '/firmas-compartir', abbr: _abbr('Compartir firmas'), icon: Share2 },
         { label: 'Entidad digital', to: '/entidad-digital', abbr: _abbr('Entidad digital'), icon: Key },
         { label: 'Solicitudes', to: '/admin/solicitudes', abbr: _abbr('Solicitudes'), icon: List, adminOnly: true, category: 'admin' },
+        { label: 'Usuarios', to: '/admin/users', abbr: _abbr('Usuarios'), icon: Users, adminOnly: true, category: 'admin' },
         { label: 'Perfil', to: '/perfil', abbr: _abbr('Perfil'), icon: User }
     ]
 
