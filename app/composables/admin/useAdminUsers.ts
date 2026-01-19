@@ -5,11 +5,11 @@ import { useSession } from '~/composables/useSession';
 export interface Usuario {
     id: string;
     username: string;
-    nombre: string;
-    apellido: string;
+    nombres: string;
+    apellidos: string;
     email: string;
-    tipo_identificacion: string;
-    numero_identificacion: string;
+    tipo_documento: string;
+    numero_documento: string;
     rol: string;
     estado: string;
     ultimo_acceso: string;
@@ -240,20 +240,18 @@ export function useAdminUsers() {
     // Utilidades
     const getRolLabel = (rol: string) => {
         const roles: Record<string, string> = {
-            admin: 'Administrador',
-            user: 'Usuario',
-            trabajador: 'Trabajador',
-            empresa: 'Empresa',
+            administrator: 'Administrador',
+            user_trabajador: 'Trabajador',
+            user_empresa: 'Empresa',
         };
         return roles[rol] || rol;
     };
 
     const getRolVariant = (rol: string): 'default' | 'destructive' | 'outline' | 'secondary' => {
         const variants: Record<string, 'default' | 'destructive' | 'outline' | 'secondary'> = {
-            admin: 'destructive',
-            user: 'default',
-            trabajador: 'secondary',
-            empresa: 'outline',
+            administrator: 'destructive',
+            user_trabajador: 'default',
+            user_empresa: 'secondary',
         };
         return variants[rol] || 'default';
     };

@@ -5,11 +5,11 @@
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-4">
           <h1 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <UsersIcon class="w-8 h-8 text-blue-500" />
-            Administración de Usuarios
+            <BuildingOfficeIcon class="w-8 h-8 text-blue-500" />
+            Administración de Convenios
           </h1>
           <p class="text-sm text-gray-500">
-            Gestión de usuarios del sistema
+            Gestión de empresas con convenios
           </p>
         </div>
         <div class="flex items-center gap-3">
@@ -17,10 +17,10 @@
             <ArrowPathIcon class="w-4 h-4 mr-2" />
             Recargar
           </Button>
-          <NuxtLink to="/admin/users/create">
+          <NuxtLink to="/admin/convenios/create">
             <Button>
               <PlusIcon class="w-4 h-4 mr-2" />
-              Nuevo Usuario
+              Nuevo Convenio
             </Button>
           </NuxtLink>
         </div>
@@ -33,36 +33,7 @@
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
             <FunnelIcon class="w-4 h-4 text-gray-400" />
-            Filtrar por Rol
-          </label>
-          <select 
-            v-model="filtros.rol" 
-            @change="aplicarFiltros"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">Todos los roles</option>
-            <option value="administrator">Administrador</option>
-            <option value="user_trabajador">Trabajador</option>
-            <option value="user_empresa">Empresa</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
-            <MagnifyingGlassIcon class="w-4 h-4 text-gray-400" />
-            Buscar por nombre o email
-          </label>
-          <input
-            v-model="filtros.busqueda"
-            @input="debounceSearch"
-            type="text"
-            placeholder="Buscar usuario..."
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
-            <ShieldCheckIcon class="w-4 h-4 text-gray-400" />
-            Estado
+            Filtrar por Estado
           </label>
           <select 
             v-model="filtros.estado" 
@@ -70,39 +41,55 @@
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Todos los estados</option>
-            <option value="active">Activo</option>
-            <option value="inactive">Inactivo</option>
-            <option value="suspended">Suspendido</option>
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
           </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
+            <MagnifyingGlassIcon class="w-4 h-4 text-gray-400" />
+            Buscar por razón social, NIT o representante
+          </label>
+          <input
+            v-model="filtros.busqueda"
+            @input="debounceSearch"
+            type="text"
+            placeholder="Buscar empresa..."
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
+            <IdentificationIcon class="w-4 h-4 text-gray-400" />
+            Filtrar por NIT
+          </label>
+          <input
+            v-model="filtros.nit"
+            @input="debounceSearch"
+            type="text"
+            placeholder="NIT de la empresa..."
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
         </div>
       </div>
     </div>
 
     <!-- Resumen -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <div class="bg-white rounded-lg border border-gray-200 p-4">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-gray-500">Total Usuarios</p>
-            <p class="text-2xl font-bold text-gray-900">{{ totalUsuarios }}</p>
+            <p class="text-sm text-gray-500">Total Convenios</p>
+            <p class="text-2xl font-bold text-gray-900">{{ totalEmpresas }}</p>
           </div>
-          <UsersIcon class="w-8 h-8 text-blue-500" />
+          <BuildingOfficeIcon class="w-8 h-8 text-blue-500" />
         </div>
       </div>
       <div class="bg-white rounded-lg border border-gray-200 p-4">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-gray-500">Administradores</p>
-            <p class="text-2xl font-bold text-gray-900">{{ conteoRoles.admin || 0 }}</p>
-          </div>
-          <ShieldCheckIcon class="w-8 h-8 text-purple-500" />
-        </div>
-      </div>
-      <div class="bg-white rounded-lg border border-gray-200 p-4">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm text-gray-500">Usuarios Activos</p>
-            <p class="text-2xl font-bold text-gray-900">{{ conteoEstados.active || 0 }}</p>
+            <p class="text-sm text-gray-500">Convenios Activos</p>
+            <p class="text-2xl font-bold text-gray-900">{{ conteoEstados.Activo || 0 }}</p>
           </div>
           <CheckIcon class="w-8 h-8 text-green-500" />
         </div>
@@ -110,20 +97,20 @@
       <div class="bg-white rounded-lg border border-gray-200 p-4">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-gray-500">Usuarios Inactivos</p>
-            <p class="text-2xl font-bold text-gray-900">{{ conteoEstados.inactive || 0 }}</p>
+            <p class="text-sm text-gray-500">Convenios Inactivos</p>
+            <p class="text-2xl font-bold text-gray-900">{{ conteoEstados.Inactivo || 0 }}</p>
           </div>
           <NoSymbolIcon class="w-8 h-8 text-red-500" />
         </div>
       </div>
     </div>
 
-    <!-- Tabla de usuarios -->
+    <!-- Tabla de convenios -->
     <div class="bg-white rounded-lg border border-gray-200">
       <div class="px-6 py-4 border-b border-gray-200">
         <div class="flex items-center justify-between">
           <h2 class="text-lg font-semibold text-gray-900">
-            Usuarios ({{ usuarios.length }})
+            Empresas con Convenios ({{ empresas.length }})
           </h2>
           <div class="flex items-center gap-3">
             <select 
@@ -143,20 +130,20 @@
       <!-- Loading State -->
       <div v-if="loading" class="flex flex-col items-center justify-center py-16">
         <ArrowPathIcon class="w-10 h-10 animate-spin text-blue-500 mb-4" />
-        <p class="text-gray-500">Cargando usuarios...</p>
+        <p class="text-gray-500">Cargando convenios...</p>
       </div>
 
       <!-- Error State -->
       <div v-else-if="error" class="flex flex-col items-center justify-center py-16">
         <NoSymbolIcon class="w-10 h-10 text-red-500 mb-4" />
         <p class="text-red-600 mb-4">{{ error }}</p>
-        <Button variant="outline" @click="cargarUsuarios">Reintentar</Button>
+        <Button variant="outline" @click="cargarEmpresas">Reintentar</Button>
       </div>
 
       <!-- Empty State -->
-      <div v-else-if="usuarios.length === 0" class="flex flex-col items-center justify-center py-16">
-        <UsersIcon class="w-10 h-10 text-gray-400 mb-4" />
-        <p class="text-gray-500">No se encontraron usuarios</p>
+      <div v-else-if="empresas.length === 0" class="flex flex-col items-center justify-center py-16">
+        <BuildingOfficeIcon class="w-10 h-10 text-gray-400 mb-4" />
+        <p class="text-gray-500">No se encontraron empresas con convenios</p>
       </div>
 
       <!-- Tabla -->
@@ -167,19 +154,19 @@
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 <div class="flex items-center gap-1">
                   <IdentificationIcon class="w-4 h-4" />
-                  Número Documento
+                  NIT
+                </div>
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <div class="flex items-center gap-1">
+                  <BuildingOfficeIcon class="w-4 h-4" />
+                  Razón Social
                 </div>
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 <div class="flex items-center gap-1">
                   <UserCircleIcon class="w-4 h-4" />
-                  Nombres y Apellidos
-                </div>
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <div class="flex items-center gap-1">
-                  <ShieldCheckIcon class="w-4 h-4" />
-                  Rol
+                  Representante
                 </div>
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -191,7 +178,13 @@
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 <div class="flex items-center gap-1">
                   <CalendarIcon class="w-4 h-4" />
-                  Fecha Creación
+                  Fecha Convenio
+                </div>
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <div class="flex items-center gap-1">
+                  <CalendarIcon class="w-4 h-4" />
+                  Vencimiento
                 </div>
               </th>
               <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -200,42 +193,55 @@
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="usuario in usuarios" :key="usuario.id" class="hover:bg-gray-50">
+            <tr v-for="empresa in empresas" :key="empresa.id" class="hover:bg-gray-50">
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900 flex items-center gap-1">
-                  <IdentificationIcon class="w-4 h-4 text-gray-400" />
-                  {{ usuario.numero_documento }}
+                <div class="text-sm font-medium text-gray-900">
+                  {{ empresa.nit }}
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm font-medium text-gray-900">
-                  {{ usuario.nombres }} {{ usuario.apellidos }}
+                  {{ empresa.razon_social }}
+                </div>
+                <div class="text-sm text-gray-500 flex items-center gap-1">
+                  <EnvelopeIcon class="w-3 h-3" />
+                  {{ empresa.correo }}
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <Badge :variant="getRolVariant(usuario.rol)">
-                  {{ getRolLabel(usuario.rol) }}
-                </Badge>
+                <div class="text-sm text-gray-900">
+                  {{ empresa.representante_nombre }}
+                </div>
+                <div class="text-sm text-gray-500 flex items-center gap-1">
+                  <IdentificationIcon class="w-3 h-3" />
+                  {{ empresa.representante_documento }}
+                </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <Badge :variant="getEstadoVariant(usuario.estado)">
-                  {{ getEstadoLabel(usuario.estado) }}
+                <Badge :variant="getEstadoVariant(empresa.estado)">
+                  {{ getEstadoLabel(empresa.estado) }}
                 </Badge>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 <div class="flex items-center gap-1">
                   <CalendarIcon class="w-4 h-4 text-gray-400" />
-                  {{ formatDate(usuario.fecha_creacion) }}
+                  {{ formatDate(empresa.fecha_convenio) }}
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <div class="flex items-center gap-1">
+                  <CalendarIcon class="w-4 h-4 text-gray-400" />
+                  {{ formatDate(empresa.fecha_vencimiento) }}
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div class="flex items-center justify-end gap-2">
-                  <NuxtLink :to="`/admin/users/show/${usuario.id}`">
+                  <NuxtLink :to="`/admin/convenios/show/${empresa.id}`">
                     <Button variant="ghost" size="sm">
                       <EyeIcon class="w-4 h-4" />
                     </Button>
                   </NuxtLink>
-                  <NuxtLink :to="`/admin/users/edit/${usuario.id}`">
+                  <NuxtLink :to="`/admin/convenios/edit/${empresa.id}`">
                     <Button variant="ghost" size="sm">
                       <PencilIcon class="w-4 h-4" />
                     </Button>
@@ -243,11 +249,19 @@
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    @click="toggleEstadoUsuario(usuario)"
-                    :class="usuario.estado === 'active' ? 'text-red-600 hover:text-red-700' : 'text-green-600 hover:text-green-700'"
+                    @click="toggleEstadoEmpresa(empresa)"
+                    :class="empresa.estado === 'Activo' ? 'text-red-600 hover:text-red-700' : 'text-green-600 hover:text-green-700'"
                   >
-                    <NoSymbolIcon v-if="usuario.estado === 'active'" class="w-4 h-4" />
+                    <NoSymbolIcon v-if="empresa.estado === 'Activo'" class="w-4 h-4" />
                     <CheckIcon v-else class="w-4 h-4" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    @click="eliminarEmpresa(empresa)"
+                    class="text-red-600 hover:text-red-700"
+                  >
+                    <TrashIcon class="w-4 h-4" />
                   </Button>
                 </div>
               </td>
@@ -260,8 +274,8 @@
       <div class="px-6 py-4 border-t border-gray-200">
         <div class="flex items-center justify-between">
           <div class="text-sm text-gray-700">
-            Mostrando {{ (paginacion.offset + 1) }} a {{ Math.min(paginacion.offset + usuarios.length, totalUsuarios) }} 
-            de {{ totalUsuarios }} usuarios
+            Mostrando {{ (paginacion.offset + 1) }} a {{ Math.min(paginacion.offset + empresas.length, totalEmpresas) }} 
+            de {{ totalEmpresas }} empresas
           </div>
           <div class="flex items-center gap-2">
             <Button
@@ -288,7 +302,7 @@
               variant="outline"
               size="sm"
               @click="paginaSiguiente"
-              :disabled="paginacion.offset + usuarios.length >= totalUsuarios"
+              :disabled="paginacion.offset + empresas.length >= totalEmpresas"
             >
               Siguiente
               <ChevronRightIcon class="w-4 h-4" />
@@ -302,11 +316,11 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { useAdminUsers } from '~/composables/admin/useAdminUsers';
+import { useAdminConvenios } from '~/composables/admin/useAdminConvenios';
 import Button from '@/components/ui/Button.vue';
 import Badge from '@/components/ui/Badge.vue';
 import {
-  UsersIcon,
+  BuildingOfficeIcon,
   MagnifyingGlassIcon,
   FunnelIcon,
   ArrowPathIcon,
@@ -315,12 +329,13 @@ import {
   CheckIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  ShieldCheckIcon,
-  UserCircleIcon,
   IdentificationIcon,
+  EnvelopeIcon,
+  UserCircleIcon,
   CalendarIcon,
   EyeIcon,
   PencilIcon,
+  TrashIcon,
 } from '@heroicons/vue/24/outline';
 
 definePageMeta({
@@ -330,34 +345,32 @@ definePageMeta({
 
 // Usar el composable
 const {
-  usuarios,
+  empresas,
   loading,
   error,
-  totalUsuarios,
-  conteoRoles,
+  totalEmpresas,
   conteoEstados,
   filtros,
   paginacion,
   paginaActual,
   paginasVisibles,
   debounceSearch,
-  cargarUsuarios,
+  cargarEmpresas,
   recargarDatos,
   paginaAnterior,
   paginaSiguiente,
   irAPagina,
-  toggleEstadoUsuario,
+  toggleEstadoEmpresa,
+  eliminarEmpresa,
   cambiarLimite,
   aplicarFiltros,
-  getRolLabel,
-  getRolVariant,
   getEstadoLabel,
   getEstadoVariant,
   formatDate,
-} = useAdminUsers();
+} = useAdminConvenios();
 
 // Lifecycle
 onMounted(() => {
-  cargarUsuarios();
+  cargarEmpresas();
 });
 </script>

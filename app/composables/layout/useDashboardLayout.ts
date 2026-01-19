@@ -13,7 +13,8 @@ import {
     Key,
     User,
     Users,
-    List
+    List,
+    Building
 } from 'lucide-vue-next'
 
 // Estado compartido (singleton)
@@ -52,6 +53,7 @@ export function useDashboardLayout() {
         { label: 'Entidad digital', to: '/entidad-digital', abbr: _abbr('Entidad digital'), icon: Key },
         { label: 'Solicitudes', to: '/admin/solicitudes', abbr: _abbr('Solicitudes'), icon: List, adminOnly: true, category: 'admin' },
         { label: 'Usuarios', to: '/admin/users', abbr: _abbr('Usuarios'), icon: Users, adminOnly: true, category: 'admin' },
+        { label: 'Convenios', to: '/admin/convenios', abbr: _abbr('Convenios'), icon: Building, adminOnly: true, category: 'admin' },
         { label: 'Perfil', to: '/perfil', abbr: _abbr('Perfil'), icon: User }
     ]
 
