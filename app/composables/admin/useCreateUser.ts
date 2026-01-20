@@ -2,35 +2,7 @@ import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useApi } from '~/composables/useApi';
 import { useSession } from '~/composables/useSession';
-
-export interface CreateUserForm {
-    // Información básica
-    username: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-    rol: string;
-    estado: string;
-
-    // Datos personales
-    nombre: string;
-    apellido: string;
-    tipo_identificacion: string;
-    numero_documento: string;
-    telefono: string;
-    codigo_categoria: string;
-
-    // Datos empresa
-    empresa_nit: string;
-    empresa_razon_social: string;
-
-    // Dirección
-    direccion: string;
-    ciudad: string;
-    barrio: string;
-    tipo_vivienda: string;
-    personas_a_cargo: number;
-}
+import type { CreateUserForm } from '~/shared/types/admin_usuarios';
 
 export function useCreateUser() {
     const router = useRouter();

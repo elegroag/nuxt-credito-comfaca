@@ -3,17 +3,20 @@
     <FormField label="Fecha vinculación">
       <Input v-model="form.solicitante.fecha_vinculacion" type="date" />
     </FormField>
+    
     <FormField label="Tipo identificación">
-      <Select v-model="form.solicitante.tipo_identificacion">
-        <SelectTrigger>
-          <SelectValue placeholder="Seleccionar tipo" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="CC">CC</SelectItem>
-          <SelectItem value="CE">CE</SelectItem>
-        </SelectContent>
-      </Select>
+      <select v-model="form.solicitante.tipo_identificacion" :class="selectClass">
+        <option value="" disabled>Seleccionar tipo</option>
+        <option 
+          v-for="item in tiposDocumento" 
+          :key="item.coddoc" 
+          :value="item.coddoc"
+        >
+          {{ item.detdoc }}
+        </option>
+      </select>
     </FormField>
+
     <FormField label="Número identificación">
       <Input v-model="form.solicitante.numero_identificacion" />
     </FormField>
@@ -29,45 +32,79 @@
     <FormField label="Fecha expedición documento">
       <Input v-model="form.solicitante.fecha_expedicion_documento" type="date" />
     </FormField>
+    
     <FormField label="Profesión/Ocupación">
-      <Input v-model="form.solicitante.profesion_ocupacion" />
+      <select v-model="form.solicitante.profesion_ocupacion" :class="selectClass">
+        <option value="" disabled>Seleccionar ocupación</option>
+        <option 
+          v-for="item in ocupaciones" 
+          :key="item.codocu" 
+          :value="item.codocu"
+        >
+          {{ item.detalle }}
+        </option>
+      </select>
     </FormField>
+    
     <FormField label="Sexo">
-      <Select v-model="form.solicitante.sexo">
-        <SelectTrigger>
-          <SelectValue placeholder="Seleccionar sexo" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="M">M</SelectItem>
-          <SelectItem value="F">F</SelectItem>
-        </SelectContent>
-      </Select>
+      <select v-model="form.solicitante.sexo" :class="selectClass">
+        <option value="" disabled>Seleccionar sexo</option>
+        <option 
+          v-for="item in sexos" 
+          :key="item.codsex" 
+          :value="item.codsex"
+        >
+          {{ item.detsex }}
+        </option>
+      </select>
     </FormField>
+    
     <FormField label="Nivel educativo">
-      <Select v-model="form.solicitante.nivel_educativo">
-        <SelectTrigger>
-          <SelectValue placeholder="Seleccionar nivel" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="primaria">primaria</SelectItem>
-          <SelectItem value="bachillerato">bachillerato</SelectItem>
-          <SelectItem value="tecnico">tecnico</SelectItem>
-          <SelectItem value="universitario">universitario</SelectItem>
-          <SelectItem value="posgrado">posgrado</SelectItem>
-          <SelectItem value="ninguno">ninguno</SelectItem>
-        </SelectContent>
-      </Select>
+      <select v-model="form.solicitante.nivel_educativo" :class="selectClass">
+        <option value="" disabled>Seleccionar nivel</option>
+        <option 
+          v-for="item in nivelesEducativos" 
+          :key="item.nivedu" 
+          :value="item.nivedu"
+        >
+          {{ item.detalle }}
+        </option>
+      </select>
     </FormField>
 
     <FormField label="Barrio residencia">
       <Input v-model="form.solicitante.barrio_residencia" />
     </FormField>
-    <FormField label="Ciudad residencia">
-      <Input v-model="form.solicitante.ciudad_residencia" />
+    
+    <FormField label="Ciudad residencia (Vue Select)">
+      <vSelect
+        v-model="form.solicitante.ciudad_residencia"
+        :options="ciudades"
+        :reduce="(item: CiudadOption) => item.codciu"
+        label="detciu"
+        placeholder="Seleccionar ciudad"
+        :clearable="true"
+        :searchable="true"
+        class="w-full"
+      />
     </FormField>
+    
     <FormField label="País residencia">
       <Input v-model="form.solicitante.pais_residencia" />
     </FormField>
+    <FormField label="Estado civil">
+      <select v-model="form.solicitante.estado_civil" :class="selectClass">
+        <option value="" disabled>Seleccionar estado civil</option>
+        <option 
+          v-for="item in estadoCiviles" 
+          :key="item.estciv" 
+          :value="item.estciv"
+        >
+          {{ item.detest }}
+        </option>
+      </select>
+    </FormField>
+    
     <FormField label="Teléfono fijo (opcional)">
       <Input v-model="form.solicitante.telefono_fijo" />
     </FormField>
@@ -79,16 +116,16 @@
     </FormField>
 
     <FormField label="Tipo vivienda">
-      <Select v-model="form.solicitante.tipo_vivienda">
-        <SelectTrigger>
-          <SelectValue placeholder="Seleccionar tipo" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="propia">propia</SelectItem>
-          <SelectItem value="familiar">familiar</SelectItem>
-          <SelectItem value="arrendada">arrendada</SelectItem>
-        </SelectContent>
-      </Select>
+      <select v-model="form.solicitante.tipo_vivienda" :class="selectClass">
+        <option value="" disabled>Seleccionar tipo</option>
+        <option 
+          v-for="item in tiposVivienda" 
+          :key="item.vivienda" 
+          :value="item.vivienda"
+        >
+          {{ item.detalle }}
+        </option>
+      </select>
     </FormField>
 
     <label class="flex items-center gap-2 text-sm text-foreground">
@@ -107,12 +144,66 @@
 </template>
 
 <script setup lang="ts">
+import { h } from 'vue'
 import FormField from '~/components/shared/FormField.vue'
 import Input from '@/components/ui/Input.vue'
+import vSelect from 'vue-select'
+import "~/assets/css/vue-select.css";
+
+// Configurar componentes personalizados para vue-select
+vSelect.props.components.default = () => ({
+  Deselect: {
+    render: () => h('span', '❌'),
+  },
+  OpenIndicator: {
+    render: () => h('span', '🔽'),
+  },
+})
+
+interface CiudadOption {
+  codciu: string
+  detciu: string
+}
 
 interface Props {
   form: any
+  ciudades?: CiudadOption[]
+  tiposDocumento?: any[]
+  sexos?: any[]
+  nivelesEducativos?: any[]
+  tiposVivienda?: any[]
+  ocupaciones?: any[]
+  estadoCiviles?: any[]
 }
 
-defineProps<Props>()
+withDefaults(defineProps<Props>(), {
+  ciudades: () => [],
+  tiposDocumento: () => [],
+  sexos: () => [],
+  nivelesEducativos: () => [],
+  tiposVivienda: () => [],
+  ocupaciones: () => [],
+  estadoCiviles: () => []
+})
+
+const selectClass = "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
 </script>
+
+<style scoped>
+:root {
+  --vs-controls-color: #664cc3;
+  --vs-border-color: #664cc3;
+
+  --vs-dropdown-bg: #282c34;
+  --vs-dropdown-color: #cc99cd;
+  --vs-dropdown-option-color: #cc99cd;
+
+  --vs-selected-bg: #664cc3;
+  --vs-selected-color: #eeeeee;
+
+  --vs-search-input-color: #eeeeee;
+
+  --vs-dropdown-option--active-bg: #664cc3;
+  --vs-dropdown-option--active-color: #eeeeee;
+}
+</style>

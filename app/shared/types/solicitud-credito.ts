@@ -26,7 +26,7 @@ export type NivelEducativo =
     | 'posgrado'
     | 'ninguno'
 
-export type TipoVivienda = 'propia' | 'familiar' | 'arrendada'
+export type TipoVivienda = string | 'N' | 'F' | 'P' | 'A' | 'H'
 
 export type TiempoServicioUnidad = 'meses' | 'anios'
 
@@ -110,7 +110,8 @@ export interface SolicitudCreditoPayload {
         codigo_categoria?: string
         salario?: number
         empresa_nit?: string
-        empresa_razon_social?: string
+        empresa_razon_social?: string,
+        estado_civil?: string,
     }
     conyuge?: {
         identificacion: string

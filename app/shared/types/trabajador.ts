@@ -28,5 +28,6 @@ export type Trabajador = {
     sexo: string
     telefono: string
     tipo_documento: string,
-    codigo_categoria?: string
+    codigo_categoria?: string,
+    tipo_vivienda?: string,
 }

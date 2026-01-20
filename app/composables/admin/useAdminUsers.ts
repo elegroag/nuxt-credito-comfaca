@@ -1,34 +1,7 @@
 import { ref, computed } from 'vue';
 import { useApi } from '~/composables/useApi';
 import { useSession } from '~/composables/useSession';
-
-export interface Usuario {
-    id: string;
-    username: string;
-    nombres: string;
-    apellidos: string;
-    email: string;
-    tipo_documento: string;
-    numero_documento: string;
-    rol: string;
-    estado: string;
-    ultimo_acceso: string;
-    fecha_creacion: string;
-    telefono?: string;
-    codigo_categoria?: string;
-    empresa_nit?: string;
-    empresa_razon_social?: string;
-    direccion?: string;
-    ciudad?: string;
-    barrio?: string;
-    tipo_vivienda?: string;
-    personas_a_cargo?: number;
-}
-
-export interface Paginacion {
-    limit: number;
-    offset: number;
-}
+import type { Usuario, Paginacion } from '~/shared/types/admin_usuarios';
 
 export function useAdminUsers() {
     const { getJson, putJson } = useApi();

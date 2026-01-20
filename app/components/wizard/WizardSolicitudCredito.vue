@@ -85,6 +85,13 @@
         <SolicitanteStep 
           v-else-if="steps[step]?.key === 'solicitante'"
           :form="form"
+          :ciudades="props.parametros?.ciudades || []"
+          :tipos-documento="props.parametros?.codigos_tipo_documento || []"
+          :sexos="props.parametros?.sexos || []"
+          :niveles-educativos="props.parametros?.nivel_educativos || []"
+          :tipos-vivienda="props.parametros?.tipo_vivienda || []"
+          :ocupaciones="props.parametros?.ocupaciones || []"
+          :estado-civiles="props.parametros?.estado_civiles || []"
         />
         
         <ConyugeStep 
@@ -98,6 +105,8 @@
         <LaboralStep 
           v-else-if="steps[step]?.key === 'laboral'"
           :form="form"
+          :ciudades="props.parametros?.ciudades || []"
+          :tipos-contrato="props.parametros?.tipo_contrato || []"
         />
         
         <IngresosStep 
@@ -116,6 +125,7 @@
           :form="form"
           :add-propiedad="addPropiedad"
           :remove-propiedad="removePropiedad"
+          :ciudades="props.parametros?.ciudades || []"
         />
         
         <DeudasStep 
@@ -330,6 +340,8 @@ onMounted(() => {
     form.value.solicitante.telefono_fijo = trabajador.telefono || ''
     form.value.solicitante.telefono_movil = trabajador.telefono || ''
     form.value.solicitante.email = trabajador.email || ''
+    form.value.solicitante.estado_civil = trabajador.estado_civil || ''
+    form.value.solicitante.tipo_vivienda = trabajador.tipo_vivienda || 'A'
     
     // Agregar campos adicionales del solicitante
     form.value.solicitante.codigo_categoria = trabajador.codigo_categoria || ''

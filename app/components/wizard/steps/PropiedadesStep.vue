@@ -38,7 +38,16 @@
             </select>
           </FormField>
           <FormField label="Ciudad">
-            <Input v-model="p.ciudad" />
+            <select v-model="p.ciudad" :class="selectClass">
+              <option value="" disabled>Seleccionar ciudad</option>
+              <option 
+                v-for="item in ciudades" 
+                :key="item.codciu" 
+                :value="item.codciu"
+              >
+                {{ item.detciu }}
+              </option>
+            </select>
           </FormField>
           <FormField label="Descripción" class="sm:col-span-2">
             <Input v-model="p.descripcion" />

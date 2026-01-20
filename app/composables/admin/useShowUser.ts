@@ -3,29 +3,7 @@ import { useRouter } from 'vue-router';
 import { useRoute } from 'vue-router';
 import { useApi } from '~/composables/useApi';
 import { useSession } from '~/composables/useSession';
-
-export interface Usuario {
-    id: string;
-    username: string;
-    nombre: string;
-    apellido: string;
-    email: string;
-    tipo_identificacion: string;
-    numero_documento: string;
-    rol: string;
-    estado: string;
-    ultimo_acceso: string;
-    fecha_creacion: string;
-    telefono?: string;
-    codigo_categoria?: string;
-    empresa_nit?: string;
-    empresa_razon_social?: string;
-    direccion?: string;
-    ciudad?: string;
-    barrio?: string;
-    tipo_vivienda?: string;
-    personas_a_cargo?: number;
-}
+import type { Usuario } from '~/shared/types/admin_usuarios';
 
 export function useShowUser() {
     const router = useRouter();

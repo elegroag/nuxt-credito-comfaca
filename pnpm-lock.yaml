@@ -59,6 +59,9 @@ importers:
       vue-router:
         specifier: ^4.6.4
         version: 4.6.4(vue@3.5.26(typescript@5.9.3))
+      vue-select:
+        specifier: 4.0.0-beta.6
+        version: 4.0.0-beta.6(vue@3.5.26(typescript@5.9.3))
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4.0.0
@@ -3619,6 +3622,11 @@ packages:
     resolution: {integrity: sha512-Hz9q5sa33Yhduglwz6g9skT8OBPii+4bFn88w6J+J4MfEo4KRRpmiNG/hHHkdbRFlLBOqxN8y8gf2Fb0MTUgVg==}
     peerDependencies:
       vue: ^3.5.0
+
+  vue-select@4.0.0-beta.6:
+    resolution: {integrity: sha512-K+zrNBSpwMPhAxYLTCl56gaMrWZGgayoWCLqe5rWwkB8aUbAUh7u6sXjIR7v4ckp2WKC7zEEUY27g6h1MRsIHw==}
+    peerDependencies:
+      vue: 3.x
 
   vue@3.5.26:
     resolution: {integrity: sha512-SJ/NTccVyAoNUJmkM9KUqPcYlY+u8OVL1X5EW9RIs3ch5H2uERxyyIUI4MRxVCSOiEcupX9xNGde1tL9ZKpimA==}
@@ -7465,6 +7473,10 @@ snapshots:
   vue-router@4.6.4(vue@3.5.26(typescript@5.9.3)):
     dependencies:
       '@vue/devtools-api': 6.6.4
+      vue: 3.5.26(typescript@5.9.3)
+
+  vue-select@4.0.0-beta.6(vue@3.5.26(typescript@5.9.3)):
+    dependencies:
       vue: 3.5.26(typescript@5.9.3)
 
   vue@3.5.26(typescript@5.9.3):
