@@ -20,27 +20,15 @@ export function useCreateUser() {
         email: '',
         password: '',
         confirmPassword: '',
-        rol: '',
-        estado: 'active',
+        roles: [],
+        disabled: false,
 
         // Datos personales
         nombre: '',
         apellido: '',
-        tipo_identificacion: '',
+        tipo_documento: 'CC',
         numero_documento: '',
-        telefono: '',
-        codigo_categoria: '',
-
-        // Datos empresa
-        empresa_nit: '',
-        empresa_razon_social: '',
-
-        // Dirección
-        direccion: '',
-        ciudad: '',
-        barrio: '',
-        tipo_vivienda: '',
-        personas_a_cargo: 0,
+        phone: '',
     });
 
     // Validaciones
@@ -76,9 +64,9 @@ export function useCreateUser() {
             errors.value.confirmPassword = 'Las contraseñas no coinciden';
         }
 
-        // Validar rol
-        if (!form.rol) {
-            errors.value.rol = 'Debe seleccionar un rol';
+        // Validar roles
+        if (!form.roles || form.roles.length === 0) {
+            errors.value.roles = 'Debe seleccionar al menos un rol';
         }
 
         // Validar nombre
@@ -92,7 +80,7 @@ export function useCreateUser() {
         }
 
         // Validar número de documento si se proporciona tipo
-        if (form.tipo_identificacion && !form.numero_documento.trim()) {
+        if (form.tipo_documento && !form.numero_documento.trim()) {
             errors.value.numero_documento = 'El número de documento es requerido cuando se especifica el tipo';
         }
 
@@ -118,19 +106,11 @@ export function useCreateUser() {
                 password: form.password,
                 nombre: form.nombre.trim(),
                 apellido: form.apellido.trim(),
-                roles: [form.rol],
-                estado: form.estado,
-                tipo_identificacion: form.tipo_identificacion,
+                roles: form.roles,
+                disabled: form.disabled,
+                tipo_documento: form.tipo_documento,
                 numero_documento: form.numero_documento.trim(),
-                telefono: form.telefono.trim(),
-                codigo_categoria: form.codigo_categoria.trim(),
-                empresa_nit: form.empresa_nit.trim(),
-                empresa_razon_social: form.empresa_razon_social.trim(),
-                direccion: form.direccion.trim(),
-                ciudad: form.ciudad.trim(),
-                barrio: form.barrio.trim(),
-                tipo_vivienda: form.tipo_vivienda,
-                personas_a_cargo: form.personas_a_cargo || 0,
+                phone: form.phone.trim(),
             };
 
             const response = await postJson<{
@@ -169,21 +149,13 @@ export function useCreateUser() {
             email: '',
             password: '',
             confirmPassword: '',
-            rol: '',
-            estado: 'active',
+            roles: [],
+            disabled: false,
             nombre: '',
             apellido: '',
-            tipo_identificacion: '',
+            tipo_documento: 'CC',
             numero_documento: '',
-            telefono: '',
-            codigo_categoria: '',
-            empresa_nit: '',
-            empresa_razon_social: '',
-            direccion: '',
-            ciudad: '',
-            barrio: '',
-            tipo_vivienda: '',
-            personas_a_cargo: 0,
+            phone: '',
         });
         errors.value = {};
     };

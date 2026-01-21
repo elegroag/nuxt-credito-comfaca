@@ -37,27 +37,15 @@ export interface CreateUserForm {
     email: string;
     password: string;
     confirmPassword: string;
-    rol: string;
-    estado: string;
+    roles: string[];
+    disabled: boolean;
 
     // Datos personales
     nombre: string;
     apellido: string;
-    tipo_identificacion: string;
+    tipo_documento: string;
     numero_documento: string;
-    telefono: string;
-    codigo_categoria: string;
-
-    // Datos empresa
-    empresa_nit: string;
-    empresa_razon_social: string;
-
-    // Dirección
-    direccion: string;
-    ciudad: string;
-    barrio: string;
-    tipo_vivienda: string;
-    personas_a_cargo: number;
+    phone: string;
 }
 
 // Alias para EditUserForm - usa la misma estructura que CreateUserForm

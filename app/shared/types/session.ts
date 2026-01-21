@@ -8,6 +8,7 @@ export type SessionUser = {
     numero_documento: string
     nombres: string
     apellidos: string
+    adviser_number?: string
     trabajador?: Trabajador
 }
 

@@ -23,27 +23,15 @@ export function useEditUser() {
         email: '',
         password: '',
         confirmPassword: '',
-        rol: '',
-        estado: 'active',
+        roles: [],
+        disabled: false,
 
         // Datos personales
         nombre: '',
         apellido: '',
-        tipo_identificacion: '',
+        tipo_documento: 'CC',
         numero_documento: '',
-        telefono: '',
-        codigo_categoria: '',
-
-        // Datos empresa
-        empresa_nit: '',
-        empresa_razon_social: '',
-
-        // Dirección
-        direccion: '',
-        ciudad: '',
-        barrio: '',
-        tipo_vivienda: '',
-        personas_a_cargo: 0,
+        phone: '',
     });
 
     // Errores
@@ -69,21 +57,13 @@ export function useEditUser() {
                 // Cargar formulario con datos del usuario
                 form.username = response.data.username || '';
                 form.email = response.data.email || '';
-                form.nombre = response.data.nombre || '';
-                form.apellido = response.data.apellido || '';
-                form.rol = response.data.rol || '';
-                form.estado = response.data.estado || 'active';
-                form.tipo_identificacion = response.data.tipo_identificacion || '';
+                form.nombre = response.data.nombres || response.data.nombre || '';
+                form.apellido = response.data.apellidos || response.data.apellido || '';
+                form.roles = response.data.roles || [];
+                form.disabled = response.data.disabled || false;
+                form.tipo_documento = response.data.tipo_documento || 'CC';
                 form.numero_documento = response.data.numero_documento || '';
-                form.telefono = response.data.telefono || '';
-                form.codigo_categoria = response.data.codigo_categoria || '';
-                form.empresa_nit = response.data.empresa_nit || '';
-                form.empresa_razon_social = response.data.empresa_razon_social || '';
-                form.direccion = response.data.direccion || '';
-                form.ciudad = response.data.ciudad || '';
-                form.barrio = response.data.barrio || '';
-                form.tipo_vivienda = response.data.tipo_vivienda || '';
-                form.personas_a_cargo = response.data.personas_a_cargo || 0;
+                form.phone = response.data.phone || response.data.telefono || '';
             } else {
                 error.value = response.message || 'No se pudo cargar la información del usuario';
             }
@@ -127,9 +107,9 @@ export function useEditUser() {
             }
         }
 
-        // Validar rol
-        if (!form.rol) {
-            errors.value.rol = 'Debe seleccionar un rol';
+        // Validar roles
+        if (!form.roles || form.roles.length === 0) {
+            errors.value.roles = 'Debe seleccionar al menos un rol';
         }
 
         // Validar nombre
@@ -143,7 +123,7 @@ export function useEditUser() {
         }
 
         // Validar número de documento si se proporciona tipo
-        if (form.tipo_identificacion && !form.numero_documento.trim()) {
+        if (form.tipo_documento && !form.numero_documento.trim()) {
             errors.value.numero_documento = 'El número de documento es requerido cuando se especifica el tipo';
         }
 
@@ -167,19 +147,11 @@ export function useEditUser() {
                 email: form.email.trim(),
                 nombre: form.nombre.trim(),
                 apellido: form.apellido.trim(),
-                roles: [form.rol],
-                estado: form.estado,
-                tipo_identificacion: form.tipo_identificacion,
+                roles: form.roles,
+                disabled: form.disabled,
+                tipo_documento: form.tipo_documento,
                 numero_documento: form.numero_documento.trim(),
-                telefono: form.telefono.trim(),
-                codigo_categoria: form.codigo_categoria.trim(),
-                empresa_nit: form.empresa_nit.trim(),
-                empresa_razon_social: form.empresa_razon_social.trim(),
-                direccion: form.direccion.trim(),
-                ciudad: form.ciudad.trim(),
-                barrio: form.barrio.trim(),
-                tipo_vivienda: form.tipo_vivienda,
-                personas_a_cargo: form.personas_a_cargo || 0,
+                phone: form.phone.trim(),
             };
 
             // Agregar contraseña solo si se proporciona
@@ -220,21 +192,13 @@ export function useEditUser() {
         if (usuario.value) {
             form.username = usuario.value.username || '';
             form.email = usuario.value.email || '';
-            form.nombre = usuario.value.nombre || '';
-            form.apellido = usuario.value.apellido || '';
-            form.rol = usuario.value.rol || '';
-            form.estado = usuario.value.estado || 'active';
-            form.tipo_identificacion = usuario.value.tipo_identificacion || '';
+            form.nombre = usuario.value.nombres || usuario.value.nombre || '';
+            form.apellido = usuario.value.apellidos || usuario.value.apellido || '';
+            form.roles = usuario.value.roles || [];
+            form.disabled = usuario.value.disabled || false;
+            form.tipo_documento = usuario.value.tipo_documento || 'CC';
             form.numero_documento = usuario.value.numero_documento || '';
-            form.telefono = usuario.value.telefono || '';
-            form.codigo_categoria = usuario.value.codigo_categoria || '';
-            form.empresa_nit = usuario.value.empresa_nit || '';
-            form.empresa_razon_social = usuario.value.empresa_razon_social || '';
-            form.direccion = usuario.value.direccion || '';
-            form.ciudad = usuario.value.ciudad || '';
-            form.barrio = usuario.value.barrio || '';
-            form.tipo_vivienda = usuario.value.tipo_vivienda || '';
-            form.personas_a_cargo = usuario.value.personas_a_cargo || 0;
+            form.phone = usuario.value.phone || usuario.value.telefono || '';
             form.password = '';
             form.confirmPassword = '';
         }
