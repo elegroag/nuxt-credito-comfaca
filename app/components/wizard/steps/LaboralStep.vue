@@ -13,34 +13,34 @@
       <Input v-model="form.informacion_laboral.empresa_direccion" />
     </FormField>
     <FormField label="Ciudad">
-      <select v-model="form.informacion_laboral.empresa_ciudad" :class="selectClass">
-        <option value="" disabled>Seleccionar ciudad</option>
-        <option 
-          v-for="item in ciudades" 
-          :key="item.codciu" 
-          :value="item.codciu"
-        >
-          {{ item.detciu }}
-        </option>
-      </select>
+      <CustomSelect
+        v-model="form.informacion_laboral.empresa_ciudad"
+        :options="ciudadesOptions"
+        placeholder="Seleccionar ciudad"
+        clearable
+        searchable
+      />
     </FormField>
     <FormField label="Cargo">
-      <Input v-model="form.informacion_laboral.cargo" />
+      <CustomSelect
+        v-model="form.informacion_laboral.cargo"
+        :options="cargosOptions"
+        placeholder="Seleccionar cargo"
+        clearable
+        searchable
+      />
     </FormField>
     <FormField label="Fecha ingreso">
       <Input v-model="form.informacion_laboral.fecha_ingreso" type="date" />
     </FormField>
     <FormField label="Tipo contrato">
-      <select v-model="form.informacion_laboral.tipo_contrato" :class="selectClass">
-        <option value="" disabled>Seleccionar tipo</option>
-        <option 
-          v-for="item in tiposContrato" 
-          :key="item.tipcon" 
-          :value="item.tipcon"
-        >
-          {{ item.detalle }}
-        </option>
-      </select>
+      <CustomSelect
+        v-model="form.informacion_laboral.tipo_contrato"
+        :options="tiposContratoOptions"
+        placeholder="Seleccionar tipo"
+        clearable
+        searchable
+      />
     </FormField>
     <FormField label="Nombramiento / Pagador">
       <Input v-model="form.informacion_laboral.nombramiento_o_pagador" />
@@ -49,28 +49,67 @@
       <Input v-model.number="form.informacion_laboral.tiempo_servicio" type="number" min="0" />
     </FormField>
     <FormField label="Unidad">
-      <select v-model="form.informacion_laboral.tiempo_servicio_unidad" :class="selectClass">
-        <option value="meses">meses</option>
-        <option value="anios">anios</option>
-      </select>
+      <CustomSelect
+        v-model="form.informacion_laboral.tiempo_servicio_unidad"
+        :options="tiempoUnidadOptions"
+        placeholder="Seleccionar unidad"
+      />
     </FormField>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from '#imports';
 import FormField from '~/components/shared/FormField.vue'
 import Input from '@/components/ui/Input.vue'
+import CustomSelect from '~/components/ui/CustomSelect.vue'
 
 interface Props {
   form: any
   ciudades?: any[]
   tiposContrato?: any[]
+  ocupaciones?: any[]
 }
 
-withDefaults(defineProps<Props>(), {
+interface SelectOption {
+  label: string
+  value: string | number
+  description?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
   ciudades: () => [],
-  tiposContrato: () => []
+  tiposContrato: () => [],
+  ocupaciones: () => []
 })
 
-const selectClass = "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+// Opciones para unidades de tiempo
+const tiempoUnidadOptions: SelectOption[] = [
+  { label: 'Meses', value: 'meses' },
+  { label: 'Años', value: 'anios' }
+]
+
+// Convertir ocupaciones a formato SelectOption
+const cargosOptions = computed(() => 
+  props.ocupaciones.map(item => ({
+    label: item.detalle,
+    value: item.codocu
+  }))
+)
+
+// Convertir ciudades a formato SelectOption
+const ciudadesOptions = computed(() => 
+  props.ciudades.map(item => ({
+    label: item.detciu,
+    value: item.codciu
+  }))
+)
+
+// Convertir tipos de contrato a formato SelectOption
+const tiposContratoOptions = computed(() => 
+  props.tiposContrato.map(item => ({
+    label: item.detalle,
+    value: item.tipcon
+  }))
+)
 </script>

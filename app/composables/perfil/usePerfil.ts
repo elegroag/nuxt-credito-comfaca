@@ -1,20 +1,42 @@
 // frontend/pages/perfil/usePerfil.ts
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useSession } from '~/composables/useSession';
 import { useApi } from '~/composables/useApi';
 import type { Perfil, PasswordData } from '~/shared/types/perfil';
 
+type ApiSuccessResponse<T> = {
+    success: boolean;
+    message?: string;
+    data?: T;
+};
+
+type PerfilApiData = {
+    id: string;
+    username: string;
+    email: string;
+    full_name?: string | null;
+    phone?: string | null;
+    tipo_documento?: string | null;
+    numero_documento?: string | null;
+    nombres?: string | null;
+    apellidos?: string | null;
+};
+
 export function usePerfil() {
     const router = useRouter();
     const { session, setSession } = useSession();
-    const { getJson, putJson, postJson } = useApi();
+    const { getJson, putJson } = useApi();
 
     const perfil = ref<Perfil>({
-        nombre: '',
+        username: '',
         email: '',
-        telefono: '',
-        direccion: ''
+        full_name: '',
+        phone: '',
+        tipo_documento: '',
+        numero_documento: '',
+        nombres: '',
+        apellidos: ''
     });
 
     const passwordData = ref<PasswordData>({
@@ -28,10 +50,13 @@ export function usePerfil() {
     const error = ref<string | null>(null);
     const success = ref(false);
 
-    // Validar contraseña
+    const hasPasswordChange = computed(() => {
+        return Boolean(passwordData.value.password_actual || passwordData.value.nueva_password || passwordData.value.confirmar_password);
+    });
+
     const validarPassword = () => {
-        if (!passwordData.value.nueva_password && !passwordData.value.password_actual) {
-            return true; // No se está cambiando la contraseña
+        if (!hasPasswordChange.value) {
+            return true;
         }
 
         if (!passwordData.value.password_actual) {
@@ -39,8 +64,22 @@ export function usePerfil() {
             return false;
         }
 
-        if (passwordData.value.nueva_password.length < 6) {
-            error.value = 'La nueva contraseña debe tener al menos 6 caracteres';
+        if (!passwordData.value.nueva_password) {
+            error.value = 'Debes ingresar la nueva contraseña';
+            return false;
+        }
+
+        if (passwordData.value.nueva_password.length < 8) {
+            error.value = 'La nueva contraseña debe tener al menos 8 caracteres';
+            return false;
+        }
+
+        const pwd = passwordData.value.nueva_password;
+        const hasUpper = /[A-Z]/.test(pwd);
+        const hasLower = /[a-z]/.test(pwd);
+        const hasDigit = /\d/.test(pwd);
+        if (!(hasUpper && hasLower && hasDigit)) {
+            error.value = 'La nueva contraseña debe contener mayúsculas, minúsculas y números';
             return false;
         }
 
@@ -52,115 +91,137 @@ export function usePerfil() {
         return true;
     };
 
-    // Cargar datos del perfil
+    const sync_full_name = () => {
+        const fullName = `${perfil.value.nombres} ${perfil.value.apellidos}`.trim();
+        perfil.value.full_name = fullName;
+    };
+
+    watch(
+        () => [perfil.value.nombres, perfil.value.apellidos],
+        () => {
+            sync_full_name();
+        }
+    );
+
     const cargarPerfil = async () => {
         try {
             loading.value = true;
+            error.value = null;
 
-            // Obtener datos de identificación desde localStorage
-            const userData = localStorage.getItem('comfaca_credito_user');
-            let tipo_identificacion = '';
-            let numero_identificacion = '';
-
-            if (userData) {
-                const user = JSON.parse(userData);
-                tipo_identificacion = user.tipo_documento || '';
-                numero_identificacion = user.numero_documento || '';
-            }
-
-            // Usar POST con body en lugar de GET con query params
-            const data = await postJson<any>('/api/perfil', {
-                tipo_identificacion,
-                numero_identificacion
-            }, { auth: true });
-
-            // Actualizar perfil con los datos obtenidos
-            if (data.success && data.data) {
+            const data = await getJson<ApiSuccessResponse<PerfilApiData>>('/api/perfil', { auth: true });
+            if (data?.success && data.data) {
                 perfil.value = {
-                    nombre: data.data.full_name || '',
-                    email: data.data.email || '',
-                    telefono: data.data.phone || '',
-                    direccion: '' // No disponible en la respuesta actual
+                    username: String(data.data.username || ''),
+                    email: String(data.data.email || ''),
+                    full_name: String(data.data.full_name || ''),
+                    phone: String(data.data.phone || ''),
+                    tipo_documento: String(data.data.tipo_documento || ''),
+                    numero_documento: String(data.data.numero_documento || ''),
+                    nombres: String(data.data.nombres || ''),
+                    apellidos: String(data.data.apellidos || '')
                 };
-            } else {
-                // Fallback a datos existentes si el endpoint no funciona
-                if (session.value.user) {
-                    const user = session.value.user;
-                    perfil.value = {
-                        nombre: `${user.nombres || ''} ${user.apellidos || ''}`.trim(),
-                        email: user.email || '',
-                        telefono: '',
-                        direccion: ''
-                    };
-                }
+            } else if (session.value.user) {
+                const user = session.value.user;
+                perfil.value.username = user.username || '';
+                perfil.value.email = user.email || '';
+                perfil.value.tipo_documento = user.tipo_documento || '';
+                perfil.value.numero_documento = user.numero_documento || '';
+                perfil.value.nombres = user.nombres || '';
+                perfil.value.apellidos = user.apellidos || '';
+                sync_full_name();
             }
         } catch (err) {
             console.error('Error al cargar perfil:', err);
             error.value = 'No se pudo cargar el perfil. Intenta de nuevo.';
-
-            // Fallback a datos de sesión en caso de error
             if (session.value.user) {
                 const user = session.value.user;
-                perfil.value = {
-                    nombre: `${user.nombres || ''} ${user.apellidos || ''}`.trim(),
-                    email: user.email || '',
-                    telefono: '',
-                    direccion: ''
-                };
+                perfil.value.username = user.username || '';
+                perfil.value.email = user.email || '';
+                perfil.value.tipo_documento = user.tipo_documento || '';
+                perfil.value.numero_documento = user.numero_documento || '';
+                perfil.value.nombres = user.nombres || '';
+                perfil.value.apellidos = user.apellidos || '';
+                sync_full_name();
             }
         } finally {
             loading.value = false;
         }
     };
 
-    // Guardar cambios
+    const recargarPerfil = async () => {
+        await cargarPerfil();
+    };
+
     const guardarPerfil = async () => {
         try {
             guardando.value = true;
             error.value = null;
             success.value = false;
 
-            // Validar contraseña si se está cambiando
+            sync_full_name();
+
             if (!validarPassword()) {
                 guardando.value = false;
                 return;
             }
 
-            const payload: any = { ...perfil.value };
+            const updatePayload: Record<string, string> = {
+                email: perfil.value.email,
+                phone: perfil.value.phone,
+                full_name: perfil.value.full_name
+            };
 
-            // Agregar datos de contraseña solo si se está cambiando
-            if (passwordData.value.nueva_password) {
-                payload.password_actual = passwordData.value.password_actual;
-                payload.nueva_password = passwordData.value.nueva_password;
+            const updateResp = await putJson<ApiSuccessResponse<PerfilApiData>>('/api/perfil', updatePayload, { auth: true });
+            if (updateResp?.success && updateResp.data) {
+                perfil.value = {
+                    username: String(updateResp.data.username || ''),
+                    email: String(updateResp.data.email || ''),
+                    full_name: String(updateResp.data.full_name || ''),
+                    phone: String(updateResp.data.phone || ''),
+                    tipo_documento: String(updateResp.data.tipo_documento || ''),
+                    numero_documento: String(updateResp.data.numero_documento || ''),
+                    nombres: String(updateResp.data.nombres || ''),
+                    apellidos: String(updateResp.data.apellidos || '')
+                };
             }
 
-            const data = await putJson<any>('/api/perfil', payload, { auth: true });
+            if (hasPasswordChange.value) {
+                await putJson<ApiSuccessResponse<null>>(
+                    '/api/perfil/password',
+                    {
+                        current_password: passwordData.value.password_actual,
+                        new_password: passwordData.value.nueva_password
+                    },
+                    { auth: true }
+                );
+            }
 
-            // Actualizar sesión si se devuelven datos de usuario
-            if (data.usuario) {
-                setSession({
+            if (session.value.user) {
+                await setSession({
                     ...session.value,
-                    user: data.usuario
+                    user: {
+                        ...session.value.user,
+                        email: perfil.value.email,
+                        nombres: perfil.value.nombres,
+                        apellidos: perfil.value.apellidos
+                    }
                 });
             }
 
             success.value = true;
-
-            // Limpiar campos de contraseña después de guardar
             passwordData.value = {
                 password_actual: '',
                 nueva_password: '',
                 confirmar_password: ''
             };
 
-            // Ocultar mensaje de éxito después de 3 segundos
             setTimeout(() => {
                 success.value = false;
             }, 3000);
 
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Error al guardar perfil:', err);
-            error.value = err.data?.message || err.response?.data?.message || 'Error al guardar los cambios. Intenta de nuevo.';
+            error.value = 'Error al guardar los cambios. Intenta de nuevo.';
         } finally {
             guardando.value = false;
         }
@@ -175,25 +236,21 @@ export function usePerfil() {
         };
     };
 
-    // Cargar perfil al montar el componente
     onMounted(async () => {
         if (!session.value || !session.value.user) {
             console.error('Usuario no autenticado');
-            // Redirigir al login si no hay usuario
             router.push('/login');
             return;
         }
 
-        // Inicializar con datos del usuario si existen
-        if (session.value.user) {
-            const user = session.value.user;
-            perfil.value = {
-                nombre: `${user.nombres || ''} ${user.apellidos || ''}`.trim(),
-                email: user.email || '',
-                telefono: '', // No disponible en SessionUser
-                direccion: '' // No disponible en SessionUser
-            };
-        }
+        const user = session.value.user;
+        perfil.value.username = user.username || '';
+        perfil.value.email = user.email || '';
+        perfil.value.tipo_documento = user.tipo_documento || '';
+        perfil.value.numero_documento = user.numero_documento || '';
+        perfil.value.nombres = user.nombres || '';
+        perfil.value.apellidos = user.apellidos || '';
+        sync_full_name();
 
         await cargarPerfil();
     });
@@ -206,6 +263,7 @@ export function usePerfil() {
         error,
         success,
         guardarPerfil,
+        recargarPerfil,
         resetPasswordForm
     };
 }

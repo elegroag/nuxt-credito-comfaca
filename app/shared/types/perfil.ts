@@ -1,8 +1,12 @@
 export interface Perfil {
-    nombre: string;
+    username: string;
     email: string;
-    telefono?: string;
-    direccion?: string;
+    full_name: string;
+    phone: string;
+    tipo_documento: string;
+    numero_documento: string;
+    nombres: string;
+    apellidos: string;
 }
 
 export interface PasswordData {

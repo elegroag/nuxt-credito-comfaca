@@ -20,34 +20,32 @@
     <div class="grid gap-4">
       <Card v-for="(p, idx) in form.propiedades" :key="idx" class="border-border/50 bg-muted/20">
         <CardHeader class="flex flex-row items-center justify-between py-3">
-          <CardTitle class="text-sm font-semibold">Propiedad #{{ idx + 1 }}</CardTitle>
+          <CardTitle class="text-sm font-semibold">Propiedad #{{ (idx as number) + 1 }}</CardTitle>
           <Button 
             variant="ghost" 
             size="sm" 
             class="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-2" 
-            @click="removePropiedad(idx)"
+            @click="removePropiedad(idx as number)"
           >
             <Trash2 class="h-4 w-4" />
           </Button>
         </CardHeader>
         <CardContent class="grid gap-4 sm:grid-cols-2 pb-4">
           <FormField label="Tipo bien">
-            <select v-model="p.tipo_bien" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-              <option value="vivienda">vivienda</option>
-              <option value="vehiculo">vehiculo</option>
-            </select>
+            <CustomSelect
+              v-model="p.tipo_bien"
+              :options="tiposBienOptions"
+              placeholder="Seleccionar tipo"
+            />
           </FormField>
           <FormField label="Ciudad">
-            <select v-model="p.ciudad" :class="selectClass">
-              <option value="" disabled>Seleccionar ciudad</option>
-              <option 
-                v-for="item in ciudades" 
-                :key="item.codciu" 
-                :value="item.codciu"
-              >
-                {{ item.detciu }}
-              </option>
-            </select>
+            <CustomSelect
+              v-model="p.ciudad"
+              :options="ciudadesOptions"
+              placeholder="Seleccionar ciudad"
+              clearable
+              searchable
+            />
           </FormField>
           <FormField label="Descripción" class="sm:col-span-2">
             <Input v-model="p.descripcion" />
@@ -71,6 +69,7 @@
 
 <script setup lang="ts">
 import { Plus, Trash2 } from 'lucide-vue-next'
+import { computed } from '#imports'
 import FormField from '~/components/shared/FormField.vue'
 import Input from '@/components/ui/Input.vue'
 import Button from '@/components/ui/Button.vue'
@@ -78,12 +77,36 @@ import Card from '@/components/ui/Card.vue'
 import CardHeader from '@/components/ui/CardHeader.vue'
 import CardTitle from '@/components/ui/CardTitle.vue'
 import CardContent from '@/components/ui/CardContent.vue'
+import CustomSelect from '~/components/ui/CustomSelect.vue'
 
 interface Props {
   form: any
   addPropiedad: () => void
   removePropiedad: (index: number) => void
+  ciudades?: any[]
 }
 
-defineProps<Props>()
+interface SelectOption {
+  label: string
+  value: string | number
+  description?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  ciudades: () => []
+})
+
+// Opciones para tipo de bien
+const tiposBienOptions: SelectOption[] = [
+  { label: 'Vivienda', value: 'vivienda' },
+  { label: 'Vehículo', value: 'vehiculo' }
+]
+
+// Convertir ciudades a formato SelectOption
+const ciudadesOptions = computed(() => 
+  props.ciudades.map(item => ({
+    label: item.detciu,
+    value: item.codciu
+  }))
+)
 </script>

@@ -452,3 +452,13 @@
 .text-gray-400 {
   color: #9ca3af;
 }
+
+/* Checkbox styling */
+input[type="checkbox"] {
+  accent-color: #3b82f6;
+}
+
+input[type="checkbox"]:checked {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+}

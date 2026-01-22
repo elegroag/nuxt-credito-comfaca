@@ -17,22 +17,10 @@
           </div>
 
           <div class="flex shrink-0 flex-wrap items-center gap-2">
-            <NuxtLink to="/solicitud">
+            <NuxtLink to="/simulador/lineas-credito">
               <Button class="bg-primary text-primary-foreground hover:bg-primary/90">
                 <FilePlus class="h-5 w-5 mr-2" />
                 Nueva solicitud
-              </Button>
-            </NuxtLink>
-            <NuxtLink to="/simulador/lineas-credito">
-              <Button variant="outline" class="border-border bg-transparent">
-                <Calculator class="h-5 w-5 mr-2" />
-                Simular
-              </Button>
-            </NuxtLink>
-            <NuxtLink to="/xml-extract">
-              <Button variant="outline" class="border-border bg-transparent">
-                <FileText class="h-5 w-5 mr-2" />
-                Extraer XML
               </Button>
             </NuxtLink>
           </div>

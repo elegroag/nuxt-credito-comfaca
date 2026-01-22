@@ -107,6 +107,7 @@
           :form="form"
           :ciudades="props.parametros?.ciudades || []"
           :tipos-contrato="props.parametros?.tipo_contrato || []"
+          :ocupaciones="props.parametros?.ocupaciones || []"
         />
         
         <IngresosStep 

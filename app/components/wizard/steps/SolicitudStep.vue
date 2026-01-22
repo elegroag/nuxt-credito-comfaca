@@ -20,10 +20,11 @@
         <Input v-model="form.solicitud.categoria" />
       </FormField>
       <FormField label="Rol en solicitud">
-        <select v-model="form.solicitud.rol_en_solicitud" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-          <option value="solicitante">solicitante</option>
-          <option value="codeudor">codeudor</option>
-        </select>
+        <CustomSelect
+          v-model="form.solicitud.rol_en_solicitud"
+          :options="rolesOptions"
+          placeholder="Seleccionar rol"
+        />
       </FormField>
       <FormField label="Valor solicitado">
         <Input v-model.number="form.solicitud.valor_solicitado" type="number" min="0" />
@@ -32,16 +33,11 @@
         <Input v-model.number="form.solicitud.plazo_meses" type="number" min="1" />
       </FormField>
       <FormField label="Producto">
-        <select v-model="form.producto_solicitado.tipo" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-          <option value="educacion">educacion</option>
-          <option value="salud">salud</option>
-          <option value="vivienda">vivienda</option>
-          <option value="electrodomesticos">electrodomesticos</option>
-          <option value="productos_hogar">productos_hogar</option>
-          <option value="vestuario">vestuario</option>
-          <option value="recreacion">recreacion</option>
-          <option value="turismo">turismo</option>
-        </select>
+        <CustomSelect
+          v-model="form.producto_solicitado.tipo"
+          :options="productosOptions"
+          placeholder="Seleccionar producto"
+        />
       </FormField>
       <FormField label="URL Foto documento (opcional)">
         <Input v-model="form.solicitud.foto_documento!.url" placeholder="https://..." />
@@ -62,13 +58,39 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from '#imports';
 import FormField from '~/components/shared/FormField.vue'
 import Input from '@/components/ui/Input.vue'
+import CustomSelect from '~/components/ui/CustomSelect.vue'
 
 interface Props {
   form: any
   fechaRadicado: string
 }
 
+interface SelectOption {
+  label: string
+  value: string | number
+  description?: string
+}
+
 defineProps<Props>()
+
+// Opciones para roles en solicitud
+const rolesOptions: SelectOption[] = [
+  { label: 'Solicitante', value: 'solicitante' },
+  { label: 'Codeudor', value: 'codeudor' }
+]
+
+// Opciones para productos
+const productosOptions: SelectOption[] = [
+  { label: 'Educación', value: 'educacion' },
+  { label: 'Salud', value: 'salud' },
+  { label: 'Vivienda', value: 'vivienda' },
+  { label: 'Electrodomésticos', value: 'electrodomesticos' },
+  { label: 'Productos del hogar', value: 'productos_hogar' },
+  { label: 'Vestuario', value: 'vestuario' },
+  { label: 'Recreación', value: 'recreacion' },
+  { label: 'Turismo', value: 'turismo' }
+]
 </script>

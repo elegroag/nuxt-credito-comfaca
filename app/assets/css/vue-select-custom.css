@@ -1,0 +1,311 @@
+/* Personalización de Vue Select para mantener el estándar de diseño */
+
+/* Contenedor principal de Vue Select */
+.v-select {
+  position: relative;
+  font-family: inherit;
+}
+
+/* Dropdown principal - coincide con .form-control */
+.vs__dropdown-toggle {
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  background: #FBF7EE;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Estado focus del dropdown - coincide con .form-control:focus */
+.vs__dropdown-toggle:hover {
+  border-color: #9ca3af;
+}
+
+.v-select.vs--open .vs__dropdown-toggle {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+/* Campo de búsqueda */
+.vs__search {
+  padding: 0;
+  margin: 0;
+  border: none;
+  font-size: 0.875rem;
+  color: #1f2937;
+  background: transparent;
+  outline: none;
+  appearance: none;
+  flex: 1;
+  min-width: 0;
+}
+
+.vs__search::placeholder {
+  color: #9ca3af;
+}
+
+/* Contenedor de acciones (iconos) */
+.vs__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+/* Flecha del dropdown */
+.vs__open-indicator {
+  fill: #6b7280;
+  transform: scale(1);
+  transition: transform 0.2s ease;
+}
+
+.v-select.vs--open .vs__open-indicator {
+  transform: scale(1) rotate(180deg);
+}
+
+/* Opciones seleccionadas (tags) */
+.vs__selected-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+}
+
+/* Opciones seleccionadas (tags) */
+.vs__selected {
+  border-radius: 4px;
+  padding: 0.125rem 0.5rem;
+  margin: 0.125rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Botón para remover opción seleccionada */
+.vs__selected button {
+  margin-left: 0.25rem;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.vs__selected button:hover {
+  opacity: 1;
+}
+
+/* Clear button */
+.vs__clear {
+  fill: #6b7280;
+  padding: 0;
+  margin: 0 0.25rem;
+  cursor: pointer;
+  transition: fill 0.2s ease;
+}
+
+.vs__clear:hover {
+  fill: #ef4444;
+}
+
+/* Dropdown de opciones */
+.vs__dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.25rem;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+/* Opción individual */
+.vs__dropdown-option {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: #1f2937;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.vs__dropdown-option:last-child {
+  border-bottom: none;
+}
+
+/* Hover en opciones */
+.vs__dropdown-option:hover {
+  background: #f9fafb;
+  color: #1f2937;
+}
+
+/* Opción seleccionada */
+.vs__dropdown-option--selected {
+  background: #dbeafe;
+  color: #1e40af;
+  font-weight: 500;
+}
+
+.vs__dropdown-option--selected:hover {
+  background: #bfdbfe;
+}
+
+/* Opción con focus (navegación por teclado) */
+.vs__dropdown-option--highlight {
+  background: #f3f4f6;
+  color: #1f2937;
+}
+
+/* Estado disabled */
+.v-select.vs--disabled .vs__dropdown-toggle {
+  background: #f9fafb;
+  border-color: #e5e7eb;
+  color: #6b7280;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.v-select.vs--disabled .vs__search,
+.v-select.vs--disabled .vs__open-indicator {
+  cursor: not-allowed;
+}
+
+/* Loading state */
+.vs__spinner {
+  border: 2px solid #e5e7eb;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  width: 1rem;
+  height: 1rem;
+  animation: spin 1s linear infinite;
+  margin: 0 0.5rem;
+}
+
+/* Sin resultados */
+.vs__no-options {
+  padding: 1rem;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.875rem;
+  background: #f9fafb;
+}
+
+/* Estados específicos para el diseño del sistema */
+
+/* Variante para filtros (más compacta) */
+.v-select.filter-select .vs__dropdown-toggle {
+  padding: 0.375rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+.v-select.filter-select .vs__selected {
+  padding: 0.0625rem 0.375rem;
+  font-size: 0.7rem;
+}
+
+/* Variante para formulario grande */
+.v-select.form-select-lg .vs__dropdown-toggle {
+  padding: 0.75rem;
+  font-size: 1rem;
+}
+
+/* Variante para error state */
+.v-select.has-error .vs__dropdown-toggle {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.25);
+}
+
+/* Animación de apertura/cierre */
+.vs__dropdown-menu {
+  opacity: 0;
+  transform: translateY(-0.5rem);
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.v-select.vs--open .vs__dropdown-menu {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .vs__dropdown-menu {
+    max-height: 150px;
+  }
+
+  .vs__dropdown-option {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Dark mode support (si se necesita en el futuro) */
+@media (prefers-color-scheme: dark) {
+  .vs__dropdown-toggle {
+    background: #1f2937;
+    border-color: #374151;
+    color: #f9fafb;
+  }
+
+  .vs__dropdown-menu {
+    background: #1f2937;
+    border-color: #374151;
+  }
+
+  .vs__dropdown-option {
+    color: #f9fafb;
+    border-bottom-color: #374151;
+  }
+
+  .vs__dropdown-option:hover {
+    background: #374151;
+  }
+}
+
+/* Integración con las clases existentes del sistema */
+
+/* Para que vue-select se vea como los demás form controls */
+.form-group .v-select {
+  width: 100%;
+}
+
+.form-group .v-select .vs__dropdown-toggle {
+  width: 100%;
+}
+
+/* En headers de tablas */
+.table-header .v-select {
+  min-width: 200px;
+}
+
+/* En modales */
+.modal-content .v-select .vs__dropdown-menu {
+  max-height: 180px;
+}
+
+/* Animación keyframe para spinner (ya existe pero la incluyo para completitud) */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
