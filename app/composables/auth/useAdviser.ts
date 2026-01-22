@@ -1,12 +1,12 @@
 // frontend/composables/auth/useAdviser.ts
 import { ref } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { useApi } from '~/composables/useApi';
 import { useSession } from '~/composables/useSession';
 import type { LoginData } from '~/shared/types/auth';
+import type { AdviserAuthResponse, PuntoAsesoria, ApiResponse } from '~/shared/types/adviser';
 
 export function useAdviser() {
-  const router = useRouter();
   const route = useRoute();
   const { postJson } = useApi();
   const { isAuthenticated, setSession } = useSession();
@@ -17,18 +17,25 @@ export function useAdviser() {
   const loading = ref(false);
   const errorMsg = ref('');
 
+  // Estados para la modal de puntos de asesoría
+  const showPuntosModal = ref(false);
+  const puntosAsesoria = ref<PuntoAsesoria[]>([]);
+  const selectedPunto = ref<PuntoAsesoria | null>(null);
+  const authData = ref<AdviserAuthResponse | null>(null);
+
   const login = async () => {
     loading.value = true;
     errorMsg.value = '';
 
     try {
-      const response = await postJson<any>('/api/auth/adviser/login', {
+      const response = await postJson<ApiResponse<AdviserAuthResponse>>('/api/auth/adviser/autenticar', {
         adviser_number: adviserNumber.value,
         username: username.value,
         password: password.value
       });
 
       const data = response.data;
+      authData.value = data;
 
       const accessToken = String(data?.access_token || '');
       const tokenType = String(data?.token_type || 'bearer');
@@ -44,26 +51,16 @@ export function useAdviser() {
         throw new Error('El usuario no tiene rol de asesor');
       }
 
-      setSession({
-        accessToken,
-        tokenType,
-        user: {
-          username: typeof user?.username === 'string' ? user.username : username.value,
-          roles: userRoles,
-          email: typeof user?.email === 'string' ? user.email : '',
-          tipo_documento: typeof user?.tipo_documento === 'string' ? user.tipo_documento : '',
-          numero_documento: typeof user?.numero_documento === 'string' ? user.numero_documento : '',
-          nombres: typeof user?.nombres === 'string' ? user.nombres : '',
-          apellidos: typeof user?.apellidos === 'string' ? user.apellidos : '',
-          adviser_number: adviserNumber.value
-        }
-      });
+      // Verificar si hay puntos de asesoría disponibles
+      if (user?.puntos_asesorias && user.puntos_asesorias.length > 0) {
+        puntosAsesoria.value = user.puntos_asesorias;
+        showPuntosModal.value = true;
+        return true; // Mantener en la página hasta que seleccione un punto
+      }
 
-      // Redirigir al dashboard de asesores
-      const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/adviser/dashboard';
-      await navigateTo(redirect.startsWith('/') ? redirect : '/');
+      // Si no hay puntos, continuar con el flujo normal
+      return await completeLogin(data);
 
-      return true;
     } catch (e: any) {
       const status = Number(e?.statusCode || e?.response?.status || 0);
       const code = e?.data?.code;
@@ -120,6 +117,51 @@ export function useAdviser() {
     return true;
   };
 
+  const completeLogin = async (data: AdviserAuthResponse) => {
+    const accessToken = String(data?.access_token || '');
+    const tokenType = String(data?.token_type || 'bearer');
+    const user = data?.user;
+
+    setSession({
+      accessToken,
+      tokenType,
+      user: {
+        username: typeof user?.username === 'string' ? user.username : username.value,
+        roles: Array.isArray(user?.roles) ? user.roles : [],
+        email: typeof user?.email === 'string' ? user.email : '',
+        tipo_documento: typeof user?.tipo_documento === 'string' ? user.tipo_documento : '',
+        numero_documento: typeof user?.numero_documento === 'string' ? user.numero_documento : '',
+        nombres: typeof user?.nombres === 'string' ? user.nombres : '',
+        apellidos: typeof user?.apellidos === 'string' ? user.apellidos : '',
+        adviser_number: adviserNumber.value,
+        asesor: user?.asesor,
+        trabajador: user?.trabajador,
+        selected_punto: selectedPunto.value || undefined
+      }
+    });
+
+    // Redirigir al dashboard de asesores
+    const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/adviser/dashboard';
+    await navigateTo(redirect.startsWith('/') ? redirect : '/');
+
+    return true;
+  };
+
+  const selectPuntoAsesoria = async (punto: PuntoAsesoria) => {
+    selectedPunto.value = punto;
+    showPuntosModal.value = false;
+
+    if (authData.value) {
+      await completeLogin(authData.value);
+    }
+  };
+
+  const cancelPuntoSelection = () => {
+    showPuntosModal.value = false;
+    selectedPunto.value = null;
+    authData.value = null;
+  };
+
   return {
     adviserNumber,
     username,
@@ -128,6 +170,11 @@ export function useAdviser() {
     errorMsg,
     login,
     checkAuthAndRedirect,
-    validateForm
+    validateForm,
+    // Estados para la modal
+    showPuntosModal,
+    puntosAsesoria,
+    selectPuntoAsesoria,
+    cancelPuntoSelection
   };
 }

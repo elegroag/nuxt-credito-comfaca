@@ -1,4 +1,5 @@
 import type { Trabajador } from './trabajador'
+import type { PuntoAsesoria } from './adviser'
 
 export type SessionUser = {
     username: string
@@ -9,7 +10,16 @@ export type SessionUser = {
     nombres: string
     apellidos: string
     adviser_number?: string
-    trabajador?: Trabajador
+    asesor?: {
+        full_name: string
+        email: string
+        celular: string
+        codigo_funcionario: string
+        estado: string
+        tipo_funcionario: string
+    }
+    trabajador?: Trabajador | null
+    selected_punto?: PuntoAsesoria | null
 }
 
 export type SessionData = {

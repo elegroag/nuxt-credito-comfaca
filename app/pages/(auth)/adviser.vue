@@ -87,6 +87,15 @@
       </div>
     </div>
 
+    <!-- Modal de selección de puntos de asesoría -->
+    <SelectPuntoAsesoriaModal
+      :is-open="showPuntosModal"
+      :puntos-asesoria="puntosAsesoria"
+      :loading="loading"
+      @close="cancelPuntoSelection"
+      @select="selectPuntoAsesoria"
+    />
+
     <!-- Estado de conexión minimalista -->
     <div 
       :class="cn('border-t px-4 py-1 text-xs transition-colors', connectionStatusClass)"
@@ -110,6 +119,7 @@ import { cn } from '@/lib/utils'
 import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
 import Label from '@/components/ui/Label.vue'
+import SelectPuntoAsesoriaModal from '@/components/shared/SelectPuntoAsesoriaModal.vue'
 
 definePageMeta({
   layout: 'auth'
@@ -123,7 +133,11 @@ const {
   errorMsg, 
   login, 
   checkAuthAndRedirect,
-  validateForm 
+  validateForm,
+  showPuntosModal,
+  puntosAsesoria,
+  selectPuntoAsesoria,
+  cancelPuntoSelection
 } = useAdviser()
 
 const { 
