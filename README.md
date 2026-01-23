@@ -1,13 +1,13 @@
 # Comfaca Crédito - Frontend
 
-Aplicación móvil para el sistema de postulación a créditos de Comfaca, desarrollada con Nuxt 4 y Capacitor.
+Aplicación móvil para el sistema de postulación a créditos de Comfaca, desarrollada con Nuxt 4 frontend.
 
 ## Características
 
-- Aplicación móvil híbrida con Nuxt 4 + Capacitor
+- Aplicación Browser y responsive móvil con Nuxt 4 frontend
 - Autenticación de usuarios y gestión de sesiones
 - Captura de documentos con cámara
-- Almacenamiento local con Capacitor Data Local Storage
+- Almacenamiento local con Local Storage y Sessiones de Nuxt 4
 - Generación y compartición de códigos QR
 - Simulador de créditos
 - Gestión de firmas digitales
@@ -19,7 +19,7 @@ Aplicación móvil para el sistema de postulación a créditos de Comfaca, desar
 - **Gestor de paquetes**: pnpm
 - **Estilos**: TailwindCSS + DaisyUI
 - **Iconos**: Heroicons
-- **Base de datos local**: Capacitor Data Local Storage
+- **Base de datos local**: Local Storage y Sessiones de Nuxt 4
 
 ## Requisitos Previos
 
@@ -56,10 +56,10 @@ pnpm dev
 
 ## Características
 
-- Aplicación móvil híbrida con Nuxt 4 + Capacitor
+- Aplicación para cualquier Browser y responsive móvil con Nuxt 4
 - Autenticación de usuarios y gestión de sesiones
 - Captura de documentos con cámara
-- Almacenamiento local con Capacitor Data Local Storage
+- Almacenamiento local Local Storage y Sessiones de Nuxt 4
 - Generación y compartición de códigos QR
 - Simulador de créditos
 - Gestión de firmas digitales
@@ -71,7 +71,7 @@ pnpm dev
 - **Gestor de paquetes**: pnpm
 - **Estilos**: TailwindCSS + DaisyUI
 - **Iconos**: Heroicons
-- **Base de datos local**: Capacitor Data Local Storage
+- **Base de datos local**: Local Storage y Sessiones de Nuxt 4
 
 ## Requisitos Previos
 

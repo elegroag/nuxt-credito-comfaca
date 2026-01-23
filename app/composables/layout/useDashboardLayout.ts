@@ -45,11 +45,8 @@ export function useDashboardLayout() {
     const navItems: NavItem[] = [
         { label: 'Inicio', to: '/', abbr: _abbr('Inicio'), icon: Home },
         { label: 'Simulador', to: '/simulador/lineas-credito', abbr: _abbr('Simulador'), icon: Calculator },
-        { label: 'Solicitud', to: '/solicitud', abbr: _abbr('Solicitud'), icon: FilePlus },
-        { label: 'Documentos', to: '/documentos', abbr: _abbr('Documentos'), icon: FileText },
-        { label: 'Extraer XML', to: '/xml-extract', abbr: _abbr('Extraer XML'), icon: FileCode },
-        { label: 'Firmas', to: '/firmas', abbr: _abbr('Firmas'), icon: PenTool },
-        { label: 'Compartir firmas', to: '/firmas-compartir', abbr: _abbr('Compartir firmas'), icon: Share2 },
+        { label: 'Solicitud', to: '/solicitud', abbr: _abbr('Solicitud'), icon: FilePlus, adminOnly: true, category: 'user' },
+        { label: 'Gestión firmas', to: '/firmas-compartir', abbr: _abbr('Gestión firmas'), icon: Share2, adminOnly: true, category: 'admin' },
         { label: 'Entidad digital', to: '/entidad-digital', abbr: _abbr('Entidad digital'), icon: Key },
         { label: 'Solicitudes', to: '/admin/solicitudes', abbr: _abbr('Solicitudes'), icon: List, adminOnly: true, category: 'admin' },
         { label: 'Usuarios', to: '/admin/users', abbr: _abbr('Usuarios'), icon: Users, adminOnly: true, category: 'admin' },
@@ -97,7 +94,7 @@ export function useDashboardLayout() {
 
     const sectionTitle = computed(() => {
         const hit = filteredNavItems.value.find((x) => isActive(x.to))
-        return hit?.label || 'Dashboard'
+        return hit?.label || 'Inicio'
     })
 
     const logout = async () => {
