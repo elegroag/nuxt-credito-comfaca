@@ -231,6 +231,7 @@ export interface SolicitudCredito {
     numero_solicitud: string;
     owner_username: string;
     xml_filename?: string;
+    pdf_filename?: string;
     payload: SolicitudCreditoPayload;
     solicitante: SolicitanteBasic;
     documentos: DocumentoCargado[];

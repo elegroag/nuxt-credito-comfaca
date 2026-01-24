@@ -79,7 +79,7 @@
                     <div class="mt-1 text-sm text-muted-foreground">
                       <span class="font-medium text-foreground">{{ ultimaSolicitud.numero_solicitud || '-' }}</span>
                       <span class="text-muted-foreground/60"> · </span>
-                      <span>{{ fmtMoney(ultimaSolicitud.monto_solicitado) }}</span>
+                      <span>{{ fmtMoney(ultimaSolicitud?.payload?.solicitud?.valor_solicitud || 0) }}</span>
                     </div>
                   </div>
 
@@ -122,9 +122,8 @@
             <table class="w-full text-left text-sm">
               <thead class="bg-muted/50 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 <tr>
-                  <th class="px-4 py-3">Número</th>
+                  <th class="px-4 py-3">Modalidad</th>
                   <th class="px-4 py-3">Monto</th>
-                  <th class="px-4 py-3">Plazo</th>
                   <th class="px-4 py-3">Estado</th>
                   <th class="px-4 py-3">Creación</th>
                   <th class="px-4 py-3">Acciones</th>
@@ -132,13 +131,12 @@
               </thead>
               <tbody>
                 <tr v-for="s in solicitudes" :key="s.id" class="border-t border-border">
-                  <td class="px-4 py-3 font-medium text-foreground">{{ s.numero_solicitud || '-' }}</td>
-                  <td class="px-4 py-3 text-foreground">{{ fmtMoney(s.monto_solicitado) }}</td>
-                  <td class="px-4 py-3 text-foreground">{{ (s.plazo_meses || 0) }} meses</td>
+                  <td class="px-4 py-3 text-foreground">{{ s.payload?.linea_credito?.detalle_modalidad || '-' }}</td>
+                  <td class="px-4 py-3 text-foreground">{{ fmtMoney(s?.payload?.solicitud?.valor_solicitud || 0) }}</td>
                   <td class="px-4 py-3">
                     <div class="flex flex-col gap-2">
                         <Badge :class="`w-fit ${estadoBadgeClass(String(s.estado || ''))}`">
-                            {{ s.estado || '-' }}
+                            {{ getEstadoData(String(s.estado || ''))?.nombre || s.estado || '-' }}
                         </Badge>
                         <Progress :model-value="estadoProgressPercent(String(s.estado || ''))" class="w-32 h-1.5" />
                     </div>
@@ -207,6 +205,7 @@
       </NuxtLink>
 
       <NuxtLink
+        v-if="!esTrabajador"
         to="/firmas"
         class="group block rounded-xl border border-border bg-card p-5 shadow-sm transition-colors hover:border-primary/50 hover:bg-card/80"
       >
@@ -225,6 +224,7 @@
       </NuxtLink>
 
       <NuxtLink
+        v-if="!esTrabajador"
         to="/firmas-compartir"
         class="group block rounded-xl border border-border bg-card p-5 shadow-sm transition-colors hover:border-primary/50 hover:bg-card/80"
       >
@@ -238,26 +238,6 @@
                 Compartir firmas
               </div>
               <div class="mt-1 text-sm text-muted-foreground">Generar enlaces y QR para firma digital</div>
-            </div>
-          </div>
-          <ChevronRight class="h-5 w-5 shrink-0 text-muted-foreground group-hover:text-primary" />
-        </div>
-      </NuxtLink>
-
-      <NuxtLink
-        to="/entidad-digital"
-        class="group block rounded-xl border border-border bg-card p-5 shadow-sm transition-colors hover:border-primary/50 hover:bg-card/80"
-      >
-        <div class="flex items-start justify-between gap-3">
-          <div class="flex min-w-0 items-start gap-3">
-            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-border bg-card p-2">
-              <Key class="h-full w-full text-foreground" />
-            </div>
-            <div class="min-w-0">
-              <div class="text-base font-semibold text-foreground group-hover:text-primary">
-                Entidad digital
-              </div>
-              <div class="mt-1 text-sm text-muted-foreground">Gestión y consulta de datos</div>
             </div>
           </div>
           <ChevronRight class="h-5 w-5 shrink-0 text-muted-foreground group-hover:text-primary" />
@@ -316,6 +296,11 @@ const {
   cargarEstados,
   cargarSolicitudes
 } = useInicio()
+
+// Verificar si el usuario es trabajador para ocultar opciones de firmas
+const esTrabajador = computed(() => {
+  return session.value?.user?.roles?.includes('user_trabajador') || false
+})
 
 // Estados con colores para mostrar en la UI
 const estadosConColores = computed(() => {

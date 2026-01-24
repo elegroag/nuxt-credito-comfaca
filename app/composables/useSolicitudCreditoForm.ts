@@ -1,12 +1,5 @@
 import type {
-    SolicitudCreditoPayload,
-    RolEnSolicitud,
-    TipoIdentificacion,
-    ProductoTipo,
-    NivelEducativo,
-    TipoVivienda,
-    TiempoServicioUnidad,
-    TipoBien
+    SolicitudCreditoPayload
 } from '~/shared/types/solicitud-credito'
 
 export const useSolicitudCreditoForm = () => {
@@ -22,6 +15,7 @@ export const useSolicitudCreditoForm = () => {
             categoria: '',
             rol_en_solicitud: 'solicitante',
             valor_solicitado: 0,
+            cuota_mensual: 0,
             plazo_meses: 0,
             moneda: 'COP',
             tipcre: '',
@@ -216,6 +210,7 @@ export const useSolicitudCreditoForm = () => {
                 categoria: '',
                 rol_en_solicitud: 'solicitante',
                 valor_solicitado: 0,
+                cuota_mensual: 0,
                 plazo_meses: 0,
                 moneda: 'COP',
                 foto_documento: { url: '' }

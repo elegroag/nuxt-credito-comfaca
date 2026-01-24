@@ -186,23 +186,77 @@ export type TipoDocumentoRequerido = {
     tipdoc: string
 }
 
+// Tipos adicionales para detalles de solicitudes
+export type CodigoTipoDocumento = {
+    coddoc: string
+    coddoc_circular: string
+    codrua: string
+    detdoc: string
+}
+
+export type Ocupacion = {
+    codocu: string
+    detalle: string
+}
+
+export type TipoVivienda = {
+    vivienda: string
+    detalle: string
+}
+
+export type TipoContrato = {
+    tipcon: string
+    detalle: string
+}
+
+export type EstadoCivil = {
+    detest: string
+    estciv: string
+    estciv_circular: string
+}
+
+export type Sexo = {
+    codsex: string
+    codsex_circular: string
+    detsex: string
+}
+
+export type NivelEducativo = {
+    detalle: string
+    nivedu: string
+}
+
+export type BancoDesembolso = {
+    codban: string
+    codcue: string
+    detalle: string
+}
+
 export type ParametrosResponse = {
     data: {
         auxiliares_contables: AuxiliarContable[]
+        bancos_desembolso: BancoDesembolso[]
         centros_de_costos: CentroCosto[]
+        codigos_tipo_documento: CodigoTipoDocumento[]
         datos_de_periodos: DatoPeriodo[]
         datos_generales_del_creditos: DatoGeneralCredito[]
         empresa_de_seguros: EmpresaSeguro[]
+        estado_civiles: EstadoCivil[]
         fondos_de_credito_social: FondoCreditoSocial[]
         formas_de_pago: FormaPago[]
         formas_de_pagos_tesoreria: FormaPagoTesoreria[]
         garantia_de_pagos: GarantiaPago[]
         marcas_de_recibos_de_caja: MarcaReciboCaja[]
         motivos_de_rechazos: MotivoRechazo[]
+        nivel_educativos: NivelEducativo[]
+        ocupaciones: Ocupacion[]
         oficinas_de_afiliacion_por_usuario: OficinaAfiliacionUsuario[]
         oficinas_de_credito: OficinaCredito[]
         periodos_de_pago: PeriodoPago[]
         periodos_de_pago_desembolsos: PeriodoPagoDesembolso[]
+        sexos: Sexo[]
+        tipo_contrato: TipoContrato[]
+        tipo_vivienda: TipoVivienda[]
         tipos_de_credito_en_vigencia: TipoCreditoVigencia[]
         tipos_de_distribucion: TipoDistribucion[]
         tipos_de_inversion: TipoInversion[]

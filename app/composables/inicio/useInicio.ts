@@ -14,7 +14,7 @@ export function useInicio() {
     const solicitudesError = ref('');
 
     // Flujo de aprobación (se cargará dinámicamente desde la API)
-    const flujoAprobacion = ref<EstadoSolicitud[]>(['Postulado', 'En validación', 'Aprobado', 'Desembolsado', 'Activo', 'Finalizado']);
+    const flujoAprobacion = ref<EstadoSolicitud[]>([]);
     const estadosData = ref<EstadoSolicitudData[]>([]);
     const loadingEstados = ref(false);
     const estadosError = ref('');
@@ -30,7 +30,7 @@ export function useInicio() {
         if (typeof value !== 'string' || !value) return '-';
         const d = new Date(value);
         if (Number.isNaN(d.getTime())) return '-';
-        return new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeStyle: 'short' }).format(d);
+        return new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium' }).format(d);
     };
 
     // Funciones de utilidad para estados
@@ -48,9 +48,9 @@ export function useInicio() {
     };
 
     // Funciones para obtener información de estados
-    const getEstadoData = (nombreEstado: string): EstadoSolicitudData | undefined => {
+    const getEstadoData = (idEstado: string): EstadoSolicitudData | undefined => {
         return estadosData.value.find(estado =>
-            _normalizeEstado(estado.nombre) === _normalizeEstado(nombreEstado)
+            estado.id === idEstado // Cambiado de nombre a id
         );
     };
 
@@ -102,11 +102,11 @@ export function useInicio() {
             const response = await getJson<{ data: EstadoSolicitudData[] }>('/api/estados-solicitud', { auth: true });
             const data = response.data;
             if (Array.isArray(data)) {
-                // Ordenar por campo 'orden' y extraer solo los nombres
+                // Ordenar por campo 'orden' y extraer los IDs (no los nombres)
                 const estadosOrdenados = data
                     .filter(estado => estado.activo)
                     .sort((a, b) => a.orden - b.orden)
-                    .map(estado => estado.nombre);
+                    .map(estado => estado.id); // Cambiado de nombre a id
 
                 estadosData.value = data;
                 flujoAprobacion.value = estadosOrdenados;

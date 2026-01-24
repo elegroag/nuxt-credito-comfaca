@@ -89,7 +89,7 @@ export const useResumenSolicitud = () => {
 
       // Navegar a página de confirmación si el PDF se generó exitosamente
       if (response.success) {
-        router.push(`/solicitud/confirmacion/${solicitudId}`)
+        router.push(`/solicitud/special_thanks/${solicitudId}`)
       } else {
         errorSolicitud.value = response.message || 'Error al generar el PDF'
       }
