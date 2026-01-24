@@ -70,13 +70,7 @@
 <script setup lang="ts">
 import FormField from '~/components/shared/FormField.vue'
 import Input from '@/components/ui/Input.vue'
+import type { ConyugeProps } from '~/shared/types/solicitud-credito'
 
-interface Props {
-  form: any
-  toggleConyuge: (checked: boolean) => void
-  toggleEmpresaConyuge: (checked: boolean) => void
-  loadingConyuge?: boolean
-}
-
-defineProps<Props>()
+defineProps<ConyugeProps>()
 </script>

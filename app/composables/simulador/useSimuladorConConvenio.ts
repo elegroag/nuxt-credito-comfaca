@@ -22,7 +22,6 @@ export function useSimuladorConConvenio() {
 
   // Estados
   const convenioVerificado = ref(false);
-  const mostrarBeneficiosConvenio = ref(false);
 
   // Beneficios del convenio (pueden ser configurables desde backend)
   const beneficiosConvenio = computed(() => {
@@ -69,7 +68,15 @@ export function useSimuladorConConvenio() {
 
     const elegible = await validarConvenio(nitEmpresa.value, cedulaTrabajador.value);
     convenioVerificado.value = true;
-    mostrarBeneficiosConvenio.value = elegible;
+
+    // Debug para verificar reactividad
+    console.log('validarConvenioAntesDSimular:', {
+      elegible,
+      convenioVerificado: convenioVerificado.value,
+      isElegible: isElegible.value,
+      convenio: convenio.value,
+      mensajeBeneficios: mensajeBeneficios.value
+    });
 
     return elegible;
   };
@@ -162,7 +169,6 @@ export function useSimuladorConConvenio() {
     nitEmpresa.value = '';
     cedulaTrabajador.value = '';
     convenioVerificado.value = false;
-    mostrarBeneficiosConvenio.value = false;
   };
 
   // Watch para auto-validar cuando cambien los datos
@@ -170,7 +176,6 @@ export function useSimuladorConConvenio() {
     // Reset cuando cambien los datos
     if (convenioVerificado.value) {
       convenioVerificado.value = false;
-      mostrarBeneficiosConvenio.value = false;
     }
   });
 
@@ -184,7 +189,6 @@ export function useSimuladorConConvenio() {
     errorConvenio,
     convenioVerificado,
     isElegible,
-    mostrarBeneficiosConvenio,
 
     // Datos del convenio
     convenio,

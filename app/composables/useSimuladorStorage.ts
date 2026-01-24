@@ -13,6 +13,7 @@ const loadSimuladorData = (): SimuladorStorageData | null => {
         if (stored) {
             const data = JSON.parse(stored) as SimuladorStorageData
             simuladorData.value = data
+            console.log('✅ Datos del simulador cargados desde localStorage:', data)
             return data
         }
     } catch (error) {
@@ -20,6 +21,7 @@ const loadSimuladorData = (): SimuladorStorageData | null => {
         // Limpiar datos corruptos
         localStorage.removeItem(STORAGE_KEY)
     }
+    console.log('⚠️ No se encontraron datos del simulador en localStorage')
     return null
 }
 
@@ -82,9 +84,14 @@ const updateSimuladorData = (updates: Partial<SimuladorStorageData>): void => {
 // Obtener datos formateados para solicitud
 const getDatosParaSolicitud = () => {
     const data = simuladorData.value
-    if (!data) return null
+    console.log('🔍 getDatosParaSolicitud llamado. simuladorData.value:', data)
 
-    return {
+    if (!data) {
+        console.log('❌ No hay datos del simulador disponibles')
+        return null
+    }
+
+    const result = {
         lineaCredito: data.lineaCredito,
         valorSolicitud: data.montoCredito,
         plazoMeses: data.plazoMeses,
@@ -94,6 +101,9 @@ const getDatosParaSolicitud = () => {
         totalPagar: data.totalPagar,
         fechaSimulacion: data.fechaSimulacion
     }
+
+    console.log('✅ Datos formateados para solicitud:', result)
+    return result
 }
 
 // Verificar si hay datos disponibles
@@ -113,10 +123,8 @@ watch(simuladorData, (newValue) => {
 }, { deep: true })
 
 export const useSimuladorStorage = () => {
-    // Inicializar cargando datos existentes
-    if (!simuladorData.value) {
-        loadSimuladorData()
-    }
+    // Forzar carga inicial de datos existentes
+    loadSimuladorData()
 
     return {
         // Estado

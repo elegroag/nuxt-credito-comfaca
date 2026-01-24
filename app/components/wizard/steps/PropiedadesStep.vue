@@ -78,21 +78,9 @@ import CardHeader from '@/components/ui/CardHeader.vue'
 import CardTitle from '@/components/ui/CardTitle.vue'
 import CardContent from '@/components/ui/CardContent.vue'
 import CustomSelect from '~/components/ui/CustomSelect.vue'
+import type { SelectOption, PropiedadesProps } from '~/shared/types/solicitud-credito'
 
-interface Props {
-  form: any
-  addPropiedad: () => void
-  removePropiedad: (index: number) => void
-  ciudades?: any[]
-}
-
-interface SelectOption {
-  label: string
-  value: string | number
-  description?: string
-}
-
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<PropiedadesProps>(), {
   ciudades: () => []
 })
 

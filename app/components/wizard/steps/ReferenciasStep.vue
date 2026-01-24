@@ -25,12 +25,12 @@
       <div class="grid gap-4">
         <Card v-for="(r, idx) in form.referencias.familiares" :key="`f-${idx}`" class="border-border/50 bg-muted/20 shadow-none">
           <CardHeader class="flex flex-row items-center justify-between py-3">
-            <CardTitle class="text-sm font-semibold">Familiar #{{ idx + 1 }}</CardTitle>
+            <CardTitle class="text-sm font-semibold">Familiar #{{ Number(idx) + 1 }}</CardTitle>
             <Button 
               variant="ghost" 
               size="sm" 
               class="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-2" 
-              @click="removeReferencia('familiares', idx)"
+              @click="removeReferencia('familiares', Number(idx))"
             >
               <Trash2 class="h-4 w-4" />
             </Button>
@@ -72,12 +72,12 @@
       <div class="grid gap-4">
         <Card v-for="(r, idx) in form.referencias.personales" :key="`p-${idx}`" class="border-border/50 bg-muted/20 shadow-none">
           <CardHeader class="flex flex-row items-center justify-between py-3">
-            <CardTitle class="text-sm font-semibold">Personal #{{ idx + 1 }}</CardTitle>
+            <CardTitle class="text-sm font-semibold">Personal #{{ Number(idx) + 1 }}</CardTitle>
             <Button 
               variant="ghost" 
               size="sm" 
               class="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-2" 
-              @click="removeReferencia('personales', idx)"
+              @click="removeReferencia('personales', Number(idx))"
             >
               <Trash2 class="h-4 w-4" />
             </Button>

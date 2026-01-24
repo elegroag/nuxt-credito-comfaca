@@ -5,6 +5,25 @@
       <p class="text-muted-foreground">Estima la cuota mensual, intereses y capacidad de pago.</p>
     </div>
 
+    <!-- Alerta de convenio -->
+    <div v-if="mensajeBeneficios" class="mb-6">
+      <ConvenioAlert
+        :titulo="mensajeBeneficios.titulo"
+        :descripcion="`Su empresa ${mensajeBeneficios.empresa} tiene convenio con COMFACA. Beneficios: ${mensajeBeneficios.items.join(', ')}`"
+        tipo="success"
+        :dismissible="false"
+      />
+    </div>
+
+    <!-- Alerta de error de convenio -->
+    <div v-else-if="convenioVerificado && !isElegible && getMensajeError" class="mb-6">
+      <ConvenioAlert
+        :titulo="getMensajeError.titulo"
+        :descripcion="getMensajeError.descripcion"
+        :tipo="getMensajeError.tipo"
+      />
+    </div>
+
     <div class="grid gap-6 lg:grid-cols-2">
       <!-- Formulario de entrada -->
       <Card class="border-primary/20">
@@ -250,8 +269,12 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, watch } from 'vue'
 import { AlertCircle, CheckCircle2 } from 'lucide-vue-next'
 import { useSimulador } from '~/composables/simulador/useSimulador'
+import { useSimuladorConConvenio } from '~/composables/simulador/useSimuladorConConvenio'
+import { useTrabajador } from '~/composables/useTrabajador'
+import { useSimuladorStorage } from '~/composables/useSimuladorStorage'
 import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
 import Label from '@/components/ui/Label.vue'
@@ -260,11 +283,27 @@ import CardContent from '@/components/ui/CardContent.vue'
 import CardDescription from '@/components/ui/CardDescription.vue'
 import CardHeader from '@/components/ui/CardHeader.vue'
 import CardTitle from '@/components/ui/CardTitle.vue'
+import ConvenioAlert from '@/components/solicitud/ConvenioAlert.vue'
 
 definePageMeta({
   layout: 'dashboard',
   middleware: ['auth']
 })
+
+const { trabajador } = useTrabajador()
+const { saveSimuladorDataSilent } = useSimuladorStorage()
+
+// Composable de convenio
+const {
+  nitEmpresa,
+  cedulaTrabajador,
+  loadingConvenio,
+  convenioVerificado,
+  isElegible,
+  mensajeBeneficios,
+  getMensajeError,
+  validarConvenioAntesDSimular
+} = useSimuladorConConvenio()
 
 const {
   monto,
@@ -311,4 +350,69 @@ const tasaInput = computed({
     }
   }
 })
+
+// Cargar datos del trabajador y validar convenio al montar
+onMounted(async () => {
+  // Cargar salario del trabajador
+  if (trabajador.value?.salario) {
+    ingresosMensuales.value = trabajador.value.salario
+  }
+
+  // Validar convenio si tiene empresa
+  if (trabajador.value?.empresa?.nit && trabajador.value?.cedula) {
+    nitEmpresa.value = trabajador.value.empresa.nit
+    cedulaTrabajador.value = trabajador.value.cedula
+    await validarConvenioAntesDSimular()
+  }
+})
+
+// Watch para guardar datos cuando cambien (con debounce)
+let saveTimeout: NodeJS.Timeout | null = null
+
+watch(
+  [
+    monto,
+    plazoMeses,
+    tasaEfectivaAnual,
+    ingresosMensuales,
+    descuentosMensuales,
+    cuotaMensual,
+    totalPagar,
+    intereses,
+    isElegible,
+    convenioVerificado
+  ],
+  () => {
+    if (saveTimeout) {
+      clearTimeout(saveTimeout)
+    }
+
+    saveTimeout = setTimeout(() => {
+      if (monto.value > 0) {
+        saveSimuladorDataSilent({
+          monto: monto.value,
+          montoCredito: monto.value,
+          plazoMeses: plazoMeses.value,
+          tasaEfectivaAnual: tasaEfectivaAnual.value,
+          ingresosMensuales: ingresosMensuales.value,
+          descuentosMensuales: descuentosMensuales.value,
+          maxEndeudamientoPct: maxEndeudamientoPct.value,
+          tasaInteresAnual: tasaEfectivaAnual.value,
+          cuotaMensual: cuotaMensual.value,
+          totalIntereses: intereses.value,
+          totalPagar: totalPagar.value,
+          fechaSimulacion: new Date().toISOString(),
+          // Datos del convenio
+          tieneConvenio: isElegible.value,
+          convenioVerificado: convenioVerificado.value,
+          nitEmpresa: nitEmpresa.value,
+          cedulaTrabajador: cedulaTrabajador.value,
+          // Sin línea de crédito específica
+          lineaCredito: null
+        })
+      }
+    }, 500)
+  },
+  { deep: true }
+)
 </script>

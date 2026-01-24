@@ -47,7 +47,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-export type StepKey = 'formulario' | 'documentos' | 'firmado' | 'completado'
+export type StepKey = 'formulario' | 'documentos' | 'completado'
 
 interface Step {
   key: StepKey
@@ -65,8 +65,7 @@ const emit = defineEmits<{
 const steps: Step[] = [
   { key: 'formulario', label: 'Solicitud' },
   { key: 'documentos', label: 'Documentos' },
-  { key: 'firmado', label: 'Firma Digital' },
-  { key: 'completado', label: 'Finalizar' }
+  { key: 'completado', label: 'Enviar para Validación' }
 ]
 
 const currentIndex = computed(() => steps.findIndex(s => s.key === props.currentStep))

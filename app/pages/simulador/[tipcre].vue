@@ -74,8 +74,27 @@
       </Card>
     </div>
 
+    <!-- Alerta de convenio -->
+    <div v-if="convenioVerificado && isElegible && lineaSeleccionada.estado === 'A'" class="mb-6">
+      <ConvenioAlert
+        :titulo="'🎉 ¡Elegible para Crédito Convenio Empresarial!'"
+        :descripcion="'Su empresa tiene convenio con COMFACA. Beneficios: Tasa reducida, plazo extendido y más.'"
+        tipo="success"
+        :dismissible="false"
+      />
+    </div>
+
+    <!-- Alerta de error de convenio -->
+    <div v-else-if="convenioVerificado && !isElegible && getMensajeError && lineaSeleccionada.estado === 'A'" class="mb-6">
+      <ConvenioAlert
+        :titulo="getMensajeError.titulo"
+        :descripcion="getMensajeError.descripcion"
+        :tipo="getMensajeError.tipo"
+      />
+    </div>
+
     <!-- Contenido principal -->
-    <div v-else class="grid gap-6 lg:grid-cols-2">
+    <div v-if="convenioVerificado && isElegible && lineaSeleccionada.estado === 'A'" class="grid gap-6 lg:grid-cols-2">
       <!-- Formulario de entrada -->
       <Card class="border-primary/20">
         <CardHeader>
@@ -351,10 +370,10 @@
 <script setup lang="ts">
 import { onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { useSimuladorCore } from '~/composables/simulador/useSimuladorCore'
 import { useSimuladorWithLinea } from '~/composables/simulador/useSimuladorWithLinea'
 import { useTrabajador } from '~/composables/useTrabajador'
 import { useSimuladorStorage } from '~/composables/useSimuladorStorage'
+import { useSimuladorConConvenio } from '~/composables/simulador/useSimuladorConConvenio'
 import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
 import Label from '@/components/ui/Label.vue'
@@ -364,6 +383,7 @@ import CardDescription from '@/components/ui/CardDescription.vue'
 import CardHeader from '@/components/ui/CardHeader.vue'
 import CardTitle from '@/components/ui/CardTitle.vue'
 import Badge from '@/components/ui/Badge.vue'
+import ConvenioAlert from '@/components/solicitud/ConvenioAlert.vue'
 
 definePageMeta({
   layout: 'dashboard',
@@ -373,7 +393,17 @@ definePageMeta({
 const route = useRoute()
 const { getJson } = useApi()
 const { trabajador, salario } = useTrabajador()
-const { saveSimuladorDataSilent, updateSimuladorData } = useSimuladorStorage()
+const { saveSimuladorDataSilent } = useSimuladorStorage()
+
+// Composable de convenio
+const {
+  nitEmpresa,
+  cedulaTrabajador,
+  convenioVerificado,
+  isElegible,
+  getMensajeError,
+  validarConvenioAntesDSimular
+} = useSimuladorConConvenio()
 
 const tipcre = computed(() => route.params.tipcre as string)
 const loading = ref(true)
@@ -472,6 +502,13 @@ const cargarLineaCredito = async () => {
         tasaEfectivaAnual.value = parseFloat(categoriaLinea.facfin)
       }
     }
+
+    // Validar convenio automáticamente si tiene datos del trabajador
+    if (trabajador.value?.empresa?.nit && trabajador.value?.cedula) {
+      nitEmpresa.value = trabajador.value.empresa.nit
+      cedulaTrabajador.value = trabajador.value.cedula
+      await validarConvenioAntesDSimular()
+    }
   } catch (err) {
     console.error('Error cargando línea crédito:', err)
     error.value = 'No se pudo cargar la línea de crédito. Por favor, intenta nuevamente.'
@@ -505,7 +542,9 @@ watch(
     cuotaMensual,
     totalPagar,
     intereses,
-    lineaSeleccionada
+    lineaSeleccionada,
+    isElegible,
+    convenioVerificado
   ],
   () => {
     if (saveTimeout) {
@@ -527,7 +566,12 @@ watch(
           cuotaMensual: cuotaMensual.value,
           totalIntereses: intereses.value,
           totalPagar: totalPagar.value,
-          fechaSimulacion: new Date().toISOString()
+          fechaSimulacion: new Date().toISOString(),
+          // Datos del convenio
+          tieneConvenio: isElegible.value,
+          convenioVerificado: convenioVerificado.value,
+          nitEmpresa: nitEmpresa.value,
+          cedulaTrabajador: cedulaTrabajador.value
         })
       }
     }, 500) // 500ms de debounce

@@ -26,8 +26,8 @@
           placeholder="Seleccionar rol"
         />
       </FormField>
-      <FormField label="Valor solicitado">
-        <Input v-model.number="form.solicitud.valor_solicitado" type="number" min="0" />
+      <FormField label="Valor mensual">
+        <Input v-model.number="form.solicitud.cuota_mensual" type="number" min="0" />
       </FormField>
       <FormField label="Plazo (meses)">
         <Input v-model.number="form.solicitud.plazo_meses" type="number" min="1" />
@@ -58,23 +58,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from '#imports';
 import FormField from '~/components/shared/FormField.vue'
 import Input from '@/components/ui/Input.vue'
 import CustomSelect from '~/components/ui/CustomSelect.vue'
+import type { SelectOption, SolicitudProps } from '~/shared/types/solicitud-credito'
 
-interface Props {
-  form: any
-  fechaRadicado: string
-}
-
-interface SelectOption {
-  label: string
-  value: string | number
-  description?: string
-}
-
-defineProps<Props>()
+defineProps<SolicitudProps>()
 
 // Opciones para roles en solicitud
 const rolesOptions: SelectOption[] = [

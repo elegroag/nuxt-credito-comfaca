@@ -63,21 +63,9 @@ import { computed } from '#imports';
 import FormField from '~/components/shared/FormField.vue'
 import Input from '@/components/ui/Input.vue'
 import CustomSelect from '~/components/ui/CustomSelect.vue'
+import type { SelectOption, LaboralProps } from '~/shared/types/solicitud-credito'
 
-interface Props {
-  form: any
-  ciudades?: any[]
-  tiposContrato?: any[]
-  ocupaciones?: any[]
-}
-
-interface SelectOption {
-  label: string
-  value: string | number
-  description?: string
-}
-
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<LaboralProps>(), {
   ciudades: () => [],
   tiposContrato: () => [],
   ocupaciones: () => []

@@ -55,6 +55,7 @@ export interface SolicitudCreditoPayload {
         categoria: string
         rol_en_solicitud: RolEnSolicitud
         valor_solicitado: number
+        cuota_mensual: number
         plazo_meses: number
         moneda: Moneda
         tipcre?: string
@@ -210,7 +211,7 @@ export interface DocumentoCargado {
     tipo_mime?: string;
 }
 
-export type EstadoSolicitud = 'Postulado' | 'Documentos cargados' | 'Firmado' | 'Aprobado' | 'Rechazado';
+export type EstadoSolicitud = 'POSTULADO' | 'DOCUMENTOS_CARGADOS' | 'PENDIENTE_FIRMADO' | 'FIRMADO' | 'ENVIADO_PENDIENTE_APROBACION';
 
 export interface SolicitanteBasic {
     email: string;
@@ -238,4 +239,85 @@ export interface SolicitudCredito {
         fecha: string;
         detalle: string;
     }>;
+}
+
+export interface SelectOption {
+    label: string
+    value: string | number
+    description?: string
+}
+
+
+export interface CiudadOption {
+    codciu: string;
+    detciu: string;
+}
+
+export interface SolocitanteProps {
+    form: any;
+    ciudades?: CiudadOption[];
+    tiposDocumento?: any[];
+    sexos?: any[];
+    nivelesEducativos?: any[];
+    tiposVivienda?: any[];
+    ocupaciones?: any[];
+    estadoCiviles?: any[];
+}
+
+export interface SolicitudProps {
+    form: any
+    fechaRadicado: string
+}
+
+export interface RevisionProps {
+    prettyPayload: string
+    xmlText?: string
+    savedFilename?: string
+    errorMsg?: string
+    mensajeProgreso?: string
+    loadingPdf?: boolean
+    pdfGenerado?: boolean
+    pdfFilename?: string | null
+    downloadXml: () => void
+    descargarPdf?: () => void
+}
+
+export interface PropiedadesProps {
+    form: any
+    addPropiedad: () => void
+    removePropiedad: (index: number) => void
+    ciudades?: any[]
+}
+
+export interface LaboralProps {
+    form: any
+    ciudades?: any[]
+    tiposContrato?: any[]
+    ocupaciones?: any[]
+}
+
+export interface IngrresosProps {
+    form: any
+    autocalcularIngresos: () => void
+}
+
+
+export interface DeudasProps {
+    form: any
+    addDeuda: () => void
+    removeDeuda: (index: number) => void
+}
+
+
+export interface ConyugeProps {
+    form: any
+    toggleConyuge: (checked: boolean) => void
+    toggleEmpresaConyuge: (checked: boolean) => void
+    loadingConyuge?: boolean
+}
+
+
+export interface WizardProps {
+    parametros?: any
+    fechaRadicado: string
 }

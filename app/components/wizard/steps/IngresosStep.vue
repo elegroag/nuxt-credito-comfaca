@@ -68,11 +68,7 @@ import { RefreshCw } from 'lucide-vue-next'
 import FormField from '~/components/shared/FormField.vue'
 import Input from '@/components/ui/Input.vue'
 import Button from '@/components/ui/Button.vue'
+import type { IngrresosProps } from '~/shared/types/solicitud-credito'
 
-interface Props {
-  form: any
-  autocalcularIngresos: () => void
-}
-
-defineProps<Props>()
+defineProps<IngrresosProps>()
 </script>

@@ -124,30 +124,9 @@ import FormField from '~/components/shared/FormField.vue';
 import Input from '@/components/ui/Input.vue';
 import CustomSelect from '~/components/ui/CustomSelect.vue';
 import '~/assets/css/vue-select-custom.css';
+import type { CiudadOption, SelectOption, SolocitanteProps } from '~/shared/types/solicitud-credito';
 
-interface CiudadOption {
-  codciu: string;
-  detciu: string;
-}
-
-interface SelectOption {
-  label: string;
-  value: string | number;
-  description?: string;
-}
-
-interface Props {
-  form: any;
-  ciudades?: CiudadOption[];
-  tiposDocumento?: any[];
-  sexos?: any[];
-  nivelesEducativos?: any[];
-  tiposVivienda?: any[];
-  ocupaciones?: any[];
-  estadoCiviles?: any[];
-}
-
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<SolocitanteProps>(), {
   ciudades: () => [],
   tiposDocumento: () => [],
   sexos: () => [],

@@ -568,19 +568,19 @@
         </CardHeader>
         <CardContent>
           <div class="flex flex-wrap gap-3">
-            <NuxtLink :to="`/documentos/${solicitud.id}`">
+            <NuxtLink :to="`/solicitud/documentos/${solicitud.id}`">
               <Button variant="outline" class="gap-2">
                 <FolderOpen class="h-4 w-4" />
                 Gestionar Documentos
               </Button>
             </NuxtLink>
             <NuxtLink
-              v-if="solicitud.estado === 'Documentos cargados'"
-              :to="`/firmado/${solicitud.id}`"
+              v-if="solicitud.estado === 'DOCUMENTOS_CARGADOS' || solicitud.estado === 'POSTULADO'"
+              :to="`/solicitud/resumen/${solicitud.id}`"
             >
               <Button variant="outline" class="gap-2">
                 <PenTool class="h-4 w-4" />
-                Firmar Solicitud
+                Enviar Solicitud
               </Button>
             </NuxtLink>
             <Button

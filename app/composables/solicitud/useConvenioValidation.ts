@@ -1,42 +1,6 @@
 import { ref, computed } from '#imports';
 import { useApi } from '~/composables/useApi';
-
-interface ConvenioValidationResponse {
-  success: boolean;
-  data: {
-    elegible: boolean;
-    convenio: {
-      nit: number;
-      razon_social: string;
-      representante_nombre: string;
-      representante_documento: string;
-      correo: string;
-      telefono: string;
-      estado: string;
-      fecha_convenio: string;
-      fecha_vencimiento: string;
-    };
-    trabajador: {
-      cedula: string;
-      nombre_completo: string;
-      estado: string;
-      meses_servicio: number;
-      fecha_afiliacion: string;
-      salario: number;
-      cargo: string;
-      email: string;
-    };
-    mensaje: string;
-  };
-  message: string;
-}
-
-interface ConvenioValidationError {
-  success: false;
-  error_type: string;
-  message: string;
-  details?: Record<string, any>;
-}
+import type { ConvenioValidationResponse, ConvenioValidationError } from '~/shared/types/simulador';
 
 export function useConvenioValidation() {
   const api = useApi();
@@ -84,7 +48,7 @@ export function useConvenioValidation() {
         error.value = 'Error al validar el convenio. Intente nuevamente.';
       }
 
-      console.error('Error validando convenio:', err);
+      console.log('Error validando convenio:', err);
       return false;
     } finally {
       loading.value = false;

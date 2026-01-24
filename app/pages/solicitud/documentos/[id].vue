@@ -9,7 +9,7 @@
           <p class="text-gray-600">Complete los documentos requeridos para su solicitud de crédito</p>
         </div>
         <div class="flex items-center gap-2 text-sm text-gray-500">
-          <Icon name="lucide:file-text" class="w-4 h-4" />
+          <DocumentTextIcon class="w-4 h-4" />
           <span>{{ documentosRequeridos?.length || 0 }} documentos requeridos</span>
         </div>
       </div>
@@ -27,7 +27,7 @@
       <div v-if="loadingSolicitud" class="flex flex-col items-center justify-center py-20 space-y-6">
         <div class="relative">
           <div class="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-          <Icon name="lucide:file-text" class="absolute inset-0 w-8 h-8 m-auto text-blue-600" />
+          <DocumentTextIcon class="absolute inset-0 w-8 h-8 m-auto text-blue-600" />
         </div>
         <div class="text-center">
           <p class="text-lg font-medium text-gray-700">Cargando información...</p>
@@ -39,12 +39,12 @@
       <div v-else-if="errorSolicitud" class="max-w-2xl mx-auto">
         <div class="bg-red-50 border border-red-200 rounded-2xl p-8 text-center shadow-lg">
           <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Icon name="lucide:alert-circle" class="w-8 h-8 text-red-600" />
+            <ExclamationCircleIcon class="w-8 h-8 text-red-600" />
           </div>
           <h3 class="text-xl font-bold text-red-900 mb-2">Error al cargar la solicitud</h3>
           <p class="text-red-700 mb-6">{{ errorSolicitud }}</p>
           <UiButton @click="cargarSolicitud" class="bg-red-600 hover:bg-red-700 text-white">
-            <Icon name="lucide:refresh-cw" class="w-4 h-4 mr-2" />
+            <ArrowPathIcon class="w-4 h-4 mr-2" />
             Reintentar
           </UiButton>
         </div>
@@ -56,7 +56,7 @@
         <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl p-8 text-white shadow-xl">
           <div class="flex items-start gap-6">
             <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-              <Icon name="lucide:info" class="w-6 h-6" />
+              <InformationCircleIcon class="w-6 h-6" />
             </div>
             <div class="flex-1">
               <h2 class="text-2xl font-bold mb-3">Documentos Requeridos</h2>
@@ -66,11 +66,11 @@
               </p>
               <div class="mt-4 flex items-center gap-6 text-sm">
                 <div class="flex items-center gap-2">
-                  <Icon name="lucide:file-check" class="w-4 h-4" />
+                  <DocumentCheckIcon class="w-4 h-4" />
                   <span>Formatos: PDF, JPG, PNG</span>
                 </div>
                 <div class="flex items-center gap-2">
-                  <Icon name="lucide:hard-drive" class="w-4 h-4" />
+                  <ServerIcon class="w-4 h-4" />
                   <span>Tamaño máximo: 5MB</span>
                 </div>
               </div>
@@ -113,7 +113,7 @@
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
                   <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <Icon name="lucide:file-text" class="w-5 h-5 text-blue-600" />
+                    <DocumentTextIcon class="w-5 h-5 text-blue-600" />
                   </div>
                   <div>
                     <h3 class="font-semibold text-gray-900 text-lg">{{ docReq.nombre }}</h3>
@@ -132,15 +132,15 @@
                 </div>
                 <div class="flex items-center gap-2">
                   <div v-if="getDocumentoCargado(docReq.id)" class="flex items-center gap-2 text-green-600">
-                    <Icon name="lucide:check-circle" class="w-5 h-5" />
+                    <CheckCircleIcon class="w-5 h-5" />
                     <span class="text-sm font-medium">Cargado</span>
                   </div>
                   <div v-else-if="docReq.obligatorio" class="flex items-center gap-2 text-orange-600">
-                    <Icon name="lucide:alert-circle" class="w-5 h-5" />
+                    <ExclamationCircleIcon class="w-5 h-5" />
                     <span class="text-sm font-medium">Pendiente</span>
                   </div>
                   <div v-else class="flex items-center gap-2 text-gray-500">
-                    <Icon name="lucide:circle" class="w-5 h-5" />
+                    <CircleStackIcon class="w-5 h-5" />
                     <span class="text-sm font-medium">Opcional</span>
                   </div>
                 </div>
@@ -171,7 +171,7 @@
               @click="handleBack" 
               class="w-full md:w-auto gap-2 h-12 px-6 bg-gray-300"
             >
-              <Icon name="lucide:arrow-left" class="w-4 h-4" />
+              <ArrowLeftIcon class="w-4 h-4" />
               Volver a la Solicitud
             </UiButton>
             
@@ -183,12 +183,12 @@
                 class="w-full md:w-auto gap-2 h-12 px-8 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-lg transition-all duration-300"
                 :class="!puedeContinuar ? 'opacity-50 cursor-not-allowed' : ''"
               >
-                <Icon name="lucide:arrow-right" class="w-5 h-5" />
-                Continuar a Firma
+                <ArrowRightIcon class="w-5 h-5" />
+                Continuar
               </UiButton>
               <div v-if="!puedeContinuar" class="text-center md:text-right">
                 <p class="text-sm text-red-600 font-medium flex items-center gap-2 justify-center md:justify-end">
-                  <Icon name="lucide:alert-triangle" class="w-4 h-4" />
+                  <ExclamationTriangleIcon class="w-4 h-4" />
                   Faltan documentos obligatorios por cargar
                 </p>
                 <p class="text-xs text-gray-500 mt-1">
@@ -197,7 +197,7 @@
               </div>
               <div v-else class="text-center md:text-right">
                 <p class="text-sm text-green-600 font-medium flex items-center gap-2 justify-center md:justify-end">
-                  <Icon name="lucide:check-circle" class="w-4 h-4" />
+                  <CheckCircleIcon class="w-4 h-4" />
                   Todos los documentos obligatorios están completos
                 </p>
               </div>
@@ -210,137 +210,48 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useApi } from '~/composables/useApi'
-import { useSession } from '~/composables/useSession'
-import { useDocumentos } from '~/composables/documentos/useDocumentos'
-import type { SolicitudCredito, DocumentoCargado } from '~/shared/types/solicitud-credito'
+import { onMounted } from 'vue'
+import { useDocumentosSolicitud } from '~/composables/solicitud/useDocumentosSolicitud'
 import DocumentosUpload from '~/components/documentos/DocumentosUpload.vue'
+import { 
+  DocumentTextIcon,
+  ExclamationCircleIcon,
+  ArrowPathIcon,
+  InformationCircleIcon,
+  DocumentCheckIcon,
+  ServerIcon,
+  CheckCircleIcon,
+  CircleStackIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  ExclamationTriangleIcon
+} from '@heroicons/vue/24/outline'
 
-const route = useRoute()
-const router = useRouter()
-const { getJson } = useApi()
-const { ready } = useSession()
-
-const solicitudId = route.params.id as string
-const { 
-  subirDocumento, 
-  eliminarDocumento, 
-  cargarDocumentos,
+// Usar el composable
+const {
+  solicitud,
+  loadingSolicitud,
+  errorSolicitud,
+  cargandoId,
+  puedeContinuar,
+  progresoDocumentos,
+  documentosCargadosCount,
+  getDocumentoCargado,
+  cargarSolicitud,
+  handleUpload,
+  handleDelete,
+  handleNavigation,
+  handleBack,
+  handleContinue,
   documentosCargados,
   documentosRequeridos,
-  progreso, 
-  error: errorUpload 
-} = useDocumentos(solicitudId)
+  progreso,
+  errorUpload
+} = useDocumentosSolicitud()
 
-const solicitud = ref<SolicitudCredito | null>(null)
-const loadingSolicitud = ref(true)
-const errorSolicitud = ref<string | null>(null)
-const cargandoId = ref<string | null | undefined>(null)
-
-const getDocumentoCargado = (reqId: string) => {
-  if (!documentosCargados.value || !Array.isArray(documentosCargados.value)) {
-    return undefined
-  }
-  return documentosCargados.value.find(d => d.documento_requerido_id === reqId)
-}
-
-const puedeContinuar = computed(() => {
-  if (!solicitud.value || !documentosRequeridos.value || !Array.isArray(documentosRequeridos.value)) return false
-  const obligatorios = documentosRequeridos.value.filter(d => d.obligatorio)
-  return obligatorios.every(req => getDocumentoCargado(req.id))
-})
-
-const progresoDocumentos = computed(() => {
-  if (!documentosRequeridos.value || !Array.isArray(documentosRequeridos.value)) return 0
-  
-  // Contar cuántos documentos requeridos están cargados
-  const cargados = documentosRequeridos.value.filter(req => getDocumentoCargado(req.id)).length
-  const total = documentosRequeridos.value.length
-  
-  return total > 0 ? Math.round((cargados / total) * 100) : 0
-})
-
-const documentosCargadosCount = computed(() => {
-  if (!documentosRequeridos.value || !Array.isArray(documentosRequeridos.value)) return 0
-  
-  // Contar cuántos documentos requeridos están cargados
-  return documentosRequeridos.value.filter(req => getDocumentoCargado(req.id)).length
-})
-
-const cargarSolicitud = async () => {
-  loadingSolicitud.value = true
-  errorSolicitud.value = null
-  try {
-    await ready
-    // Cargar datos de la solicitud
-    const response = await getJson<{success: boolean, data: SolicitudCredito}>(`/api/solicitudes-credito/${solicitudId}`, { auth: true })
-    solicitud.value = response.data
-    
-    // Cargar documentos requeridos y existentes con una sola llamada
-    await cargarDocumentos()
-  } catch (e: any) {
-    console.error(e)
-    errorSolicitud.value = e.message || 'No se pudo cargar la información de la solicitud.'
-  } finally {
-    loadingSolicitud.value = false
-  }
-}
-
-const handleUpload = async (file: File, docReqId: string) => {
-  cargandoId.value = docReqId
-  try {
-    await subirDocumento(file, docReqId)
-  } catch (e) {
-    // El error ya se maneja en el composable y se pasa via prop
-  } finally {
-    cargandoId.value = null
-  }
-}
-
-const handleDelete = async (docCargadoId: string) => {
-  // Encontrar a qué requerimiento pertenece para mostrar loading si es necesario
-  // Aunque eliminar es rápido, podemos mostrar loading global o local
-  const doc = documentosCargados.value.find(d => d.id === docCargadoId)
-  if (doc) {
-    cargandoId.value = doc.documento_requerido_id
-  }
-  
-  try {
-    await eliminarDocumento(docCargadoId)
-  } catch (e) {
-    console.error(e)
-  } finally {
-    cargandoId.value = null
-  }
-}
-
-const handleNavigation = (step: string) => {
-  // Navegación simple por ahora
-  if (step === 'formulario') {
-    // Ir atrás? Depende de si se puede editar
-  }
-}
-
-const handleBack = () => {
-  // Volver a la lista de solicitudes o al paso anterior si fuera wizard
-  router.push('/solicitudes') // O window.history.back()
-}
-
-const handleContinue = () => {
-  if (puedeContinuar.value) {
-    router.push(`/firmado/${solicitudId}`)
-  }
-}
-
+// Lifecycle
 onMounted(() => {
-  if (solicitudId) {
-    cargarSolicitud()
-  } else {
-    errorSolicitud.value = 'ID de solicitud no válido'
-    loadingSolicitud.value = false
-  }
+  cargarSolicitud()
 })
 
 definePageMeta({

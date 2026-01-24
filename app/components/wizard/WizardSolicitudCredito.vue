@@ -37,7 +37,7 @@
             <Button
               variant="secondary"
               size="sm"
-              :disabled="loadingXml"
+              :disabled="loadingXml || loadingPdf"
               @click="generarXml(false)"
               type="button"
             >
@@ -46,12 +46,12 @@
             </Button>
             <Button
               size="sm"
-              :disabled="loadingXml"
+              :disabled="loadingXml || loadingPdf"
               @click="generarXml(true)"
               type="button"
             >
               <Send class="mr-2 h-4 w-4" />
-              Enviar
+              {{ loadingXml ? 'Enviando...' : loadingPdf ? 'Generando PDF...' : 'Enviar' }}
             </Button>
           </template>
         </div>
@@ -149,9 +149,13 @@
           :xml-text="xmlText"
           :saved-filename="savedFilename"
           :error-msg="errorMsg"
+          :mensaje-progreso="mensajeProgreso"
+          :loading-pdf="loadingPdf"
+          :pdf-generado="pdfGenerado"
+          :pdf-filename="pdfFilename"
           :download-xml="downloadXml"
+          :descargar-pdf="() => createdSolicitudId ? descargarPDF(createdSolicitudId) : null"
         />
-
         </form>
     </CardContent>
   </Card>
@@ -181,18 +185,21 @@ import CardTitle from '@/components/ui/CardTitle.vue'
 import CardContent from '@/components/ui/CardContent.vue'
 import Button from '@/components/ui/Button.vue'
 import SuccessModal from '@/components/shared/SuccessModal.vue'
+import type { WizardProps } from '~/shared/types/solicitud-credito'
 
 // Importar componentes de pasos
-import SolicitudStep from './steps/SolicitudStep.vue'
-import SolicitanteStep from './steps/SolicitanteStep.vue'
-import ConyugeStep from './steps/ConyugeStep.vue'
-import LaboralStep from './steps/LaboralStep.vue'
-import IngresosStep from './steps/IngresosStep.vue'
-import EconomicaStep from './steps/EconomicaStep.vue'
-import PropiedadesStep from './steps/PropiedadesStep.vue'
-import DeudasStep from './steps/DeudasStep.vue'
-import ReferenciasStep from './steps/ReferenciasStep.vue'
-import RevisionStep from './steps/RevisionStep.vue'
+import { 
+  SolicitudStep, 
+  SolicitanteStep, 
+  ConyugeStep, 
+  LaboralStep, 
+  IngresosStep, 
+  EconomicaStep, 
+  PropiedadesStep, 
+  DeudasStep, 
+  ReferenciasStep, 
+  RevisionStep 
+} from './steps/index'
 
 // Importar composables
 import { useWizardSolicitud } from '~/composables/solicitud/useWizardSolicitud'
@@ -200,13 +207,7 @@ import { useSimuladorStorage } from '~/composables/useSimuladorStorage'
 import { useSession } from '~/composables/useSession'
 import { useConyugeTrabajador } from '~/composables/solicitud/useConyugeComposable'
 
-// Props
-interface Props {
-  parametros?: any
-  fechaRadicado: string
-}
-
-const props = defineProps<Props>()
+const props = defineProps<WizardProps>()
 
 // Obtener datos del simulador
 const { hasSimuladorData, getDatosParaSolicitud } = useSimuladorStorage()
@@ -270,11 +271,15 @@ const {
   form,
   step,
   loadingXml,
+  loadingPdf,
   xmlText,
   savedFilename,
   createdSolicitudId,
   errorMsg,
-  successModalOpen,
+  errorPdf,
+  pdfGenerado,
+  pdfFilename,
+  mensajeProgreso,
   steps,
   prettyPayload,
   next,
@@ -288,11 +293,13 @@ const {
   removeDeuda,
   addReferencia,
   removeReferencia,
+  successModalOpen,
   closeSuccessModal,
   goToHome,
   goToDocumentos,
   generarXml,
-  downloadXml
+  downloadXml,
+  descargarPDF
 } = useWizardSolicitud()
 
 // Cargar datos del simulador si existen
@@ -303,7 +310,7 @@ onMounted(() => {
     if (datosSimulador && form.value.solicitud) {
       // Prellenar campos del formulario con datos del simulador
       form.value.solicitud.valor_solicitud = datosSimulador.valorSolicitud
-      form.value.solicitud.valor_solicitado = datosSimulador.valorSolicitud
+      form.value.solicitud.cuota_mensual = Math.round(datosSimulador.cuotaMensual)
       form.value.solicitud.plazo_meses = datosSimulador.plazoMeses
       
       // Guardar datos importantes de la línea de crédito

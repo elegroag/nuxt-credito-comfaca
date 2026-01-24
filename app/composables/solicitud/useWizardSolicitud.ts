@@ -2,12 +2,11 @@ import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useSolicitudCreditoForm } from '~/composables/useSolicitudCreditoForm';
 import { useSolicitudXmlActions } from './useSolicitudXmlActions';
-import { useSimuladorStorage } from '~/composables/useSimuladorStorage';
+import { usePDFGenerator } from './usePDFGenerator';
 import type { WizardStep } from '~/shared/types/solicitud-credito';
 
 export function useWizardSolicitud() {
     const router = useRouter();
-    const simuladorStorage = useSimuladorStorage();
     const {
         form,
         toggleConyuge,
@@ -31,6 +30,14 @@ export function useWizardSolicitud() {
         downloadXml
     } = useSolicitudXmlActions();
 
+    const {
+        loading: loadingPdf,
+        error: errorPdf,
+        generarPDF,
+        descargarPDF,
+        pdfFilename
+    } = usePDFGenerator();
+
     // Steps configuration
     const steps: WizardStep[] = [
         { key: 'solicitud', title: 'Solicitud', short: 'Solicitud' },
@@ -48,6 +55,8 @@ export function useWizardSolicitud() {
     // Reactive state
     const step = ref(0);
     const successModalOpen = ref(false);
+    const pdfGenerado = ref(false);
+    const mensajeProgreso = ref('');
 
     // Computed properties
     const prettyPayload = computed(() => JSON.stringify(form.value, null, 2));
@@ -82,15 +91,46 @@ export function useWizardSolicitud() {
         const id = createdSolicitudId.value;
         if (!id) return;
         successModalOpen.value = false;
-        await router.push(`/documentos/${id}`);
+        await router.push(`/solicitud/documentos/${id}`);
     };
 
-    // XML generation
+    // XML generation con PDF automático
     const generarXmlEvent = async (saveXml: boolean) => {
+        pdfGenerado.value = false;
+        mensajeProgreso.value = '';
+
+        // Paso 1: Generar y guardar XML
+        mensajeProgreso.value = 'Generando solicitud...';
         const success = await generarXml(form.value, saveXml);
-        if (success && saveXml) {
-            successModalOpen.value = true;
+
+        if (!success) {
+            return;
         }
+
+        // Si no se guarda, solo mostrar XML
+        if (!saveXml) {
+            return;
+        }
+
+        // Paso 2: Generar PDF automáticamente
+        if (createdSolicitudId.value) {
+            mensajeProgreso.value = 'Generando PDF...';
+            const pdfSuccess = await generarPDF(createdSolicitudId.value, {
+                incluirConvenio: true,
+                incluirFirmantes: true
+            });
+
+            if (pdfSuccess) {
+                pdfGenerado.value = true;
+                mensajeProgreso.value = 'Solicitud y PDF generados exitosamente';
+            } else {
+                // PDF falló pero XML se guardó, mostrar advertencia
+                mensajeProgreso.value = 'Solicitud guardada. Error al generar PDF: ' + (errorPdf.value || 'Error desconocido');
+            }
+        }
+
+        // Mostrar modal de éxito
+        successModalOpen.value = true;
     };
 
     return {
@@ -100,11 +140,16 @@ export function useWizardSolicitud() {
         // State
         step,
         loadingXml,
+        loadingPdf,
         xmlText,
         savedFilename,
         createdSolicitudId,
         errorMsg,
+        errorPdf,
         successModalOpen,
+        pdfGenerado,
+        pdfFilename,
+        mensajeProgreso,
         steps,
         prettyPayload,
 
@@ -133,6 +178,9 @@ export function useWizardSolicitud() {
 
         // XML operations
         generarXml: generarXmlEvent,
-        downloadXml
+        downloadXml,
+
+        // PDF operations
+        descargarPDF
     };
 }

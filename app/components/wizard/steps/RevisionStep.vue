@@ -15,7 +15,7 @@
             <h4 class="font-semibold text-indigo-700 mb-2">Encabezado</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
               <div v-for="(value, key) in getResumenEncabezado()" :key="String(key)">
-                <span class="font-medium">{{ formatKey(String(key)) }}:</span> {{ formatValue(value) }}
+                <span class="font-medium">{{ formatRevisionKey(String(key)) }}:</span> {{ formatValue(value) }}
               </div>
             </div>
           </div>
@@ -25,7 +25,7 @@
             <h4 class="font-semibold text-green-700 mb-2">Solicitud</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
               <div v-for="(value, key) in getResumenSolicitud()" :key="String(key)">
-                <span class="font-medium">{{ formatKey(String(key)) }}:</span> {{ formatValue(value) }}
+                <span class="font-medium">{{ formatRevisionKey(String(key)) }}:</span> {{ formatValue(value) }}
               </div>
             </div>
           </div>
@@ -35,7 +35,7 @@
             <h4 class="font-semibold text-blue-700 mb-2">Datos del Solicitante</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
               <div v-for="(value, key) in getResumenSolicitante()" :key="String(key)">
-                <span class="font-medium">{{ formatKey(String(key)) }}:</span> {{ formatValue(value) }}
+                <span class="font-medium">{{ formatRevisionKey(String(key)) }}:</span> {{ formatValue(value) }}
               </div>
             </div>
           </div>
@@ -45,7 +45,7 @@
             <h4 class="font-semibold text-orange-700 mb-2">Datos del Simulador</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
               <div v-for="(value, key) in getResumenSimulador()" :key="String(key)">
-                <span class="font-medium">{{ formatKey(String(key)) }}:</span> {{ formatValue(value) }}
+                <span class="font-medium">{{ formatRevisionKey(String(key)) }}:</span> {{ formatValue(value) }}
               </div>
             </div>
           </div>
@@ -55,7 +55,7 @@
             <h4 class="font-semibold text-purple-700 mb-2">Datos del Cónyuge</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
               <div v-for="(value, key) in getResumenConyuge()" :key="String(key)">
-                <span class="font-medium">{{ formatKey(String(key)) }}:</span> {{ formatValue(value) }}
+                <span class="font-medium">{{ formatRevisionKey(String(key)) }}:</span> {{ formatValue(value) }}
               </div>
             </div>
           </div>
@@ -65,7 +65,7 @@
             <h4 class="font-semibold text-orange-700 mb-2">Información Laboral</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
               <div v-for="(value, key) in getResumenLaboral()" :key="String(key)">
-                <span class="font-medium">{{ formatKey(String(key)) }}:</span> {{ formatValue(value) }}
+                <span class="font-medium">{{ formatRevisionKey(String(key)) }}:</span> {{ formatValue(value) }}
               </div>
             </div>
           </div>
@@ -75,7 +75,7 @@
             <h4 class="font-semibold text-teal-700 mb-2">Ingresos y Descuentos</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
               <div v-for="(value, key) in getResumenIngresos()" :key="String(key)">
-                <span class="font-medium">{{ formatKey(String(key)) }}:</span> {{ formatValue(value) }}
+                <span class="font-medium">{{ formatRevisionKey(String(key)) }}:</span> {{ formatValue(value) }}
               </div>
             </div>
           </div>
@@ -85,7 +85,7 @@
             <h4 class="font-semibold text-cyan-700 mb-2">Información Económica</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
               <div v-for="(value, key) in getResumenEconomica()" :key="String(key)">
-                <span class="font-medium">{{ formatKey(String(key)) }}:</span> {{ formatValue(value) }}
+                <span class="font-medium">{{ formatRevisionKey(String(key)) }}:</span> {{ formatValue(value) }}
               </div>
             </div>
           </div>
@@ -94,10 +94,10 @@
           <div v-if="getResumenPropiedades().length > 0" class="border-l-4 border-lime-200 pl-4">
             <h4 class="font-semibold text-lime-700 mb-2">Propiedades</h4>
             <div v-for="(propiedad, index) in getResumenPropiedades()" :key="index" class="mb-3">
-              <div class="text-xs font-medium text-lime-600 mb-1">Propiedad {{ formatIndex(index) }}</div>
+              <div class="text-xs font-medium text-lime-600 mb-1">Propiedad {{ formatRevisionIndex(index) }}</div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs ml-2">
                 <div v-for="(value, key) in propiedad" :key="String(key)">
-                  <span class="font-medium">{{ formatKey(String(key)) }}:</span> {{ formatValue(value) }}
+                  <span class="font-medium">{{ formatRevisionKey(String(key)) }}:</span> {{ formatValue(value) }}
                 </div>
               </div>
             </div>
@@ -107,10 +107,10 @@
           <div v-if="getResumenDeudas().length > 0" class="border-l-4 border-rose-200 pl-4">
             <h4 class="font-semibold text-rose-700 mb-2">Deudas y Obligaciones</h4>
             <div v-for="(deuda, index) in getResumenDeudas()" :key="index" class="mb-3">
-              <div class="text-xs font-medium text-rose-600 mb-1">Deuda {{ formatIndex(index) }}</div>
+              <div class="text-xs font-medium text-rose-600 mb-1">Deuda {{ formatRevisionIndex(index) }}</div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs ml-2">
                 <div v-for="(value, key) in deuda" :key="String(key)">
-                  <span class="font-medium">{{ formatKey(String(key)) }}:</span> {{ formatValue(value) }}
+                  <span class="font-medium">{{ formatRevisionKey(String(key)) }}:</span> {{ formatValue(value) }}
                 </div>
               </div>
             </div>
@@ -120,10 +120,10 @@
           <div v-if="getResumenReferenciasFamiliares().length > 0" class="border-l-4 border-amber-200 pl-4">
             <h4 class="font-semibold text-amber-700 mb-2">Referencias Familiares</h4>
             <div v-for="(referencia, index) in getResumenReferenciasFamiliares()" :key="index" class="mb-3">
-              <div class="text-xs font-medium text-amber-600 mb-1">Referencia {{ formatIndex(index) }}</div>
+              <div class="text-xs font-medium text-amber-600 mb-1">Referencia {{ formatRevisionIndex(index) }}</div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs ml-2">
                 <div v-for="(value, key) in referencia" :key="String(key)">
-                  <span class="font-medium">{{ formatKey(String(key)) }}:</span> {{ formatValue(value) }}
+                  <span class="font-medium">{{ formatRevisionKey(String(key)) }}:</span> {{ formatValue(value) }}
                 </div>
               </div>
             </div>
@@ -133,10 +133,10 @@
           <div v-if="getResumenReferenciasPersonales().length > 0" class="border-l-4 border-violet-200 pl-4">
             <h4 class="font-semibold text-violet-700 mb-2">Referencias Personales</h4>
             <div v-for="(referencia, index) in getResumenReferenciasPersonales()" :key="index" class="mb-3">
-              <div class="text-xs font-medium text-violet-600 mb-1">Referencia {{ formatIndex(index) }}</div>
+              <div class="text-xs font-medium text-violet-600 mb-1">Referencia {{ formatRevisionIndex(index) }}</div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs ml-2">
                 <div v-for="(value, key) in referencia" :key="String(key)">
-                  <span class="font-medium">{{ formatKey(String(key)) }}:</span> {{ formatValue(value) }}
+                  <span class="font-medium">{{ formatRevisionKey(String(key)) }}:</span> {{ formatValue(value) }}
                 </div>
               </div>
             </div>
@@ -198,6 +198,41 @@
       </CardContent>
     </Card>
 
+    <!-- Mensaje de progreso -->
+    <div v-if="mensajeProgreso" class="rounded-lg border border-primary/50 bg-primary/10 p-4 text-sm text-primary flex items-center gap-3">
+      <Loader2 v-if="loadingPdf" class="h-5 w-5 shrink-0 animate-spin" />
+      <CheckCircle2 v-else class="h-5 w-5 shrink-0" />
+      <span class="font-medium">{{ mensajeProgreso }}</span>
+    </div>
+
+    <!-- Card de PDF generado -->
+    <Card v-if="pdfGenerado && pdfFilename" class="border-secondary/20 bg-secondary/5 shadow-none animate-in fade-in slide-in-from-bottom-2">
+      <CardHeader class="flex flex-row items-center justify-between py-3">
+        <CardTitle class="text-xs font-bold uppercase tracking-wider text-secondary flex items-center gap-2">
+          <FileText class="h-4 w-4" />
+          PDF generado
+        </CardTitle>
+        <Button
+          variant="outline"
+          size="sm"
+          class="h-8 gap-2 bg-background"
+          @click="descargarPdf"
+        >
+          <Download class="h-3.5 w-3.5" />
+          Descargar PDF
+        </Button>
+      </CardHeader>
+      <CardContent class="space-y-2">
+        <div class="text-xs text-muted-foreground">
+          Archivo: {{ pdfFilename }}
+        </div>
+        <div class="text-xs text-secondary font-medium">
+          ✓ PDF listo para descarga y firma digital
+        </div>
+      </CardContent>
+    </Card>
+
+    <!-- Error de XML -->
     <div v-if="errorMsg" class="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive flex items-center gap-3">
       <AlertCircle class="h-5 w-5 shrink-0" />
       <span class="font-medium">{{ errorMsg }}</span>
@@ -207,22 +242,25 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { FileCode, Download, CheckCircle2, AlertCircle, ClipboardList, PenTool } from 'lucide-vue-next'
+import { 
+  FileCode, 
+  Download, 
+  CheckCircle2, 
+  AlertCircle, 
+  ClipboardList, 
+  PenTool, 
+  FileText, 
+  Loader2 
+} from 'lucide-vue-next'
 import Card from '@/components/ui/Card.vue'
 import CardHeader from '@/components/ui/CardHeader.vue'
 import CardTitle from '@/components/ui/CardTitle.vue'
 import CardContent from '@/components/ui/CardContent.vue'
 import Button from '@/components/ui/Button.vue'
+import type { RevisionProps } from '@/shared/types/solicitud-credito'
+import { formatValue, formatRevisionKey, formatRevisionIndex } from '@/shared/formatters'
 
-interface Props {
-  prettyPayload: string
-  xmlText?: string
-  savedFilename?: string
-  errorMsg?: string
-  downloadXml: () => void
-}
-
-const props = defineProps<Props>()
+const props = defineProps<RevisionProps>()
 
 // Estado para controlar la visibilidad del payload
 const mostrarPayload = ref(false)
@@ -343,77 +381,4 @@ const getResumenReferenciasPersonales = () => {
   return data.referencias?.personales || []
 }
 
-// Función helper para formatear índices
-const formatIndex = (index: number | string) => {
-  const numIndex = typeof index === 'string' ? parseInt(index, 10) : index
-  return String(numIndex + 1)
-}
-
-// Función para formatear las claves
-const formatKey = (key: string) => {
-  // Mapeo de claves a nombres legibles en español
-  const keyMap: Record<string, string> = {
-    'linea_credito': 'Línea de Crédito',
-    'tipo_credito': 'Tipo Crédito',
-    'modelo_xml4': 'Modelo XML4',
-    'codigo_cre': 'Código Cre',
-    'codigo_cap': 'Código Cap',
-    'codigo_ser': 'Código Ser',
-    'numero_cuotas': 'Número Cuotas',
-    'estado': 'Estado',
-    'monto_simulado': 'Monto Simulado',
-    'plazo_meses': 'Plazo Meses',
-    'tasa_anual': 'Tasa Anual',
-    'cuota_mensual': 'Cuota Mensual',
-    'fecha_radicado': 'Fecha Radicado',
-    'valor_solicitud': 'Valor Solicitud',
-    'categoria': 'Categoría',
-    'tipcre': 'Tipo Crédito',
-    'modxml4': 'Modelo XML4',
-    'detalle_modalidad': 'Modalidad de Crédito',
-    'nombres_apellidos': 'Nombres y Apellidos',
-    'tipo_identificacion': 'Tipo Identificación',
-    'numero_identificacion': 'Número Identificación',
-    'fecha_nacimiento': 'Fecha Nacimiento',
-    'telefono_movil': 'Teléfono',
-    'email': 'Email',
-    'barrio_residencia': 'Dirección',
-    'ciudad_residencia': 'Ciudad Residencia',
-    'empresa_razon_social': 'Empresa',
-    'empresa_nit': 'NIT',
-    'cargo': 'Cargo',
-    'fecha_ingreso': 'Fecha Ingreso',
-    'salario_basico_mensual': 'Salario Básico',
-    'subsidio_transporte': 'Subsidio Transporte',
-    'salud_pension': 'Salud y Pensión'
-  }
-  
-  return keyMap[key] || key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
-}
-
-// Función para formatear valores
-const formatValue = (value: any) => {
-  if (value === null || value === undefined || value === '') {
-    return 'N/A'
-  }
-  
-  if (typeof value === 'boolean') {
-    return value ? 'Sí' : 'No'
-  }
-  
-  if (typeof value === 'number') {
-    return value.toLocaleString('es-CO', {
-      style: 'currency',
-      currency: 'COP',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-  }
-  
-  if (typeof value === 'object') {
-    return JSON.stringify(value)
-  }
-  
-  return String(value)
-}
 </script>

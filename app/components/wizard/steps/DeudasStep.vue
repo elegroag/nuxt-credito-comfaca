@@ -20,12 +20,12 @@
     <div class="grid gap-4">
       <Card v-for="(d, idx) in form.deudas" :key="idx" class="border-border/50 bg-muted/20">
         <CardHeader class="flex flex-row items-center justify-between py-3">
-          <CardTitle class="text-sm font-semibold">Deuda #{{ idx + 1 }}</CardTitle>
+          <CardTitle class="text-sm font-semibold">Deuda #{{ Number(idx) + 1 }}</CardTitle>
           <Button 
             variant="ghost" 
             size="sm" 
             class="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-2" 
-            @click="removeDeuda(idx)"
+            @click="removeDeuda(Number(idx))"
           >
             <Trash2 class="h-4 w-4" />
           </Button>
@@ -58,12 +58,7 @@ import Card from '@/components/ui/Card.vue'
 import CardHeader from '@/components/ui/CardHeader.vue'
 import CardTitle from '@/components/ui/CardTitle.vue'
 import CardContent from '@/components/ui/CardContent.vue'
+import type { DeudasProps } from '~/shared/types/solicitud-credito'
 
-interface Props {
-  form: any
-  addDeuda: () => void
-  removeDeuda: (index: number) => void
-}
-
-defineProps<Props>()
+defineProps<DeudasProps>()
 </script>
