@@ -74,11 +74,55 @@
       :fecha-envio="fechaEnvio"
     />
 
+    <!-- Alerta de error o información -->
+    <div v-if="mostrarAlerta" class="mb-6">
+      <Card class="bg-yellow-50 border-yellow-300">
+        <CardContent class="p-4">
+          <div class="flex items-start gap-3">
+            <AlertCircle class="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <p class="text-sm text-yellow-800">{{ mensajeAlerta }}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+
+    <!-- Estado del PDF -->
+    <Card v-if="estadoPdf && tienePDF" class="mb-6 mt-6 bg-blue-50 border-blue-300">
+      <CardContent class="p-4">
+        <div class="flex items-start gap-3">
+          <FileText class="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+          <div class="flex-1">
+            <p class="text-sm font-medium text-blue-900">Documento PDF disponible</p>
+            <p class="text-xs text-blue-700 mt-1">{{ estadoPdf.pdf_generado?.filename }}</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+
     <!-- Acciones disponibles -->
     <div class="flex flex-col sm:flex-row gap-4 justify-center mt-6">
-      <Button @click="descargarComprobante" variant="outline" class="flex items-center gap-2 bg-white text-gray-900">
-        <Download class="h-4 w-4" />
-        Descargar comprobante
+      <Button 
+        @click="handleVisualizarPDF" 
+        variant="outline" 
+        :disabled="pdfLoading"
+        class="flex items-center gap-2 bg-white text-gray-900"
+      >
+        <Eye v-if="!pdfLoading" class="h-4 w-4" />
+        <span v-if="pdfLoading" class="loading loading-spinner loading-xs"></span>
+        {{ pdfLoading ? 'Cargando...' : 'Ver documento' }}
+      </Button>
+
+      <Button 
+        @click="handleDescargarPDF" 
+        variant="outline" 
+        :disabled="pdfLoading"
+        class="flex items-center gap-2 bg-white text-gray-900"
+      >
+        <Download v-if="!pdfLoading" class="h-4 w-4" />
+        <span v-if="pdfLoading" class="loading loading-spinner loading-xs"></span>
+        {{ pdfLoading ? 'Descargando...' : 'Descargar PDF' }}
       </Button>
       
       <Button @click="irAlDashboard" class="flex items-center gap-2 w-full sm:w-auto">
@@ -88,15 +132,15 @@
     </div>
 
     <!-- Información de contacto -->
-    <Card class="mt-8 bg-blue-50 border-blue-200">
+    <Card class="mt-8 bg-green-50 border-green-300">
       <CardContent class="p-6">
         <div class="text-center">
-          <h3 class="text-lg font-semibold text-blue-900 mb-2">¿Necesitas ayuda?</h3>
-          <p class="text-blue-700 mb-4">
+          <h3 class="text-lg font-semibold text-green-900 mb-2">¿Necesitas ayuda?</h3>
+          <p class="text-gray-500 mb-4">
             Puedes contactarnos para cualquier pregunta sobre tu solicitud
           </p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center text-sm">
-            <div class="flex items-center gap-2 text-blue-700">
+            <div class="flex items-center gap-2 text-green-700">
               <Mail class="h-4 w-4" />
               <span>creditos@comfaca.com</span>
             </div>
@@ -112,14 +156,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { CheckCircle, Clock, Mail, Phone, Download, Home, FileText } from 'lucide-vue-next'
+import { CheckCircle, Clock, Mail, Phone, Download, Home, FileText, Eye, AlertCircle } from 'lucide-vue-next'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
 import CardContent from '@/components/ui/CardContent.vue'
 import Badge from '@/components/ui/Badge.vue'
 import SolicitudTimeline from '~/components/shared/SolicitudTimeline.vue'
+import { usePDFGenerator } from '~/composables/solicitud/usePDFGenerator'
 
 definePageMeta({
   layout: 'dashboard',
@@ -129,8 +174,20 @@ definePageMeta({
 const route = useRoute()
 const router = useRouter()
 
-// Obtener ID de la solicitud desde la ruta
 const solicitudId = computed(() => route.params.id as string)
+
+const {
+    loading: pdfLoading,
+    error: pdfError,
+    tienePDF,
+    estadoPdf,
+    verificarEstadoPDF,
+    visualizarPDF,
+    descargarPDF
+} = usePDFGenerator()
+
+const mostrarAlerta = ref(false)
+const mensajeAlerta = ref('')
 
 // Fecha actual formateada
 const fechaEnvio = computed(() => {
@@ -177,19 +234,49 @@ const estadosTimeline = computed(() => [
   }
 ])
 
-// Métodos
-const descargarComprobante = () => {
-  // Lógica para descargar el comprobante PDF
-  window.open(`/api/solicitudes/${solicitudId.value}/generar-pdf`, '_blank')
-}
+const handleVisualizarPDF = async () => {
+    mostrarAlerta.value = false;
+    
+    const disponible = await verificarEstadoPDF(solicitudId.value);
+    
+    if (!disponible) {
+        mensajeAlerta.value = 'El PDF aún no está disponible. Por favor espere un momento e intente nuevamente.';
+        mostrarAlerta.value = true;
+        return;
+    }
+    
+    const visualizado = await visualizarPDF(solicitudId.value);
+    
+    if (!visualizado && pdfError.value) {
+        mensajeAlerta.value = pdfError.value;
+        mostrarAlerta.value = true;
+    }
+};
+
+const handleDescargarPDF = async () => {
+    mostrarAlerta.value = false;
+    
+    const disponible = await verificarEstadoPDF(solicitudId.value);
+    
+    if (!disponible) {
+        mensajeAlerta.value = 'El PDF aún no está disponible. Por favor espere un momento e intente nuevamente.';
+        mostrarAlerta.value = true;
+        return;
+    }
+    
+    const descargado = await descargarPDF(solicitudId.value);
+    
+    if (!descargado && pdfError.value) {
+        mensajeAlerta.value = pdfError.value;
+        mostrarAlerta.value = true;
+    }
+};
 
 const irAlDashboard = () => {
-  router.push('/dashboard')
-}
+    router.push('/dashboard');
+};
 
-// Cargar datos de la solicitud si es necesario
 onMounted(async () => {
-  // Aquí podrías cargar información adicional de la solicitud
-  console.log('Solicitud ID:', solicitudId.value)
-})
+    await verificarEstadoPDF(solicitudId.value);
+});
 </script>

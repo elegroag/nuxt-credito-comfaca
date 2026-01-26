@@ -101,7 +101,7 @@ export function usePDFGenerator() {
   /**
    * Descarga el PDF generado de una solicitud
    */
-  const descargarPDF = async (solicitudId: string): Promise<void> => {
+  const descargarPDF = async (solicitudId: string): Promise<boolean> => {
     loading.value = true;
     error.value = null;
 
@@ -112,7 +112,6 @@ export function usePDFGenerator() {
       const baseUrl = String(config.public.backendBaseUrl || '').replace(/\/+$/, '');
       const url = `${baseUrl}/api/solicitudes/${solicitudId}/descargar-pdf`;
 
-      // Crear un enlace temporal para descargar
       const headers = authHeader.value as Record<string, string>;
 
       const response = await fetch(url, {
@@ -123,7 +122,9 @@ export function usePDFGenerator() {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        error.value = errorData.message || 'El PDF no está disponible. Por favor genérelo primero.';
+        return false;
       }
 
       const blob = await response.blob();
@@ -131,7 +132,6 @@ export function usePDFGenerator() {
       const link = document.createElement('a');
       link.href = downloadUrl;
 
-      // Obtener nombre del archivo desde headers o usar uno por defecto
       const contentDisposition = response.headers.get('content-disposition');
       let filename = `solicitud_${solicitudId}.pdf`;
 
@@ -148,9 +148,65 @@ export function usePDFGenerator() {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(downloadUrl);
 
+      return true;
     } catch (err: any) {
       error.value = 'Error al descargar el PDF';
       console.error('Error descargando PDF:', err);
+      return false;
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  /**
+   * Visualiza el PDF en una nueva ventana/pestaña
+   */
+  const visualizarPDF = async (solicitudId: string): Promise<boolean> => {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const config = useRuntimeConfig();
+      const { authHeader } = useSession();
+
+      const baseUrl = String(config.public.backendBaseUrl || '').replace(/\/+$/, '');
+      const url = `${baseUrl}/api/solicitudes/${solicitudId}/descargar-pdf`;
+
+      const headers = authHeader.value as Record<string, string>;
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          ...headers
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        error.value = errorData.message || 'El PDF no está disponible. Por favor genérelo primero.';
+        return false;
+      }
+
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const newWindow = window.open(blobUrl, '_blank');
+
+      if (!newWindow) {
+        error.value = 'Por favor permita ventanas emergentes para visualizar el PDF';
+        window.URL.revokeObjectURL(blobUrl);
+        return false;
+      }
+
+      setTimeout(() => {
+        window.URL.revokeObjectURL(blobUrl);
+      }, 60000);
+
+      return true;
+    } catch (err: any) {
+      error.value = 'Error al visualizar el PDF';
+      console.error('Error visualizando PDF:', err);
+      return false;
     } finally {
       loading.value = false;
     }
@@ -243,6 +299,7 @@ export function usePDFGenerator() {
     // Métodos
     generarPDF,
     descargarPDF,
+    visualizarPDF,
     verificarEstadoPDF,
     generarYDescargarPDF,
     limpiarEstado

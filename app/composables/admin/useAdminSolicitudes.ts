@@ -39,6 +39,13 @@ export const useAdminSolicitudes = () => {
     const estadosDisponibles = ref<EstadoSolicitudData[]>([])
     const loadingEstados = ref(false)
 
+    // Estado para el modal de cambio de estado
+    const showEstadoModal = ref(false)
+    const solicitudSeleccionada = ref<SolicitudAdmin | null>(null)
+    const nuevoEstado = ref('')
+    const estadoDescripcion = ref('')
+    const loadingEstado = ref(false)
+
     /**
      * Maneja la respuesta del backend de forma estandarizada
      */
@@ -213,6 +220,67 @@ export const useAdminSolicitudes = () => {
         //pendiente
     }
 
+    /**
+     * Recarga todos los datos
+     */
+    const recargarDatos = () => {
+        cargarEstadosDisponibles()
+        cargarEstadosCount()
+        cargarSolicitudes()
+    }
+
+    /**
+     * Abre el modal para cambiar estado
+     */
+    const cambiarEstado = (solicitud: SolicitudAdmin | any) => {
+        solicitudSeleccionada.value = solicitud
+        nuevoEstado.value = solicitud.estado
+        estadoDescripcion.value = ''
+        showEstadoModal.value = true
+    }
+
+    /**
+     * Cierra el modal de cambio de estado
+     */
+    const cerrarEstadoModal = () => {
+        showEstadoModal.value = false
+        solicitudSeleccionada.value = null
+        nuevoEstado.value = ''
+        estadoDescripcion.value = ''
+    }
+
+    /**
+     * Confirma el cambio de estado
+     */
+    const confirmarCambioEstado = async () => {
+        if (!solicitudSeleccionada.value || !nuevoEstado.value) return
+
+        loadingEstado.value = true
+
+        try {
+            await actualizarEstado(
+                solicitudSeleccionada.value.id,
+                nuevoEstado.value,
+                estadoDescripcion.value || undefined
+            )
+
+            cerrarEstadoModal()
+        } catch (err) {
+            console.error('Error cambiando estado:', err)
+        } finally {
+            loadingEstado.value = false
+        }
+    }
+
+    /**
+     * Elimina una solicitud con confirmación
+     */
+    const eliminarSolicitudConfirm = (solicitud: SolicitudAdmin | any) => {
+        if (confirm(`¿Estás seguro de eliminar la solicitud ${solicitud.numero_solicitud || solicitud.payload?.solicitud?.numero_solicitud || solicitud.id}?`)) {
+            eliminarSolicitud(solicitud.id)
+        }
+    }
+
     // Computed properties
     const tieneFiltrosActivos = computed(() => {
         const f = filtrosActivos.value
@@ -245,11 +313,42 @@ export const useAdminSolicitudes = () => {
     })
 
     /**
+     * Calcula el total de solicitudes
+     */
+    const getTotalSolicitudes = computed(() => {
+        return Object.values(estadosCount.value).reduce((total, count) => total + count, 0)
+    })
+
+    /**
+     * Calcula el porcentaje de un estado
+     */
+    const getEstadoPercentage = (count: number): string => {
+        const total = getTotalSolicitudes.value
+        if (total === 0) return '0'
+        return ((count / total) * 100).toFixed(1)
+    }
+
+    /**
     * Aplica filtros y recarga los datos
     */
     const aplicarFiltroPaginacion = (nuevosFiltros: Partial<FiltrosSolicitudes>) => {
         filtrosActivos.value = { ...filtrosActivos.value, ...nuevosFiltros, skip: 0 }
         cargarSolicitudes()
+    }
+
+    /**
+     * Filtra solicitudes por estado
+     */
+    const filtrarPorEstado = (estado: string) => {
+        // Buscar el estado por nombre para obtener su ID
+        const estadoData = estadosDisponibles.value.find(e => e.nombre === estado)
+        const estadoId = estadoData?.id || estado
+
+        // Aplicar filtro por estado específico usando el ID del estado
+        aplicarFiltroPaginacion({
+            estados: [estadoId],
+            skip: 0 // Reiniciar paginación
+        })
     }
 
     // Cargar datos iniciales
@@ -270,6 +369,11 @@ export const useAdminSolicitudes = () => {
         estadosCount: readonly(estadosCount),
         estadosDisponibles: readonly(estadosDisponibles),
         loadingEstados: readonly(loadingEstados),
+        showEstadoModal: readonly(showEstadoModal),
+        solicitudSeleccionada: readonly(solicitudSeleccionada),
+        nuevoEstado: readonly(nuevoEstado),
+        estadoDescripcion: readonly(estadoDescripcion),
+        loadingEstado: readonly(loadingEstado),
 
         // Computed
         tieneFiltrosActivos,
@@ -277,6 +381,8 @@ export const useAdminSolicitudes = () => {
         paginaActual,
         tieneSiguientePagina,
         tienePaginaAnterior,
+        getTotalSolicitudes,
+        getEstadoPercentage,
 
         // Métodos
         cargarSolicitudes,
@@ -288,6 +394,12 @@ export const useAdminSolicitudes = () => {
         obtenerSolicitud,
         eliminarSolicitud,
         exportarCSV,
-        aplicarFiltroPaginacion
+        aplicarFiltroPaginacion,
+        recargarDatos,
+        cambiarEstado,
+        cerrarEstadoModal,
+        confirmarCambioEstado,
+        eliminarSolicitudConfirm,
+        filtrarPorEstado
     }
 }
