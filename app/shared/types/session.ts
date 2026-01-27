@@ -4,6 +4,7 @@ import type { PuntoAsesoria } from './adviser'
 export type SessionUser = {
     username: string
     roles: string[]
+    permissions: string[]
     email: string
     tipo_documento: string
     numero_documento: string

@@ -211,7 +211,27 @@ export interface DocumentoCargado {
     tipo_mime?: string;
 }
 
-export type EstadoSolicitud = 'POSTULADO' | 'DOCUMENTOS_CARGADOS' | 'PENDIENTE_FIRMADO' | 'FIRMADO' | 'ENVIADO_PENDIENTE_APROBACION';
+export type EstadoSolicitud =
+    | 'POSTULADO'
+    | 'DOCUMENTOS_CARGADOS'
+    | 'ENVIADO_VALIDACION'
+    | 'PENDIENTE_FIRMADO'
+    | 'FIRMADO'
+    | 'ENVIADO_PENDIENTE_APROBACION'
+    | 'APROBADO'
+    | 'DESEMBOLSADO'
+    | 'FINALIZADO'
+    | 'RECHAZADO'
+    | 'DESISTE';
+
+export interface Firmante {
+    nombre_completo: string;
+    email: string;
+    numero_documento: string;
+    tipo_documento?: string;
+    rol?: string;
+    telefono?: string;
+}
 
 export interface SolicitanteBasic {
     email: string;
@@ -229,12 +249,12 @@ export interface SolicitudCredito {
     monto_solicitado: number;
     plazo_meses: number;
     numero_solicitud: string;
-    owner_username: string;
-    xml_filename?: string;
-    pdf_filename?: string;
-    payload: SolicitudCreditoPayload;
+    fecha_postulacion: string;
+    tasa_interes?: number;
+    descripcion_solicitud?: string;
     solicitante: SolicitanteBasic;
     documentos: DocumentoCargado[];
+    firmantes?: Firmante[];
     timeline: Array<{
         estado: EstadoSolicitud;
         fecha: string;

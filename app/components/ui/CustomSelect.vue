@@ -79,12 +79,18 @@ const DEFAULT_MAX_HEIGHT = 200;
 const ID_PREFIX = 'custom-select-';
 
 // Types
-type SelectValue = string | number | SelectOption | (string | number | SelectOption)[] | null;
-type RawOption = SelectOption | string | number;
+interface VueSelectOption {
+  label: string;
+  value: string | number | boolean;
+  [key: string]: any;
+}
+
+type SelectValue = string | number | VueSelectOption | (string | number | VueSelectOption)[] | null;
+type RawOption = VueSelectOption | string | number;
 
 interface SelectOption {
   label: string;
-  value: string | number;
+  value: string | number | boolean;
   description?: string;
   [key: string]: any;
 }
@@ -183,9 +189,9 @@ const normalizedOptions = computed(() =>
   props.options.map(normalizeOption)
 );
 
-const reduceOption = (option: SelectOption) => option.value;
+const reduceOption = (option: VueSelectOption) => option.value;
 
-const getOptionLabel = (option: SelectOption) => option.label;
+const getOptionLabel = (option: VueSelectOption) => option.label;
 
 const getDisplayLabel = (option: SelectOption | RawOption) => {
   if (typeof option === 'string' || typeof option === 'number') {

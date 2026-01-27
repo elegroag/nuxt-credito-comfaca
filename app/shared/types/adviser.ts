@@ -16,6 +16,7 @@ export interface AdviserAuthResponse {
   user: {
     username: string;
     roles: string[];
+    permissions: string[];
     email: string;
     tipo_documento: string;
     numero_documento: string;

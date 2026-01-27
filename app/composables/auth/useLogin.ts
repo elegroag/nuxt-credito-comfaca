@@ -84,6 +84,7 @@ export function useLogin() {
                 user: {
                     username: typeof user?.username === 'string' ? user.username : username.value,
                     roles: Array.isArray(user?.roles) ? user.roles : [],
+                    permissions: Array.isArray(user?.permissions) ? user.permissions : [],
                     email: typeof user?.email === 'string' ? user.email : '',
                     tipo_documento: typeof user?.tipo_documento === 'string' ? user.tipo_documento : '',
                     numero_documento: typeof user?.numero_documento === 'string' ? user.numero_documento : '',

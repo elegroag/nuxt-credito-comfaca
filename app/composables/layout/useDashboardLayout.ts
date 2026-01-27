@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSession } from '~/composables/useSession'
+import { usePermissions } from '~/composables/usePermissions'
 import type { NavItem } from '~/shared/types/layout'
 import {
     Home,
@@ -24,6 +25,7 @@ const userMenuOpen = ref(false)
 
 export function useDashboardLayout() {
     const { session, clearSession } = useSession()
+    const { hasPermission, isAdministrator } = usePermissions()
     const route = useRoute()
     const router = useRouter()
 
@@ -45,12 +47,12 @@ export function useDashboardLayout() {
     const navItems: NavItem[] = [
         { label: 'Inicio', to: '/', abbr: _abbr('Inicio'), icon: Home },
         { label: 'Simulador', to: '/simulador/lineas-credito', abbr: _abbr('Simulador'), icon: Calculator },
-        { label: 'Solicitud', to: '/solicitud', abbr: _abbr('Solicitud'), icon: FilePlus, adminOnly: true, category: 'user' },
-        { label: 'Gestión firmas', to: '/firmas-compartir', abbr: _abbr('Gestión firmas'), icon: Share2, adminOnly: true, category: 'admin' },
+        { label: 'Solicitud', to: '/solicitud', abbr: _abbr('Solicitud'), icon: FilePlus, category: 'user' },
+        { label: 'Gestión firmas', to: '/admin/firmas', abbr: _abbr('Gestión firmas'), icon: Share2, requiredPermissions: ['firmas.view'], category: 'admin' },
         { label: 'Entidad digital', to: '/entidad-digital', abbr: _abbr('Entidad digital'), icon: Key },
-        { label: 'Solicitudes', to: '/admin/solicitudes', abbr: _abbr('Solicitudes'), icon: List, adminOnly: true, category: 'admin' },
+        { label: 'Solicitudes', to: '/admin/solicitudes', abbr: _abbr('Solicitudes'), icon: List, requiredPermissions: ['solicitudes.view'], category: 'admin' },
         { label: 'Usuarios', to: '/admin/users', abbr: _abbr('Usuarios'), icon: Users, adminOnly: true, category: 'admin' },
-        { label: 'Convenios', to: '/admin/convenios', abbr: _abbr('Convenios'), icon: Building, adminOnly: true, category: 'admin' },
+        { label: 'Convenios', to: '/admin/convenios', abbr: _abbr('Convenios'), icon: Building, requiredPermissions: ['convenios.view'], category: 'admin' },
         { label: 'Perfil', to: '/perfil', abbr: _abbr('Perfil'), icon: User }
     ]
 
@@ -59,16 +61,23 @@ export function useDashboardLayout() {
         return route.path.startsWith(to)
     }
 
-    // Filtrar items de navegación según el rol del usuario
+    // Filtrar items de navegación según los permisos del usuario
     const filteredNavItems = computed(() => {
-        const userRoles = session.value?.user?.roles || []
-        const isAdmin = userRoles.includes('admin') || userRoles.includes('administrator')
-
         return navItems.filter(item => {
-            // Si el item es solo para admin y el usuario no es admin, ocultarlo
-            if (item.adminOnly && !isAdmin) {
+            // Si el item es solo para administrator y el usuario no es administrator, ocultarlo
+            if (item.adminOnly && !isAdministrator.value) {
                 return false
             }
+
+            // Si el item requiere permisos específicos, verificarlos
+            if (item.requiredPermissions && item.requiredPermissions.length > 0) {
+                const hasAllPermissions = item.requiredPermissions.every(permission =>
+                    hasPermission(permission)
+                )
+                return hasAllPermissions
+            }
+
+            // Si no hay restricciones, mostrar el item
             return true
         })
     })

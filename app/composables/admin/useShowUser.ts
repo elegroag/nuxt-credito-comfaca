@@ -76,7 +76,7 @@ export function useShowUser() {
 
     const editarUsuario = () => {
         if (usuario.value) {
-            router.push(`/admin/users/${usuario.value.id}/edit`);
+            router.push(`/admin/users/edit/${usuario.value.id}`);
         }
     };
 

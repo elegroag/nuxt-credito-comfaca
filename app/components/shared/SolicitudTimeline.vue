@@ -127,7 +127,9 @@ const getTiempoEstimado = (estadoId: string): string => {
     'ENVIADO_VALIDACION': '1-2 días hábiles',
     'PENDIENTE_FIRMADO': '2-3 días hábiles',
     'FIRMADO': '1-2 días hábiles',
-    'ENVIADO_PENDIENTE_APROBACION': '3-5 días hábiles'
+    'ENVIADO_PENDIENTE_APROBACION': '3-5 días hábiles',
+    'APROBADO': '1-2 días hábiles',
+    'DESEMBOLSADO': 'Inmediato'
   }
   
   return tiempos[estadoId] || ''

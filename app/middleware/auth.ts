@@ -1,6 +1,6 @@
 import type { RouteLocationNormalized } from 'vue-router'
 import { useSession } from '~/composables/useSession'
-import { shouldApplyAuthMiddleware } from '~/config/auth.config'
+import { shouldApplyAuthMiddleware, hasPermissionForRoute } from '~/config/auth.config'
 
 export default defineNuxtRouteMiddleware(async (to: RouteLocationNormalized) => {
     if (process.server) return
@@ -32,6 +32,11 @@ export default defineNuxtRouteMiddleware(async (to: RouteLocationNormalized) => 
         return navigateTo(`/login?redirect=${redirect}&expired=true`)
     }
 
-    // Token válido, permitir acceso
+    // Verificar permisos específicos para la ruta
+    if (!hasPermissionForRoute(to.path, useSession().session.value.user?.roles || [])) {
+        return navigateTo('/dashboard')
+    }
+
+    // Token válido y permisos correctos, permitir acceso
     return
 })

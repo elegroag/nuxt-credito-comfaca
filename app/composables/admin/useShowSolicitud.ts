@@ -7,13 +7,14 @@ import type { SolicitudCredito } from '~/shared/types/solicitud-credito';
 export function useShowSolicitud() {
     const route = useRoute();
     const router = useRouter();
-    const { getJson } = useApi();
+    const { getJson, postJson } = useApi();
     const { ready } = useSession();
 
     const solicitudId = route.params.id as string;
     const solicitud = ref<SolicitudCredito | null>(null);
     const loading = ref(true);
     const error = ref<string | null>(null);
+    const loadingFirmado = ref(false);
 
     // Funciones de utilidad
     const fmtMoney = (value: number | undefined) => {
@@ -163,6 +164,82 @@ export function useShowSolicitud() {
         }
     };
 
+    // Estados del timeline
+    const estadosTimeline = ref([
+        {
+            id: 'POSTULADO',
+            nombre: 'Postulado',
+            descripcion: 'Solicitud creada y registrada en el sistema'
+        },
+        {
+            id: 'DOCUMENTOS_CARGADOS',
+            nombre: 'Documentos cargados',
+            descripcion: 'Documentación requerida adjuntada'
+        },
+        {
+            id: 'ENVIADO_VALIDACION',
+            nombre: 'Enviado para validación',
+            descripcion: 'En proceso de revisión por asesores'
+        },
+        {
+            id: 'PENDIENTE_FIRMADO',
+            nombre: 'Pendiente de firmado',
+            descripcion: 'Esperando firma digital del documento'
+        },
+        {
+            id: 'FIRMADO',
+            nombre: 'Firmado',
+            descripcion: 'Documento firmado digitalmente'
+        },
+        {
+            id: 'ENVIADO_PENDIENTE_APROBACION',
+            nombre: 'Enviado (pendiente de aprobación)',
+            descripcion: 'Solicitud en evaluación final'
+        },
+        {
+            id: 'APROBADO',
+            nombre: 'Aprobado',
+            descripcion: 'Crédito aprobado'
+        },
+        {
+            id: 'DESEMBOLSADO',
+            nombre: 'Desembolsado',
+            descripcion: 'Monto desembolsado al solicitante'
+        }
+    ]);
+
+    // Función para iniciar proceso de firmado
+    const iniciarFirmado = async () => {
+        if (!solicitud.value) return;
+
+        loadingFirmado.value = true;
+        try {
+            const response = await postJson<{
+                success: boolean;
+                data: any;
+                message: string;
+            }>(`/api/solicitudes/${solicitudId}/iniciar-firmado`, {}, { auth: true });
+
+            if (response.success) {
+                await cargarSolicitud();
+                return {
+                    success: true,
+                    message: response.message || 'Proceso de firmado iniciado exitosamente'
+                };
+            } else {
+                throw new Error(response.message || 'Error al iniciar firmado');
+            }
+        } catch (e: any) {
+            console.error('Error al iniciar firmado:', e);
+            return {
+                success: false,
+                message: e.message || 'Error al iniciar el proceso de firmado'
+            };
+        } finally {
+            loadingFirmado.value = false;
+        }
+    };
+
     // Navegación
     const goBack = () => {
         router.back();
@@ -183,6 +260,8 @@ export function useShowSolicitud() {
         loading,
         error,
         solicitudId,
+        loadingFirmado,
+        estadosTimeline,
 
         // Funciones de utilidad
         fmtMoney,
@@ -205,5 +284,8 @@ export function useShowSolicitud() {
 
         // Función principal
         cargarSolicitud,
+
+        // Funciones de firmado
+        iniciarFirmado,
     };
 }

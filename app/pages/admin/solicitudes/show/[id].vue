@@ -2,19 +2,27 @@
   <div class="container mx-auto py-8 px-4 max-w-5xl">
     <!-- Header -->
     <div class="mb-6">
-      <div class="flex items-center gap-4 mb-4">
-        <Button variant="outline" @click="goBack()" class="shrink-0">
-          <ChevronLeft class="h-4 w-4 mr-2" />
-          Volver
-        </Button>
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">
-            Detalles de Solicitud - Vista Administrador
-          </h1>
-          <p class="text-sm text-gray-500">
-            Información completa de la solicitud de crédito
-          </p>
+      <div class="flex items-center justify-between gap-4 mb-4">
+        <div class="flex items-center gap-4">
+          <Button variant="outline" @click="goBack()" class="shrink-0">
+            <ChevronLeft class="h-4 w-4 mr-2" />
+            Volver
+          </Button>
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">
+              Detalles de Solicitud - Vista Administrador
+            </h1>
+            <p class="text-sm text-gray-500">
+              Información completa de la solicitud de crédito
+            </p>
+          </div>
         </div>
+        <NuxtLink v-if="solicitud" :to="`/admin/solicitudes/acciones/${solicitud.id}`">
+          <Button variant="default" class="gap-2 shrink-0">
+            <Icon name="lucide:clipboard-list" class="h-4 w-4" />
+            Registrar Acción
+          </Button>
+        </NuxtLink>
       </div>
     </div>
 
@@ -48,6 +56,13 @@
 
     <!-- Solicitud Details -->
     <div v-else-if="solicitud" class="space-y-6">
+      <!-- Timeline de la Solicitud -->
+      <SolicitudTimeline
+        :estados="estadosTimeline"
+        :estado-actual-id="solicitud.estado"
+        :fecha-envio="solicitud.created_at"
+      />
+      
       <!-- Información General -->
       <details tabindex="0" class="collapse collapse-open bg-base-100 border-base-300 border">
         <summary class="collapse-title font-semibold flex items-center gap-2">
@@ -592,12 +607,39 @@
         <summary class="collapse-title font-semibold">Acciones Administrativas</summary>
         <div class="collapse-content">
           <div class="flex flex-wrap gap-3">
+            <NuxtLink :to="`/admin/solicitudes/acciones/${solicitud.id}`">
+              <Button variant="default" class="gap-2">
+                <Icon name="lucide:clipboard-list" class="h-4 w-4" />
+                Registrar Acción / Cambiar Estado
+              </Button>
+            </NuxtLink>
+            
             <NuxtLink :to="`/admin/solicitudes/edit/${solicitud.id}`">
               <Button variant="outline" class="gap-2">
                 <Edit class="h-4 w-4" />
                 Editar Solicitud
               </Button>
             </NuxtLink>
+            
+            <Button
+              v-if="solicitud.estado === 'ENVIADO_VALIDACION' || solicitud.estado === 'DOCUMENTOS_CARGADOS'"
+              variant="outline"
+              class="gap-2"
+              :disabled="loadingFirmado"
+              @click="handleIniciarFirmado"
+            >
+              <Icon
+                v-if="loadingFirmado"
+                name="lucide:loader-2"
+                class="h-4 w-4 animate-spin"
+              />
+              <Icon
+                v-else
+                name="lucide:file-signature"
+                class="h-4 w-4"
+              />
+              {{ loadingFirmado ? 'Iniciando...' : 'Iniciar Proceso de Firmado' }}
+            </Button>
           </div>
         </div>
       </details>
@@ -623,6 +665,7 @@ import {
 import Button from '@/components/ui/Button.vue';
 import Badge from '@/components/ui/Badge.vue';
 import Progress from '@/components/ui/Progress.vue';
+import SolicitudTimeline from '@/components/shared/SolicitudTimeline.vue';
 import { useShowSolicitud } from '~/composables/admin/useShowSolicitud';
 
 // Usar el composable
@@ -630,6 +673,8 @@ const {
   solicitud,
   loading,
   error,
+  loadingFirmado,
+  estadosTimeline,
   fmtMoney,
   fmtDate,
   estadoBadgeClass,
@@ -644,7 +689,23 @@ const {
   goBack,
   goToEdit,
   cargarSolicitud,
+  iniciarFirmado,
 } = useShowSolicitud();
+
+// Función para manejar el inicio del proceso de firmado
+const handleIniciarFirmado = async () => {
+    const confirmacion = confirm('¿Está seguro de iniciar el proceso de firmado digital? Se enviará el documento al proveedor de firmas.');
+    
+    if (!confirmacion) return;
+    
+    const resultado = await iniciarFirmado();
+    
+    if (resultado?.success) {
+        alert(resultado.message || 'Proceso de firmado iniciado exitosamente');
+    } else {
+        alert(resultado?.message || 'Error al iniciar el proceso de firmado');
+    }
+};
 
 definePageMeta({
   layout: 'dashboard',

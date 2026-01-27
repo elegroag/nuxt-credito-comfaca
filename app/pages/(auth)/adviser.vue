@@ -11,21 +11,6 @@
 
         <!-- Formulario compacto -->
         <form @submit.prevent="handleLogin" class="space-y-4">
-          <!-- Número de Asesor -->
-          <div  class="space-y-2">
-            <Label for="adviser-number" class="text-sm font-medium text-gray-700">
-              Número de Asesor
-            </Label>
-            <Input 
-              id="adviser-number"
-              v-model="adviserNumber" 
-              type="number" 
-              placeholder="Ej: 001, A123..."
-              :class="cn('h-9 text-sm', errorMsg && !adviserNumber.trim() && 'border-red-500')"
-              :disabled="loading"
-            />
-          </div>
-
           <!-- Usuario -->
           <div class="space-y-2">
             <Label for="username" class="text-sm font-medium text-gray-700">

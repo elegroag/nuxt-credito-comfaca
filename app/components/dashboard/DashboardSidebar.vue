@@ -35,7 +35,7 @@
         </div>
         <div v-show="!sidebarCollapsed" class="min-w-0 flex-1">
           <div class="truncate text-sm font-medium text-sidebar-foreground">{{ session.user?.username || 'Usuario' }}</div>
-          <div class="truncate text-xs text-sidebar-foreground/60">{{ (session.user?.roles || []).join(', ') || 'sin roles' }}</div>
+          <div class="truncate text-xs text-sidebar-foreground/60">{{ getPrimaryRoleDisplay }}</div>
         </div>
       </div>
     </div>
@@ -90,6 +90,7 @@ import { X } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
 import Button from '@/components/ui/Button.vue'
 import { useDashboardLayout } from '~/composables/layout/useDashboardLayout'
+import { usePermissions } from '~/composables/usePermissions'
 
 const {
   session,
@@ -100,6 +101,8 @@ const {
   isActive,
   _abbr
 } = useDashboardLayout()
+
+const { getPrimaryRoleDisplay } = usePermissions()
 
 const sidebarDesktopClasses = computed(() => {
   const baseClasses = 'hidden h-screen flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300 lg:flex shrink-0'

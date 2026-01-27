@@ -114,7 +114,7 @@
               <div class="grid grid-cols-2 gap-4">
                 <div>
                   <label class="block text-sm font-medium text-gray-500">Tipo Documento</label>
-                  <p class="text-sm text-gray-900">{{ getTipoDocumentoLabel(usuario.tipo_identificacion) }}</p>
+                  <p class="text-sm text-gray-900">{{ getTipoDocumentoLabel(usuario.tipo_documento) }}</p>
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-gray-500">Número Documento</label>
@@ -247,7 +247,7 @@
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-500">Tipo Vivienda</label>
-              <p class="text-sm text-gray-900">{{ getTipoViviendaLabel(usuario.tipo_vivienda) }}</p>
+              <p class="text-sm text-gray-900">{{ getTipoViviendaLabel(usuario.tipo_vivienda || '') }}</p>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-500">Personas a Cargo</label>

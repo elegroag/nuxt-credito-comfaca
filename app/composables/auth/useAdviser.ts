@@ -29,7 +29,6 @@ export function useAdviser() {
 
     try {
       const response = await postJson<ApiResponse<AdviserAuthResponse>>('/api/auth/adviser/autenticar', {
-        adviser_number: adviserNumber.value,
         username: username.value,
         password: password.value
       });
@@ -94,11 +93,6 @@ export function useAdviser() {
   const validateForm = (): boolean => {
     errorMsg.value = '';
 
-    if (!adviserNumber.value.trim()) {
-      errorMsg.value = 'El número de asesor es requerido';
-      return false;
-    }
-
     if (!username.value.trim()) {
       errorMsg.value = 'El nombre de usuario es requerido';
       return false;
@@ -128,12 +122,13 @@ export function useAdviser() {
       user: {
         username: typeof user?.username === 'string' ? user.username : username.value,
         roles: Array.isArray(user?.roles) ? user.roles : [],
+        permissions: Array.isArray(user?.permissions) ? user.permissions : [],
         email: typeof user?.email === 'string' ? user.email : '',
         tipo_documento: typeof user?.tipo_documento === 'string' ? user.tipo_documento : '',
         numero_documento: typeof user?.numero_documento === 'string' ? user.numero_documento : '',
         nombres: typeof user?.nombres === 'string' ? user.nombres : '',
         apellidos: typeof user?.apellidos === 'string' ? user.apellidos : '',
-        adviser_number: adviserNumber.value,
+        adviser_number: '',
         asesor: user?.asesor,
         trabajador: user?.trabajador,
         selected_punto: selectedPunto.value || undefined
@@ -141,7 +136,7 @@ export function useAdviser() {
     });
 
     // Redirigir al dashboard de asesores
-    const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/adviser/dashboard';
+    const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/inicio';
     await navigateTo(redirect.startsWith('/') ? redirect : '/');
 
     return true;
