@@ -7,6 +7,7 @@ export interface NavItem {
     icon: Component
     adminOnly?: boolean
     requiredPermissions?: string[]
+    excludedRoles?: string[]
     category?: 'user' | 'admin'
 }
 

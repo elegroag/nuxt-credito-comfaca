@@ -25,7 +25,7 @@ const userMenuOpen = ref(false)
 
 export function useDashboardLayout() {
     const { session, clearSession } = useSession()
-    const { hasPermission, isAdministrator } = usePermissions()
+    const { hasPermission, isAdministrator, userRoles } = usePermissions()
     const route = useRoute()
     const router = useRouter()
 
@@ -52,7 +52,7 @@ export function useDashboardLayout() {
         { label: 'Entidad digital', to: '/entidad-digital', abbr: _abbr('Entidad digital'), icon: Key },
         { label: 'Solicitudes', to: '/admin/solicitudes', abbr: _abbr('Solicitudes'), icon: List, requiredPermissions: ['solicitudes.view'], category: 'admin' },
         { label: 'Usuarios', to: '/admin/users', abbr: _abbr('Usuarios'), icon: Users, adminOnly: true, category: 'admin' },
-        { label: 'Convenios', to: '/admin/convenios', abbr: _abbr('Convenios'), icon: Building, requiredPermissions: ['convenios.view'], category: 'admin' },
+        { label: 'Convenios', to: '/admin/convenios', abbr: _abbr('Convenios'), icon: Building, requiredPermissions: ['convenios.view'], excludedRoles: ['user_trabajador'], category: 'admin' },
         { label: 'Perfil', to: '/perfil', abbr: _abbr('Perfil'), icon: User }
     ]
 
@@ -74,7 +74,19 @@ export function useDashboardLayout() {
                 const hasAllPermissions = item.requiredPermissions.every(permission =>
                     hasPermission(permission)
                 )
-                return hasAllPermissions
+                if (!hasAllPermissions) {
+                    return false
+                }
+            }
+
+            // Si el item tiene roles excluidos, verificar que el usuario no tenga esos roles
+            if (item.excludedRoles && item.excludedRoles.length > 0) {
+                const hasExcludedRole = item.excludedRoles.some(role =>
+                    userRoles.value.includes(role)
+                )
+                if (hasExcludedRole) {
+                    return false
+                }
             }
 
             // Si no hay restricciones, mostrar el item

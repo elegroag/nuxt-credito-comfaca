@@ -10,7 +10,8 @@
 
     <nav class="flex-1 overflow-y-auto px-3 py-4">
     <template v-for="(group, categoryName) in groupedNavItems" :key="categoryName">
-      <div v-show="!sidebarCollapsed && group.length > 0" class="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/60">
+      <div v-show="!sidebarCollapsed && group.length > 0" 
+        class="mb-2 mt-2 px-3 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/60">
         {{ categoryName === 'admin' ? 'ADMINISTRACIÓN' : 'MENÚ' }}
       </div>
       <div class="space-y-1">
@@ -64,7 +65,8 @@
 
     <nav class="overflow-y-auto px-3 py-4">
       <template v-for="(group, categoryName) in groupedNavItems" :key="categoryName">
-        <div v-show="group.length > 0" class="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/60">
+        <div v-show="group.length > 0" 
+          class="mb-2 mt-2 px-3 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/60">
           {{ categoryName === 'admin' ? 'ADMINISTRACIÓN' : 'MENÚ' }}
         </div>
         <div class="space-y-1">

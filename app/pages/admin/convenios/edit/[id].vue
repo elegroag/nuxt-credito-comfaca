@@ -274,15 +274,15 @@ const cargarConvenio = async () => {
       convenio.value = response.data;
       
       // Cargar datos en el formulario
-      form.nit = convenio.value.nit || '';
-      form.razon_social = convenio.value.razon_social || '';
-      form.representante_documento = convenio.value.representante_documento || '';
-      form.representante_nombre = convenio.value.representante_nombre || '';
-      form.telefono = convenio.value.telefono || '';
-      form.correo = convenio.value.correo || '';
+      form.nit = String(convenio.value.nit || '');
+      form.razon_social = String(convenio.value.razon_social || '');
+      form.representante_documento = String(convenio.value.representante_documento || '');
+      form.representante_nombre = String(convenio.value.representante_nombre || '');
+      form.telefono = String(convenio.value.telefono || '');
+      form.correo = String(convenio.value.correo || '');
       form.fecha_vencimiento = convenio.value.fecha_vencimiento ? 
-        new Date(convenio.value.fecha_vencimiento).toISOString().split('T')[0] : '';
-      form.estado = convenio.value.estado || 'Activo';
+        (new Date(convenio.value.fecha_vencimiento).toISOString().split('T')[0] || '') : '';
+      form.estado = String(convenio.value.estado || 'Activo');
     } else {
       throw new Error('Estructura de respuesta inválida');
     }
@@ -298,21 +298,21 @@ const cargarConvenio = async () => {
 const validateForm = (): boolean => {
   errors.value = {};
 
-  if (!form.nit.trim()) {
+  if (typeof form.nit !== 'string' || !form.nit.trim()) {
     errors.value.nit = 'El NIT es requerido';
   } else if (!/^\d{9,12}-?\d?$/.test(form.nit.replace(/\s/g, ''))) {
     errors.value.nit = 'El NIT no tiene un formato válido';
   }
 
-  if (!form.razon_social.trim()) {
+  if (typeof form.razon_social !== 'string' || !form.razon_social.trim()) {
     errors.value.razon_social = 'La razón social es requerida';
   }
 
-  if (!form.representante_documento.trim()) {
+  if (typeof form.representante_documento !== 'string' || !form.representante_documento.trim()) {
     errors.value.representante_documento = 'El documento del representante es requerido';
   }
 
-  if (!form.representante_nombre.trim()) {
+  if (typeof form.representante_nombre !== 'string' || !form.representante_nombre.trim()) {
     errors.value.representante_nombre = 'El nombre del representante es requerido';
   }
 
