@@ -97,7 +97,7 @@
 
 <script setup lang="ts">
 import { onMounted } from '#imports'
-import { BriefcaseIcon, ArrowPathIcon, CheckCircleIcon, ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
+import { ArrowPathIcon, CheckCircleIcon, ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
 import { useAdviser } from '~/composables/auth/useAdviser'
 import { useHealthCheck } from '~/composables/useHealthCheck'
 import { cn } from '@/lib/utils'

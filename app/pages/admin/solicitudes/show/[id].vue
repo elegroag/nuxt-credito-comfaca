@@ -17,12 +17,20 @@
             </p>
           </div>
         </div>
-        <NuxtLink v-if="solicitud" :to="`/admin/solicitudes/acciones/${solicitud.id}`">
-          <Button variant="default" class="gap-2 shrink-0">
-            <Icon name="lucide:clipboard-list" class="h-4 w-4" />
-            Registrar Acción
-          </Button>
-        </NuxtLink>
+        <div class="flex items-center gap-3">
+          <NuxtLink v-if="solicitud" :to="`/admin/firmas/firmado/${solicitud.id}`">
+            <Button variant="outline" class="gap-2 shrink-0 bg-green-200 hover:bg-green-300">
+              <Icon name="lucide:file-signature" class="h-4 w-4" />
+              Gestionar Firmantes
+            </Button>
+          </NuxtLink>
+          <NuxtLink v-if="solicitud" :to="`/admin/solicitudes/acciones/${solicitud.id}`">
+            <Button variant="default" class="gap-2 shrink-0">
+              <Icon name="lucide:clipboard-list" class="h-4 w-4" />
+              Registrar Acción
+            </Button>
+          </NuxtLink>
+        </div>
       </div>
     </div>
 
@@ -126,7 +134,7 @@
                 <label class="text-sm font-medium text-gray-500"
                   >Usuario Propietario</label
                 >
-                <p class="text-lg font-semibold">{{ solicitud.owner_username || '-' }}</p>
+                <p class="text-lg font-semibold">{{ solicitud.payload?.solicitante.nombres_apellidos || '-' }}</p>
               </div>
             </div>
           </div>
@@ -598,48 +606,6 @@
               <p class="text-lg font-medium">No hay documentos adjuntos</p>
               <p class="text-sm">Esta solicitud no tiene documentos cargados actualmente.</p>
             </div>
-          </div>
-        </div>
-      </details>
-
-      <!-- Acciones Administrativas -->
-      <details class="collapse bg-base-100 border-base-300 border">
-        <summary class="collapse-title font-semibold">Acciones Administrativas</summary>
-        <div class="collapse-content">
-          <div class="flex flex-wrap gap-3">
-            <NuxtLink :to="`/admin/solicitudes/acciones/${solicitud.id}`">
-              <Button variant="default" class="gap-2">
-                <Icon name="lucide:clipboard-list" class="h-4 w-4" />
-                Registrar Acción / Cambiar Estado
-              </Button>
-            </NuxtLink>
-            
-            <NuxtLink :to="`/admin/solicitudes/edit/${solicitud.id}`">
-              <Button variant="outline" class="gap-2">
-                <Edit class="h-4 w-4" />
-                Editar Solicitud
-              </Button>
-            </NuxtLink>
-            
-            <Button
-              v-if="solicitud.estado === 'ENVIADO_VALIDACION' || solicitud.estado === 'DOCUMENTOS_CARGADOS'"
-              variant="outline"
-              class="gap-2"
-              :disabled="loadingFirmado"
-              @click="handleIniciarFirmado"
-            >
-              <Icon
-                v-if="loadingFirmado"
-                name="lucide:loader-2"
-                class="h-4 w-4 animate-spin"
-              />
-              <Icon
-                v-else
-                name="lucide:file-signature"
-                class="h-4 w-4"
-              />
-              {{ loadingFirmado ? 'Iniciando...' : 'Iniciar Proceso de Firmado' }}
-            </Button>
           </div>
         </div>
       </details>

@@ -255,6 +255,7 @@ export interface SolicitudCredito {
     solicitante: SolicitanteBasic;
     documentos: DocumentoCargado[];
     firmantes?: Firmante[];
+    payload: SolicitudCreditoPayload;
     timeline: Array<{
         estado: EstadoSolicitud;
         fecha: string;
@@ -341,4 +342,18 @@ export interface ConyugeProps {
 export interface WizardProps {
     parametros?: any
     fechaRadicado: string
+}
+
+export interface InEstadoSolicitud {
+    id: string;
+    nombre: string;
+    descripcion: string;
+    orden: number;
+    color: string;
+    activo: boolean;
+}
+
+export interface AccionData {
+    estado: string;
+    descripcion?: string;
 }

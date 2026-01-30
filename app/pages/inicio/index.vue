@@ -71,29 +71,6 @@
                   </template>
                 </template>
               </div>
-
-              <div v-if="ultimaSolicitud" class="mt-4 rounded-md border border-border bg-muted/30 p-4">
-                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div class="min-w-0">
-                    <div class="text-sm font-semibold text-foreground">Estado de tu última solicitud</div>
-                    <div class="mt-1 text-sm text-muted-foreground">
-                      <span class="font-medium text-foreground">{{ ultimaSolicitud.numero_solicitud || '-' }}</span>
-                      <span class="text-muted-foreground/60"> · </span>
-                      <span>{{ fmtMoney(ultimaSolicitud?.payload?.solicitud?.valor_solicitud || 0) }}</span>
-                    </div>
-                  </div>
-
-                  <div class="flex items-center gap-3">
-                    <Badge :class="estadoBadgeClass(String(ultimaSolicitud.estado || ''))">
-                      {{ ultimaSolicitud.estado || '-' }}
-                    </Badge>
-                    <div class="w-40">
-                        <Progress :model-value="estadoProgressPercent(String(ultimaSolicitud.estado || ''))" class="h-2" />
-                    </div>
-                  </div>
-                </div>
-
-                </div>
             </div>
           </div>
 
