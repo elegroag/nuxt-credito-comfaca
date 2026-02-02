@@ -17,7 +17,7 @@ export function useSolicitudXmlActions() {
     const createdSolicitudId = ref('')
     const errorMsg = ref('')
 
-    const generarXml = async (form: SolicitudCreditoPayload, saveXml: boolean): Promise<boolean> => {
+    const guardarSolicitud = async (form: SolicitudCreditoPayload, saveXml: boolean): Promise<boolean> => {
         loadingXml.value = true
         errorMsg.value = ''
         savedFilename.value = ''
@@ -55,9 +55,9 @@ export function useSolicitudXmlActions() {
                 })
             }
 
-            console.log('Payload enviado al backend:', payload)
+            //console.log('Payload enviado al backend:', payload)
 
-            const response = await $fetch.raw<string>(urlFor('/api/solicitud-credito/xml'), {
+            const response = await $fetch.raw<string>(urlFor('/api/solicitud-credito/guardar'), {
                 method: 'POST',
                 body: payload,
                 headers: {
@@ -116,7 +116,7 @@ export function useSolicitudXmlActions() {
         savedFilename,
         createdSolicitudId,
         errorMsg,
-        generarXml,
+        guardarSolicitud,
         downloadXml
     }
 }

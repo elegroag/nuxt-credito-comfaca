@@ -92,7 +92,7 @@ export function useWizardSolicitudExtended() {
   const completarSolicitudConFirmado = async (saveXml: boolean = true) => {
     try {
       // 1. Generar XML y crear solicitud (flujo original)
-      await wizard.generarXml(saveXml);
+      await wizard.guardarSolicitud(saveXml);
 
       // Esperar a que se complete y verificar si se creó la solicitud
       if (!wizard.createdSolicitudId.value) {

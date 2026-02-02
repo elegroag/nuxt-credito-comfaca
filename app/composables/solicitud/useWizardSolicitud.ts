@@ -26,7 +26,7 @@ export function useWizardSolicitud() {
         savedFilename,
         createdSolicitudId,
         errorMsg,
-        generarXml,
+        guardarSolicitud,
         downloadXml
     } = useSolicitudXmlActions();
 
@@ -95,13 +95,13 @@ export function useWizardSolicitud() {
     };
 
     // XML generation con PDF automático
-    const generarXmlEvent = async (saveXml: boolean) => {
+    const guardarSolicitudEvent = async (saveXml: boolean) => {
         pdfGenerado.value = false;
         mensajeProgreso.value = '';
 
         // Paso 1: Generar y guardar XML
         mensajeProgreso.value = 'Generando solicitud...';
-        const success = await generarXml(form.value, saveXml);
+        const success = await guardarSolicitud(form.value, saveXml);
 
         if (!success) {
             return;
@@ -177,7 +177,7 @@ export function useWizardSolicitud() {
         goToDocumentos,
 
         // XML operations
-        generarXml: generarXmlEvent,
+        guardarSolicitud: guardarSolicitudEvent,
         downloadXml,
 
         // PDF operations

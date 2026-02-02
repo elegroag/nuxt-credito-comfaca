@@ -1,77 +1,17 @@
 <template>
   <Card class="border-border shadow-sm">
-    <CardHeader class="border-b border-border p-4 sm:p-6">
-      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div class="space-y-1">
-          <div class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            Paso {{ step + 1 }} de {{ steps.length }}
-          </div>
-          <CardTitle class="text-xl font-bold text-foreground">
-            {{ steps[step]?.title }}
-          </CardTitle>
-        </div>
-
-        <div class="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            :disabled="step === 0"
-            @click="prev"
-            type="button"
-          >
-            <ChevronLeft class="mr-2 h-4 w-4" />
-            Atrás
-          </Button>
-          
-          <Button
-            v-if="step < steps.length - 1"
-            size="sm"
-            @click="next"
-            type="button"
-          >
-            Siguiente
-            <ChevronRight class="ml-2 h-4 w-4" />
-          </Button>
-          
-          <template v-else>
-            <Button
-              variant="secondary"
-              size="sm"
-              :disabled="loadingXml || loadingPdf"
-              @click="generarXml(false)"
-              type="button"
-            >
-              <FileCode class="mr-2 h-4 w-4" />
-              Solicitud electrónica <small>(Generar XML)</small>
-            </Button>
-            <Button
-              size="sm"
-              :disabled="loadingXml || loadingPdf"
-              @click="generarXml(true)"
-              type="button"
-            >
-              <Send class="mr-2 h-4 w-4" />
-              {{ loadingXml ? 'Enviando...' : loadingPdf ? 'Generando PDF...' : 'Enviar' }}
-            </Button>
-          </template>
-        </div>
-      </div>
-
-      <div class="mt-6 flex flex-wrap gap-2">
-        <button
-          v-for="(s, i) in steps"
-          :key="s.key"
-          class="rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition-all"
-          :class="i === step 
-            ? 'bg-primary text-primary-foreground shadow-sm' 
-            : 'bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground'"
-          @click="step = i"
-          type="button"
-        >
-          {{ s.short }}
-        </button>
-      </div>
-    </CardHeader>
+    <WizardHeader
+      :current-step="step"
+      :total-steps="steps.length"
+      :title="steps[step]?.title || ''"
+      :steps="steps"
+      :primary-button-text="loadingXml ? 'Enviando...' : loadingPdf ? 'Generando PDF...' : 'Enviar'"
+      :primary-button-disabled="loadingXml || loadingPdf"
+      @prev="prev"
+      @next="next"
+      @step-change="step = $event"
+      @primary-action="guardarSolicitud(true)"
+    />
 
     <CardContent class="p-4 sm:p-6">
       <form class="grid gap-4" @submit.prevent>
@@ -173,18 +113,11 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  FileCode, 
-  Send
-} from 'lucide-vue-next'
 import Card from '@/components/ui/Card.vue'
-import CardHeader from '@/components/ui/CardHeader.vue'
-import CardTitle from '@/components/ui/CardTitle.vue'
 import CardContent from '@/components/ui/CardContent.vue'
 import Button from '@/components/ui/Button.vue'
 import SuccessModal from '@/components/shared/SuccessModal.vue'
+import WizardHeader from './WizardHeader.vue'
 import type { WizardProps } from '~/shared/types/solicitud-credito'
 
 // Importar componentes de pasos
@@ -297,7 +230,7 @@ const {
   closeSuccessModal,
   goToHome,
   goToDocumentos,
-  generarXml,
+  guardarSolicitud,
   downloadXml,
   descargarPDF
 } = useWizardSolicitud()
