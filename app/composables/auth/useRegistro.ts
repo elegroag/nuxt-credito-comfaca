@@ -2,6 +2,7 @@ import { ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useApi } from '~/composables/useApi';
 import { storage } from '~/composables/useStorage';
+import { getTiposDocumentoOptions, getDefaultTipoDocumento } from '~/lib/tipos_documento';
 import type { RegistroData } from '~/shared/types/auth';
 
 export function useRegistro() {
@@ -9,7 +10,7 @@ export function useRegistro() {
     const { postJson } = useApi();
 
     const formData = ref<RegistroData>({
-        tipo_documento: 'CC',
+        tipo_documento: getDefaultTipoDocumento(), // Cédula de Ciudadanía por defecto
         numero_documento: '',
         nombres: '',
         apellidos: '',
@@ -25,12 +26,7 @@ export function useRegistro() {
     const success = ref(false);
     const pasoActual = ref(1);
 
-    const tiposDocumento = [
-        { value: 'CC', label: 'Cédula de Ciudadanía' },
-        { value: 'CE', label: 'Cédula de Extranjería' },
-        { value: 'PASAPORTE', label: 'Pasaporte' },
-        { value: 'NIT', label: 'NIT' }
-    ];
+    const tiposDocumento = getTiposDocumentoOptions();
 
     // Validaciones para cada paso
     const validarPaso1 = computed(() => {
@@ -86,8 +82,7 @@ export function useRegistro() {
             loading.value = true;
             error.value = null;
 
-            const { confirmar_password, ...datosRegistro } = formData.value;
-            const response = await postJson<any>('/api/auth/register', datosRegistro);
+            const response = await postJson<any>('/api/auth/register', formData.value);
 
             if (response) {
                 success.value = true;
@@ -98,7 +93,7 @@ export function useRegistro() {
                     numero_documento: formData.value.numero_documento,
                     nombres: formData.value.nombres,
                     apellidos: formData.value.apellidos,
-                    roles: response.user?.roles || ['user']
+                    roles: response.user?.roles || ['user'],
                 };
                 await storage.setItem('comfaca_credito_user', JSON.stringify(userData));
                 return true;

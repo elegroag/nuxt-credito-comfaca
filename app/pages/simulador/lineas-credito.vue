@@ -31,7 +31,7 @@
     <div v-else class="space-y-8">
       <div v-for="modalidad in modalidadesAgrupadas" :key="modalidad.modxml4" class="space-y-4">
         <!-- Header de modalidad -->
-        <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20">
+        <div class="flex items-center gap-4 p-4 bg-linear-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20">
           <div class="flex items-center gap-3">
             <div class="p-3 bg-primary/20 rounded-full">
               <Icon :name="modalidad.icono" class="h-8 w-8 text-primary" />

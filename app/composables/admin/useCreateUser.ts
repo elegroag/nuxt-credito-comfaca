@@ -2,6 +2,7 @@ import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useApi } from '~/composables/useApi';
 import { useSession } from '~/composables/useSession';
+import { getDefaultTipoDocumento } from '~/lib/tipos_documento';
 import type { CreateUserForm } from '~/shared/types/admin_usuarios';
 
 export function useCreateUser() {
@@ -26,7 +27,7 @@ export function useCreateUser() {
         // Datos personales
         nombre: '',
         apellido: '',
-        tipo_documento: 'CC',
+        tipo_documento: getDefaultTipoDocumento(), // Cédula de Ciudadanía
         numero_documento: '',
         phone: '',
     });
@@ -153,7 +154,7 @@ export function useCreateUser() {
             disabled: false,
             nombre: '',
             apellido: '',
-            tipo_documento: 'CC',
+            tipo_documento: getDefaultTipoDocumento(), // Cédula de Ciudadanía
             numero_documento: '',
             phone: '',
         });

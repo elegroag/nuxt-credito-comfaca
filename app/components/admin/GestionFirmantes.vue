@@ -21,7 +21,7 @@
                         {{ firmante.nombre_completo }}
                     </p>
                     <div class="flex gap-4 text-sm text-gray-600 mt-1">
-                        <span>{{ firmante.tipo_documento || 'CC' }}: {{ firmante.numero_documento }}</span>
+                        <span>{{ getTipoDocumentoLabel(firmante.tipo_documento || getDefaultTipoDocumento()) }}: {{ firmante.numero_documento }}</span>
                         <span>{{ firmante.email }}</span>
                         <span v-if="firmante.rol" class="text-blue-600">{{ firmante.rol }}</span>
                     </div>
@@ -82,10 +82,9 @@
                     v-model="nuevoFirmante.tipo_documento"
                     class="select select-bordered w-full"
                 >
-                    <option value="CC">Cédula de Ciudadanía</option>
-                    <option value="CE">Cédula de Extranjería</option>
-                    <option value="NIT">NIT</option>
-                    <option value="PAS">Pasaporte</option>
+                    <option v-for="tipo in getTiposDocumentoOptions()" :key="tipo.value" :value="tipo.value">
+                        {{ tipo.label }}
+                    </option>
                 </select>
             </div>
             
@@ -169,6 +168,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from '#imports';
+import { getTiposDocumentoOptions, getDefaultTipoDocumento, getTipoDocumentoLabel } from '~/lib/tipos_documento';
 import type { Firmante } from '~/shared/types/solicitud-credito';
 import { useApi } from '~/composables/useApi';
 import { useSession } from '~/composables/useSession';
@@ -205,7 +205,7 @@ const nuevoFirmante = ref<Firmante>({
     nombre_completo: '',
     email: '',
     numero_documento: '',
-    tipo_documento: 'CC',
+    tipo_documento: getDefaultTipoDocumento(), // Cédula de Ciudadanía
     rol: 'Firmante',
     telefono: ''
 });
@@ -243,7 +243,7 @@ const agregarFirmante = () => {
         nombre_completo: '',
         email: '',
         numero_documento: '',
-        tipo_documento: 'CC',
+        tipo_documento: getDefaultTipoDocumento(), // Cédula de Ciudadanía
         rol: 'Firmante',
         telefono: ''
     };

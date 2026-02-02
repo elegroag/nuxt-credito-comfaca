@@ -4,7 +4,7 @@ export interface LoginData {
 }
 
 export interface RegistroData {
-    tipo_documento: string;
+    tipo_documento: string; // Mantenemos como string porque los valores son '1', '3', '4', etc.
     numero_documento: string;
     nombres: string;
     apellidos: string;

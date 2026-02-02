@@ -151,7 +151,7 @@
       <!-- Resultados -->
       <div class="space-y-6">
         <div class="grid gap-4 sm:grid-cols-2">
-          <Card class="border-primary/30 bg-gradient-to-br from-primary/5 to-primary/10">
+          <Card class="border-primary/30 bg-linear-to-br from-primary/5 to-primary/10">
             <CardHeader class="pb-3">
               <CardDescription class="text-xs font-medium uppercase tracking-wider">
                 Cuota estimada
@@ -163,7 +163,7 @@
             </CardHeader>
           </Card>
 
-          <Card class="border-secondary/30 bg-gradient-to-br from-secondary/5 to-secondary/10">
+          <Card class="border-secondary/30 bg-linear-to-br from-secondary/5 to-secondary/10">
             <CardHeader class="pb-3">
               <CardDescription class="text-xs font-medium uppercase tracking-wider">
                 Capacidad disponible <small>(Descuento en Nomina)</small>

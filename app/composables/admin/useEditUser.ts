@@ -3,6 +3,7 @@ import { useRouter } from 'vue-router';
 import { useRoute } from 'vue-router';
 import { useApi } from '~/composables/useApi';
 import { useSession } from '~/composables/useSession';
+import { getDefaultTipoDocumento } from '~/lib/tipos_documento';
 import type { EditUserForm } from '~/shared/types/admin_usuarios';
 
 export function useEditUser() {
@@ -29,7 +30,7 @@ export function useEditUser() {
         // Datos personales
         nombre: '',
         apellido: '',
-        tipo_documento: 'CC',
+        tipo_documento: getDefaultTipoDocumento(), // Cédula de Ciudadanía
         numero_documento: '',
         phone: '',
     });
@@ -61,7 +62,7 @@ export function useEditUser() {
                 form.apellido = response.data.apellidos || response.data.apellido || '';
                 form.roles = response.data.roles || [];
                 form.disabled = response.data.disabled || false;
-                form.tipo_documento = response.data.tipo_documento || 'CC';
+                form.tipo_documento = response.data.tipo_documento || getDefaultTipoDocumento();
                 form.numero_documento = response.data.numero_documento || '';
                 form.phone = response.data.phone || response.data.telefono || '';
             } else {
@@ -196,7 +197,7 @@ export function useEditUser() {
             form.apellido = usuario.value.apellidos || usuario.value.apellido || '';
             form.roles = usuario.value.roles || [];
             form.disabled = usuario.value.disabled || false;
-            form.tipo_documento = usuario.value.tipo_documento || 'CC';
+            form.tipo_documento = usuario.value.tipo_documento || getDefaultTipoDocumento();
             form.numero_documento = usuario.value.numero_documento || '';
             form.phone = usuario.value.phone || usuario.value.telefono || '';
             form.password = '';
