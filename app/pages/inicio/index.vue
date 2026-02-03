@@ -107,7 +107,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="s in solicitudes" :key="s.id" class="border-t border-border">
+                <tr v-for="s in solicitudes" :key="s.numero_solicitud" class="border-t border-border">
                   <td class="px-4 py-3 text-foreground">{{ s.payload?.linea_credito?.detalle_modalidad || '-' }}</td>
                   <td class="px-4 py-3 text-foreground">{{ fmtMoney(s?.payload?.solicitud?.valor_solicitud || 0) }}</td>
                   <td class="px-4 py-3">
@@ -120,7 +120,7 @@
                   </td>
                   <td class="px-4 py-3 text-foreground">{{ fmtDate(s.created_at) }}</td>
                   <td class="px-4 py-3">
-                    <NuxtLink :to="`/solicitudes/${s.id}`">
+                    <NuxtLink :to="`/solicitudes/${s.numero_solicitud}`">
                       <Button variant="outline" size="sm" class="gap-1">
                         <Eye class="h-4 w-4" />
                         Ver

@@ -357,3 +357,10 @@ export interface AccionData {
     estado: string;
     descripcion?: string;
 }
+
+export interface GuardarSolicitudResponse {
+    data: {
+        numero_solicitud: string;
+    };
+    _data: string; // XML response
+}

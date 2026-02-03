@@ -10,7 +10,7 @@
       @prev="prev"
       @next="next"
       @step-change="step = $event"
-      @primary-action="guardarSolicitud(true)"
+      @primary-action="guardarSolicitud()"
     />
 
     <CardContent class="p-4 sm:p-6">

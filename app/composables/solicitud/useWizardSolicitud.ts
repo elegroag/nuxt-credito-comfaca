@@ -95,22 +95,15 @@ export function useWizardSolicitud() {
     };
 
     // XML generation con PDF automático
-    const guardarSolicitudEvent = async (saveXml: boolean) => {
+    const guardarSolicitudEvent = async () => {
         pdfGenerado.value = false;
         mensajeProgreso.value = '';
 
         // Paso 1: Generar y guardar XML
         mensajeProgreso.value = 'Generando solicitud...';
-        const success = await guardarSolicitud(form.value, saveXml);
+        const success = await guardarSolicitud(form.value);
 
-        if (!success) {
-            return;
-        }
-
-        // Si no se guarda, solo mostrar XML
-        if (!saveXml) {
-            return;
-        }
+        if (!success) return;
 
         // Paso 2: Generar PDF automáticamente
         if (createdSolicitudId.value) {

@@ -2,9 +2,7 @@ import { ref } from 'vue'
 import { useApi } from '~/composables/useApi'
 import { useSession } from '~/composables/useSession'
 import { useSimuladorStorage } from '~/composables/useSimuladorStorage'
-import type { SolicitudCreditoPayload } from '~/shared/types/solicitud-credito'
-
-const FIRMA_DEFAULTS_STORAGE_KEY = 'comfaca_credito_firma_defaults'
+import type { SolicitudCreditoPayload, GuardarSolicitudResponse } from '~/shared/types/solicitud-credito'
 
 export function useSolicitudXmlActions() {
     const { urlFor } = useApi()
@@ -17,7 +15,7 @@ export function useSolicitudXmlActions() {
     const createdSolicitudId = ref('')
     const errorMsg = ref('')
 
-    const guardarSolicitud = async (form: SolicitudCreditoPayload, saveXml: boolean): Promise<boolean> => {
+    const guardarSolicitud = async (form: SolicitudCreditoPayload): Promise<boolean> => {
         loadingXml.value = true
         errorMsg.value = ''
         savedFilename.value = ''
@@ -30,7 +28,6 @@ export function useSolicitudXmlActions() {
             // Preparar el payload con los datos del simulador
             const payload = {
                 ...form,
-                save_xml: saveXml,
                 // Agregar datos del simulador si están disponibles
                 ...(simuladorData?.lineaCredito && {
                     linea_credito: {
@@ -55,44 +52,26 @@ export function useSolicitudXmlActions() {
                 })
             }
 
-            //console.log('Payload enviado al backend:', payload)
-
-            const response = await $fetch.raw<string>(urlFor('/api/solicitud-credito/guardar'), {
+            const response = await $fetch.raw<GuardarSolicitudResponse>(urlFor('/api/solicitud-credito/guardar'), {
                 method: 'POST',
                 body: payload,
                 headers: {
-                    ...authHeader.value as any
-                }
+                    ...authHeader.value
+                } as Record<string, string>
             })
 
-            xmlText.value = response._data || ''
-
-            if (saveXml) {
-                const filename = response.headers.get('X-Saved-Filename')
-                const solicitudId = response.headers.get('X-Solicitud-Id')
-
-                if (filename) savedFilename.value = filename
-                if (solicitudId) createdSolicitudId.value = solicitudId
-
-                if (process.client) {
-                    try {
-                        localStorage.setItem(
-                            FIRMA_DEFAULTS_STORAGE_KEY,
-                            JSON.stringify({
-                                nombre_apellidos: String(form.solicitante?.nombres_apellidos || ''),
-                                tipo_identificacion: String(form.solicitante?.tipo_identificacion || ''),
-                                numero_identificacion: String(form.solicitante?.numero_identificacion || '')
-                            })
-                        )
-                    } catch (e: any) {
-                        console.log("Error guardando firma defaults", e);
-                    }
-                }
+            if (response._data) {
+                createdSolicitudId.value = response._data.data.numero_solicitud;
+                xmlText.value = response._data._data || '';
+            } else {
+                throw new Error('Respuesta inválida del servidor');
             }
             return true
-        } catch (e: any) {
+        } catch (e: unknown) {
             xmlText.value = ''
-            errorMsg.value = e?.data?.error || e?.message || 'Error generando XML'
+            const errorMessage = e instanceof Error ? e.message : 'Error desconocido';
+            const apiError = (e as any)?.data?.error;
+            errorMsg.value = apiError || errorMessage || 'Error generando XML'
             return false
         } finally {
             loadingXml.value = false
