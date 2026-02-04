@@ -18,13 +18,13 @@
           </div>
         </div>
         <div class="flex items-center gap-3">
-          <NuxtLink v-if="solicitud" :to="`/admin/firmas/firmado/${solicitud.id}`">
+          <NuxtLink v-if="solicitud" :to="`/admin/firmas/firmado/${solicitud.numero_solicitud}`">
             <Button variant="outline" class="gap-2 shrink-0 bg-green-200 hover:bg-green-300">
               <Icon name="lucide:file-signature" class="h-4 w-4" />
               Gestionar Firmantes
             </Button>
           </NuxtLink>
-          <NuxtLink v-if="solicitud" :to="`/admin/solicitudes/acciones/${solicitud.id}`">
+          <NuxtLink v-if="solicitud" :to="`/admin/solicitudes/acciones/${solicitud.numero_solicitud}`">
             <Button variant="default" class="gap-2 shrink-0">
               <Icon name="lucide:clipboard-list" class="h-4 w-4" />
               Registrar Acción

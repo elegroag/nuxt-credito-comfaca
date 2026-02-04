@@ -96,6 +96,11 @@ export function useRegistro() {
                     roles: response.user?.roles || ['user'],
                 };
                 await storage.setItem('comfaca_credito_user', JSON.stringify(userData));
+
+                const q = new URLSearchParams();
+                q.set('coddoc', userData.tipo_documento);
+                q.set('documento', userData.numero_documento);
+                await navigateTo(`/verify?${q.toString()}`);
                 return true;
             }
             error.value = 'Error en el registro. Por favor, inténtalo de nuevo.';

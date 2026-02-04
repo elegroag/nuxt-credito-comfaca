@@ -45,28 +45,13 @@ export function usePDFGenerator() {
    */
   const generarPDF = async (
     solicitudId: string,
-    opciones?: {
-      incluirConvenio?: boolean;
-      incluirFirmantes?: boolean;
-    }
   ): Promise<boolean> => {
     loading.value = true;
     error.value = null;
     pdfData.value = null;
 
     try {
-      const params = new URLSearchParams();
-
-      if (opciones?.incluirConvenio !== undefined) {
-        params.append('incluir_convenio', String(opciones.incluirConvenio));
-      }
-      if (opciones?.incluirFirmantes !== undefined) {
-        params.append('incluir_firmantes', String(opciones.incluirFirmantes));
-      }
-
-      const queryString = params.toString();
-      const path = `/api/solicitudes/${solicitudId}/generar-pdf${queryString ? `?${queryString}` : ''}`;
-
+      const path = `/api/solicitudes/${solicitudId}/generar-pdf`;
       const response = await api.postJson<PDFGenerationResponse>(
         path,
         {},
@@ -245,13 +230,9 @@ export function usePDFGenerator() {
    * Genera y descarga el PDF en una sola operación
    */
   const generarYDescargarPDF = async (
-    solicitudId: string,
-    opciones?: {
-      incluirConvenio?: boolean;
-      incluirFirmantes?: boolean;
-    }
+    solicitudId: string
   ): Promise<boolean> => {
-    const generado = await generarPDF(solicitudId, opciones);
+    const generado = await generarPDF(solicitudId);
 
     if (generado) {
       // Pequeña espera para asegurar que el archivo esté listo

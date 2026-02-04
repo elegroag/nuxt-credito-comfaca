@@ -104,24 +104,6 @@ export function useWizardSolicitud() {
         const success = await guardarSolicitud(form.value);
 
         if (!success) return;
-
-        // Paso 2: Generar PDF automáticamente
-        if (createdSolicitudId.value) {
-            mensajeProgreso.value = 'Generando PDF...';
-            const pdfSuccess = await generarPDF(createdSolicitudId.value, {
-                incluirConvenio: true,
-                incluirFirmantes: true
-            });
-
-            if (pdfSuccess) {
-                pdfGenerado.value = true;
-                mensajeProgreso.value = 'Solicitud y PDF generados exitosamente';
-            } else {
-                // PDF falló pero XML se guardó, mostrar advertencia
-                mensajeProgreso.value = 'Solicitud guardada. Error al generar PDF: ' + (errorPdf.value || 'Error desconocido');
-            }
-        }
-
         // Mostrar modal de éxito
         successModalOpen.value = true;
     };

@@ -108,7 +108,7 @@ export function useSeguimientoFirmas() {
 
             if (response.success) {
                 // Actualizar localmente
-                const index = solicitudes.value.findIndex(s => s.id === solicitudId);
+                const index = solicitudes.value.findIndex(s => s.numero_solicitud === solicitudId);
                 if (index !== -1 && solicitudes.value[index]) {
                     const solicitud = solicitudes.value[index];
                     if (solicitud?.proceso_firmado) {
@@ -137,7 +137,7 @@ export function useSeguimientoFirmas() {
 
     // Refrescar estado de todas las solicitudes visibles
     const refrescarTodos = async () => {
-        const promises = solicitudes.value.map(s => consultarEstado(s.id));
+        const promises = solicitudes.value.map(s => consultarEstado(s.numero_solicitud));
         await Promise.all(promises);
     };
 

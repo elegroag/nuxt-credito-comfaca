@@ -111,7 +111,7 @@
 
                 <!-- Acciones -->
                 <AccionesCard
-                    :solicitud-id="solicitud.id"
+                    :solicitud-id="solicitud.numero_solicitud"
                     :mostrar-enviar="solicitud.estado === 'DOCUMENTOS_CARGADOS' || solicitud.estado === 'POSTULADO'"
                     :tiene-pdf="!!solicitud.pdf_filename"
                     @descargar-pdf="descargarPdf"

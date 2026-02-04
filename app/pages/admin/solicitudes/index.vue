@@ -98,7 +98,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="solicitud in solicitudes" :key="solicitud.id">
+            <tr v-for="solicitud in solicitudes" :key="solicitud.numero_solicitud">
               <td>
                 <div class="solicitante-info">
                   <div class="nombre">{{ solicitud.solicitante?.nombres_apellidos || solicitud.payload?.solicitante?.nombres_apellidos || 'N/A' }}</div>
@@ -125,7 +125,7 @@
               <td>
                 <div class="acciones">
                   <NuxtLink
-                    :to="`/admin/solicitudes/show/${solicitud.id}`"
+                    :to="`/admin/solicitudes/show/${solicitud.numero_solicitud}`"
                     class="btn btn-sm btn-outline"
                     title="Ver detalles"
                   >

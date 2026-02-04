@@ -14,3 +14,9 @@ export interface RegistroData {
     password: string;
     confirmar_password: string;
 }
+
+export interface VerifyForm {
+    codigo: string;
+    coddoc?: string | null;
+    documento?: string | null;
+}

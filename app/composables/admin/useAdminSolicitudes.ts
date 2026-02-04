@@ -258,8 +258,13 @@ export const useAdminSolicitudes = () => {
         loadingEstado.value = true
 
         try {
+            const solicitudNumero = solicitudSeleccionada.value.numero_solicitud
+            if (!solicitudNumero) {
+                throw new Error('No se encontró el número de solicitud')
+            }
+
             await actualizarEstado(
-                solicitudSeleccionada.value.id,
+                solicitudNumero,
                 nuevoEstado.value,
                 estadoDescripcion.value || undefined
             )
@@ -276,8 +281,8 @@ export const useAdminSolicitudes = () => {
      * Elimina una solicitud con confirmación
      */
     const eliminarSolicitudConfirm = (solicitud: SolicitudAdmin | any) => {
-        if (confirm(`¿Estás seguro de eliminar la solicitud ${solicitud.numero_solicitud || solicitud.payload?.solicitud?.numero_solicitud || solicitud.id}?`)) {
-            eliminarSolicitud(solicitud.id)
+        if (confirm(`¿Estás seguro de eliminar la solicitud ${solicitud.numero_solicitud}?`)) {
+            eliminarSolicitud(solicitud.numero_solicitud)
         }
     }
 

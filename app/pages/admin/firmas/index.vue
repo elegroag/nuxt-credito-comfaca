@@ -78,7 +78,7 @@
         <div v-else class="space-y-4">
             <Card
                 v-for="solicitud in solicitudes"
-                :key="solicitud.id"
+                :key="solicitud.numero_solicitud"
                 class="border-0 shadow-md hover:shadow-lg transition-shadow"
             >
                 <CardContent class="p-6">
@@ -91,7 +91,7 @@
                                         {{ solicitud.solicitante?.nombres_apellidos || 'Sin nombre' }}
                                     </h3>
                                     <p class="text-sm text-gray-500">
-                                        ID: {{ solicitud.id }}
+                                        ID: {{ solicitud.numero_solicitud }}
                                     </p>
                                 </div>
                             </div>
@@ -153,7 +153,7 @@
                                 variant="default"
                                 size="sm"
                                 class="w-full gap-2"
-                                @click="verDetalles(solicitud.id)"
+                                @click="verDetalles(solicitud.numero_solicitud)"
                             >
                                 <Icon name="lucide:eye" class="h-4 w-4" />
                                 Ver Detalles
@@ -162,7 +162,7 @@
                                 variant="outline"
                                 size="sm"
                                 class="w-full gap-2"
-                                @click="handleConsultarEstado(solicitud.id)"
+                                @click="handleConsultarEstado(solicitud.numero_solicitud)"
                             >
                                 <Icon name="lucide:refresh-cw" class="h-4 w-4" />
                                 Actualizar

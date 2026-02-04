@@ -88,7 +88,7 @@
             <Card class="border-0 shadow-md bg-white">
                 <CardContent class="p-6">
                     <GestionFirmantes
-                        :solicitudId="solicitud.id"
+                        :solicitudId="solicitud.numero_solicitud"
                         :firmantes="firmantes"
                     />
                 </CardContent>
