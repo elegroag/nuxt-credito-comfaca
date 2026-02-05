@@ -2,13 +2,13 @@
 @import "tw-animate-css";
 
 @plugin "daisyui" {
-    themes: light --default, dark;
+    themes: light --default, cupcake;
+    root: ":root";
 }
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where([data-theme=night], [data-theme=night] *));
 
 :root {
-    /* Aplicando nueva paleta: #7CC5BB (teal), #79BD5F (verde), #FEDEAE (peach), #FAF4E8 (crema) */
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     line-height: 1.5;
     font-weight: 400;

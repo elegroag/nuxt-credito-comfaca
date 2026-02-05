@@ -33,10 +33,7 @@
 
     <!-- Contenido principal -->
     <div v-else>
-      <WizardSolicitudCredito 
-        :parametros="parametrosCache"
-        :fecha-radicado="fechaRadicado"
-      />
+      <WizardSolicitudCredito :parametros="parametrosCache" :fecha-radicado="fechaRadicado" />
     </div>
   </div>
 </template>
@@ -49,6 +46,7 @@ import Card from '@/components/ui/Card.vue'
 import CardContent from '@/components/ui/CardContent.vue'
 import WizardSolicitudCredito from '~/components/wizard/WizardSolicitudCredito.vue'
 import { useParametros } from '~/composables/useParametros'
+import '~/assets/css/vue-select-custom.css';
 
 definePageMeta({
   layout: 'dashboard',

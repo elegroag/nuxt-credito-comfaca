@@ -15,7 +15,7 @@
     <Card class="mb-8">
       <CardContent class="p-6">
         <h2 class="text-xl font-semibold mb-4 text-center">Información de seguimiento</h2>
-        
+
         <div class="grid md:grid-cols-2 gap-6">
           <div class="space-y-4">
             <div>
@@ -24,7 +24,7 @@
                 <span class="text-lg font-semibold text-gray-900">{{ solicitudId }}</span>
               </div>
             </div>
-            
+
             <div>
               <label class="text-sm font-medium text-gray-500">Estado actual</label>
               <div class="mt-1">
@@ -33,7 +33,7 @@
                 </Badge>
               </div>
             </div>
-            
+
             <div>
               <label class="text-sm font-medium text-gray-500">Fecha de envío</label>
               <div class="mt-1">
@@ -41,7 +41,7 @@
               </div>
             </div>
           </div>
-          
+
           <div class="space-y-4">
             <div>
               <label class="text-sm font-medium text-gray-500">Próximos pasos</label>
@@ -68,11 +68,7 @@
     </Card>
 
     <!-- Timeline del proceso -->
-    <SolicitudTimeline
-      :estados="estadosTimeline"
-      :estado-actual-id="'ENVIADO_VALIDACION'"
-      :fecha-envio="fechaEnvio"
-    />
+    <SolicitudTimeline :estados="estadosTimeline" :estado-actual-id="'ENVIADO_VALIDACION'" :fecha-envio="fechaEnvio" />
 
     <!-- Alerta de error o información -->
     <div v-if="mostrarAlerta" class="mb-6">
@@ -103,29 +99,21 @@
 
     <!-- Acciones disponibles -->
     <div class="flex flex-col sm:flex-row gap-4 justify-center mt-6">
-      <Button 
-        @click="handleVisualizarPDF" 
-        variant="outline" 
-        :disabled="pdfLoading"
-        class="flex items-center gap-2 bg-white text-gray-900"
-      >
+      <Button @click="handleVisualizarPDF" variant="outline" :disabled="pdfLoading"
+        class="flex items-center gap-2 bg-white text-gray-900">
         <Eye v-if="!pdfLoading" class="h-4 w-4" />
         <span v-if="pdfLoading" class="loading loading-spinner loading-xs"></span>
         {{ pdfLoading ? 'Cargando...' : 'Ver documento' }}
       </Button>
 
-      <Button 
-        @click="handleDescargarPDF" 
-        variant="outline" 
-        :disabled="pdfLoading"
-        class="flex items-center gap-2 bg-white text-gray-900"
-      >
+      <Button @click="handleDescargarPDF" variant="outline" :disabled="pdfLoading"
+        class="flex items-center gap-2 bg-white text-gray-900">
         <Download v-if="!pdfLoading" class="h-4 w-4" />
         <span v-if="pdfLoading" class="loading loading-spinner loading-xs"></span>
         {{ pdfLoading ? 'Descargando...' : 'Descargar PDF' }}
       </Button>
-      
-      <Button @click="irAlDashboard" class="flex items-center gap-2 w-full sm:w-auto">
+
+      <Button @click="irAlInicio" class="flex items-center gap-2 w-full sm:w-auto">
         <Home class="h-4 w-4" />
         Ir al dashboard
       </Button>
@@ -177,13 +165,13 @@ const router = useRouter()
 const solicitudId = computed(() => route.params.id as string)
 
 const {
-    loading: pdfLoading,
-    error: pdfError,
-    tienePDF,
-    estadoPdf,
-    verificarEstadoPDF,
-    visualizarPDF,
-    descargarPDF
+  loading: pdfLoading,
+  error: pdfError,
+  tienePDF,
+  estadoPdf,
+  verificarEstadoPDF,
+  visualizarPDF,
+  descargarPDF
 } = usePDFGenerator()
 
 const mostrarAlerta = ref(false)
@@ -235,48 +223,48 @@ const estadosTimeline = computed(() => [
 ])
 
 const handleVisualizarPDF = async () => {
-    mostrarAlerta.value = false;
-    
-    const disponible = await verificarEstadoPDF(solicitudId.value);
-    
-    if (!disponible) {
-        mensajeAlerta.value = 'El PDF aún no está disponible. Por favor espere un momento e intente nuevamente.';
-        mostrarAlerta.value = true;
-        return;
-    }
-    
-    const visualizado = await visualizarPDF(solicitudId.value);
-    
-    if (!visualizado && pdfError.value) {
-        mensajeAlerta.value = pdfError.value;
-        mostrarAlerta.value = true;
-    }
+  mostrarAlerta.value = false;
+
+  const disponible = await verificarEstadoPDF(solicitudId.value);
+
+  if (!disponible) {
+    mensajeAlerta.value = 'El PDF aún no está disponible. Por favor espere un momento e intente nuevamente.';
+    mostrarAlerta.value = true;
+    return;
+  }
+
+  const visualizado = await visualizarPDF(solicitudId.value);
+
+  if (!visualizado && pdfError.value) {
+    mensajeAlerta.value = pdfError.value;
+    mostrarAlerta.value = true;
+  }
 };
 
 const handleDescargarPDF = async () => {
-    mostrarAlerta.value = false;
-    
-    const disponible = await verificarEstadoPDF(solicitudId.value);
-    
-    if (!disponible) {
-        mensajeAlerta.value = 'El PDF aún no está disponible. Por favor espere un momento e intente nuevamente.';
-        mostrarAlerta.value = true;
-        return;
-    }
-    
-    const descargado = await descargarPDF(solicitudId.value);
-    
-    if (!descargado && pdfError.value) {
-        mensajeAlerta.value = pdfError.value;
-        mostrarAlerta.value = true;
-    }
+  mostrarAlerta.value = false;
+
+  const disponible = await verificarEstadoPDF(solicitudId.value);
+
+  if (!disponible) {
+    mensajeAlerta.value = 'El PDF aún no está disponible. Por favor espere un momento e intente nuevamente.';
+    mostrarAlerta.value = true;
+    return;
+  }
+
+  const descargado = await descargarPDF(solicitudId.value);
+
+  if (!descargado && pdfError.value) {
+    mensajeAlerta.value = pdfError.value;
+    mostrarAlerta.value = true;
+  }
 };
 
-const irAlDashboard = () => {
-    router.push('/dashboard');
+const irAlInicio = () => {
+  router.push('/inicio');
 };
 
 onMounted(async () => {
-    await verificarEstadoPDF(solicitudId.value);
+  await verificarEstadoPDF(solicitudId.value);
 });
 </script>

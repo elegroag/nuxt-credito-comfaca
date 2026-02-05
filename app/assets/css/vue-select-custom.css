@@ -1,4 +1,16 @@
-/* Personalización de Vue Select para mantener el estándar de diseño */
+@import 'global/variables.css';
+@import 'global/component.css';
+@import 'global/animations.css';
+@import 'global/states.css';
+
+@import 'modules/dropdown-toggle.css';
+@import 'modules/open-indicator.css';
+@import 'modules/clear.css';
+@import 'modules/dropdown-menu.css';
+@import 'modules/dropdown-option.css';
+@import 'modules/selected.css';
+@import 'modules/search-input.css';
+@import 'modules/spinner.css';
 
 /* Contenedor principal de Vue Select */
 .v-select {
@@ -254,31 +266,6 @@
     font-size: 0.8rem;
   }
 }
-
-/* Dark mode support (si se necesita en el futuro) */
-@media (prefers-color-scheme: dark) {
-  .vs__dropdown-toggle {
-    background: #1f2937;
-    border-color: #374151;
-    color: #f9fafb;
-  }
-
-  .vs__dropdown-menu {
-    background: #1f2937;
-    border-color: #374151;
-  }
-
-  .vs__dropdown-option {
-    color: #f9fafb;
-    border-bottom-color: #374151;
-  }
-
-  .vs__dropdown-option:hover {
-    background: #374151;
-  }
-}
-
-/* Integración con las clases existentes del sistema */
 
 /* Para que vue-select se vea como los demás form controls */
 .form-group .v-select {

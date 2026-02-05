@@ -3,15 +3,10 @@
     <FormField label="Fecha vinculación">
       <Input v-model="form.solicitante.fecha_vinculacion" type="date" />
     </FormField>
-    
+
     <FormField label="Tipo identificación">
-      <CustomSelect
-        v-model="form.solicitante.tipo_identificacion"
-        :options="tiposDocumentoOptions"
-        placeholder="Seleccionar tipo"
-        clearable
-        required
-      />
+      <CustomSelect v-model="form.solicitante.tipo_identificacion" :options="tiposDocumentoOptions"
+        placeholder="Seleccionar tipo" clearable required />
     </FormField>
 
     <FormField label="Número identificación">
@@ -30,60 +25,35 @@
       <Input v-model="form.solicitante.fecha_expedicion_documento" type="date" />
     </FormField>
     <FormField label="Profesión/Ocupación">
-      <CustomSelect
-        v-model="form.solicitante.profesion_ocupacion"
-        :options="ocupacionesOptions"
-        placeholder="Seleccionar ocupación"
-        clearable
-        searchable
-      />
+      <CustomSelect v-model="form.solicitante.profesion_ocupacion" :options="ocupacionesOptions"
+        placeholder="Seleccionar ocupación" clearable searchable />
     </FormField>
     <FormField label="Sexo">
-      <CustomSelect
-        v-model="form.solicitante.sexo"
-        :options="sexosOptions"
-        placeholder="Seleccionar sexo"
-        clearable
-      />
+      <CustomSelect v-model="form.solicitante.sexo" :options="sexosOptions" placeholder="Seleccionar sexo" clearable />
     </FormField>
-    
+
     <FormField label="Nivel educativo">
-      <CustomSelect
-        v-model="form.solicitante.nivel_educativo"
-        :options="nivelesEducativosOptions"
-        placeholder="Seleccionar nivel"
-        clearable
-        searchable
-      />
+      <CustomSelect v-model="form.solicitante.nivel_educativo" :options="nivelesEducativosOptions"
+        placeholder="Seleccionar nivel" clearable searchable />
     </FormField>
 
     <FormField label="Barrio residencia">
       <Input v-model="form.solicitante.barrio_residencia" />
     </FormField>
-    
+
     <FormField label="Ciudad residencia">
-      <CustomSelect
-        v-model="form.solicitante.ciudad_residencia"
-        :options="ciudadesOptions"
-        placeholder="Seleccionar ciudad"
-        clearable
-        searchable
-        @option:selected="handleCiudadChange"
-      />
+      <CustomSelect v-model="form.solicitante.ciudad_residencia" :options="ciudadesOptions"
+        placeholder="Seleccionar ciudad" clearable searchable @option:selected="handleCiudadChange" />
     </FormField>
-    
+
     <FormField label="País residencia">
       <Input v-model="form.solicitante.pais_residencia" />
     </FormField>
     <FormField label="Estado civil">
-      <CustomSelect
-        v-model="form.solicitante.estado_civil"
-        :options="estadoCivilesOptions"
-        placeholder="Seleccionar estado civil"
-        clearable
-      />
+      <CustomSelect v-model="form.solicitante.estado_civil" :options="estadoCivilesOptions"
+        placeholder="Seleccionar estado civil" clearable />
     </FormField>
-    
+
     <FormField label="Teléfono fijo (opcional)">
       <Input v-model="form.solicitante.telefono_fijo" />
     </FormField>
@@ -95,20 +65,13 @@
     </FormField>
 
     <FormField label="Tipo vivienda">
-      <CustomSelect
-        v-model="form.solicitante.tipo_vivienda"
-        :options="tiposViviendaOptions"
-        placeholder="Seleccionar tipo"
-        clearable
-      />
+      <CustomSelect v-model="form.solicitante.tipo_vivienda" :options="tiposViviendaOptions"
+        placeholder="Seleccionar tipo" clearable />
     </FormField>
 
     <label class="flex items-center gap-2 text-sm text-foreground">
-      <input 
-        v-model="form.solicitante.vive_con_nucleo_familiar" 
-        type="checkbox" 
-        class="h-4 w-4 rounded border-input text-primary focus:ring-primary" 
-      />
+      <input v-model="form.solicitante.vive_con_nucleo_familiar" type="checkbox"
+        class="h-4 w-4 rounded border-input text-primary focus:ring-primary" />
       Vive con núcleo familiar
     </label>
 
@@ -123,7 +86,6 @@ import { computed } from '#imports';
 import FormField from '~/components/shared/FormField.vue';
 import Input from '@/components/ui/Input.vue';
 import CustomSelect from '~/components/ui/CustomSelect.vue';
-import '~/assets/css/vue-select-custom.css';
 import type { CiudadOption, SelectOption, SolocitanteProps } from '~/shared/types/solicitud-credito';
 
 const props = withDefaults(defineProps<SolocitanteProps>(), {
@@ -137,49 +99,49 @@ const props = withDefaults(defineProps<SolocitanteProps>(), {
 });
 
 // Convertir datos a formato SelectOption
-const tiposDocumentoOptions = computed(() => 
+const tiposDocumentoOptions = computed(() =>
   props.tiposDocumento.map(item => ({
     label: item.detdoc,
     value: item.coddoc
   }))
 );
 
-const ocupacionesOptions = computed(() => 
+const ocupacionesOptions = computed(() =>
   props.ocupaciones.map(item => ({
     label: item.detalle,
     value: item.codocu
   }))
 );
 
-const sexosOptions = computed(() => 
+const sexosOptions = computed(() =>
   props.sexos.map(item => ({
     label: item.detsex,
     value: item.codsex
   }))
 );
 
-const nivelesEducativosOptions = computed(() => 
+const nivelesEducativosOptions = computed(() =>
   props.nivelesEducativos.map(item => ({
     label: item.detalle,
     value: item.nivedu
   }))
 );
 
-const tiposViviendaOptions = computed(() => 
+const tiposViviendaOptions = computed(() =>
   props.tiposVivienda.map(item => ({
     label: item.detalle,
     value: item.vivienda
   }))
 );
 
-const estadoCivilesOptions = computed(() => 
+const estadoCivilesOptions = computed(() =>
   props.estadoCiviles.map(item => ({
     label: item.detest,
     value: item.estciv
   }))
 );
 
-const ciudadesOptions = computed(() => 
+const ciudadesOptions = computed(() =>
   props.ciudades.map(item => ({
     label: item.detciu,
     value: item.codciu,
@@ -193,8 +155,3 @@ const handleCiudadChange = (option: SelectOption) => {
   // Aquí puedes agregar lógica adicional cuando se selecciona una ciudad
 };
 </script>
-
-<style scoped>
-/* Importar estilos personalizados para vue-select */
-@import '~/assets/css/vue-select-custom.css';
-</style>
