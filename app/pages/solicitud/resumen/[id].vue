@@ -16,11 +16,7 @@
 
     <div class="container mx-auto px-4 py-8 max-w-6xl">
       <!-- Progress Steps -->
-      <SharedProgresoSteps 
-        current-step="completado" 
-        class="mb-8"
-        @navigate="handleNavigation" 
-      />
+      <SharedProgresoSteps current-step="completado" class="mb-8" @navigate="handleNavigation" />
 
       <!-- Loading State -->
       <div v-if="loadingSolicitud" class="flex flex-col items-center justify-center py-20 space-y-6">
@@ -54,13 +50,14 @@
         <!-- Alerta de confirmación -->
         <div class="bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl p-8 text-white shadow-xl">
           <div class="flex items-start gap-6">
-            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
               <Icon name="lucide:alert-triangle" class="w-6 h-6" />
             </div>
             <div class="flex-1">
               <h2 class="text-2xl font-bold mb-3">Última Revisión Antes de Enviar</h2>
               <p class="text-white/90 mb-4">
-                Para continuar con su solicitud de crédito<strong> {{ solicitud?.payload?.linea_credito?.detalle_modalidad || '' }}</strong>, 
+                Para continuar con su solicitud de crédito<strong> {{
+                  solicitud?.payload?.linea_credito?.detalle_modalidad || '' }}</strong>,
                 Una vez enviada para validación previa, algunos datos no podrán ser modificados.
               </p>
               <div class="flex items-center gap-2 text-white/80 text-sm">
@@ -88,11 +85,13 @@
                 <dl class="space-y-2">
                   <div class="flex justify-between">
                     <dt class="text-gray-600">Nombre completo:</dt>
-                    <dd class="font-medium">{{ solicitud?.payload?.solicitante?.nombres_apellidos || 'N/A' }}</dd>
+                    <dd class="font-medium">{{ solicitud?.payload?.solicitante?.nombres || 'N/A' }} {{
+                      solicitud?.payload?.solicitante?.apellidos || 'N/A' }}</dd>
                   </div>
                   <div class="flex justify-between">
                     <dt class="text-gray-600">Tipo/No. Identificación:</dt>
-                    <dd class="font-medium">{{ solicitud?.payload?.solicitante?.tipo_identificacion }} - {{ solicitud?.payload?.solicitante?.numero_identificacion || 'N/A' }}</dd>
+                    <dd class="font-medium">{{ solicitud?.payload?.solicitante?.tipo_documento }} - {{
+                      solicitud?.payload?.solicitante?.numero_documento || 'N/A' }}</dd>
                   </div>
                   <div class="flex justify-between">
                     <dt class="text-gray-600">Fecha de nacimiento:</dt>
@@ -100,7 +99,7 @@
                   </div>
                   <div class="flex justify-between">
                     <dt class="text-gray-600">Género:</dt>
-                    <dd class="font-medium">{{ solicitud?.payload?.solicitante?.sexo || 'N/A' }}</dd>
+                    <dd class="font-medium">{{ solicitud?.payload?.solicitante?.genero || 'N/A' }}</dd>
                   </div>
                 </dl>
               </div>
@@ -112,12 +111,12 @@
                     <dd class="font-medium">{{ solicitud?.payload?.solicitud?.categoria || 'N/A' }}</dd>
                   </div>
                   <div class="flex justify-between">
-                    <dt class="text-gray-600">Fecha de vinculación:</dt>
-                    <dd class="font-medium">{{ solicitud?.payload?.solicitante?.fecha_vinculacion || 'N/A' }}</dd>
+                    <dt class="text-gray-600">Fecha de nacimiento:</dt>
+                    <dd class="font-medium">{{ solicitud?.payload?.solicitante?.fecha_nacimiento || 'N/A' }}</dd>
                   </div>
                   <div class="flex justify-between">
                     <dt class="text-gray-600">Profesión/Ocupación:</dt>
-                    <dd class="font-medium">{{ solicitud?.payload?.solicitante?.profesion_ocupacion || 'N/A' }}</dd>
+                    <dd class="font-medium">{{ solicitud?.payload?.solicitante?.cargo || 'N/A' }}</dd>
                   </div>
                   <div class="flex justify-between">
                     <dt class="text-gray-600">Nivel educativo:</dt>
@@ -199,14 +198,15 @@
                   {{ documentosCargados?.length || 0 }} cargados
                 </span>
                 <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full font-medium">
-                  {{ documentosRequeridos?.filter(d => d.obligatorio).length || 0 }} obligatorios
+                  {{documentosRequeridos?.filter(d => d.obligatorio).length || 0}} obligatorios
                 </span>
               </div>
             </div>
           </div>
           <div class="p-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div v-for="documento in documentosCargados" :key="documento.id" class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <div v-for="documento in documentosCargados" :key="documento.id"
+                class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                 <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
                   <Icon name="lucide:file-text" class="w-4 h-4 text-green-600" />
                 </div>
@@ -228,32 +228,20 @@
 
         <!-- Acciones -->
         <div class="flex flex-col md:flex-row gap-4 justify-between items-center">
-          <UiButton 
-            @click="handleBack"
-            variant="outline"
-            class="w-full md:w-auto gap-2 h-12 px-6"
-          >
+          <UiButton @click="handleBack" variant="outline" class="w-full md:w-auto gap-2 h-12 px-6">
             <Icon name="lucide:arrow-left" class="w-4 h-4" />
             Volver a Documentos
           </UiButton>
-          
+
           <div class="flex flex-col md:flex-row gap-3">
-            <UiButton 
-              @click="handleEdit"
-              variant="outline"
-              class="w-full md:w-auto gap-2 h-12 px-6"
-            >
+            <UiButton @click="handleEdit" variant="outline" class="w-full md:w-auto gap-2 h-12 px-6">
               <Icon name="lucide:edit" class="w-4 h-4" />
               Editar Solicitud
             </UiButton>
-            
-            <UiButton 
-              @click="handleEnviarValidacion"
-              :disabled="enviando || !todosDocumentosCompletos"
-              size="lg"
+
+            <UiButton @click="handleEnviarValidacion" :disabled="enviando || !todosDocumentosCompletos" size="lg"
               class="w-full md:w-auto gap-2 h-12 px-8 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold shadow-lg transition-all duration-300"
-              :class="(!todosDocumentosCompletos || enviando) ? 'opacity-50 cursor-not-allowed' : ''"
-            >
+              :class="(!todosDocumentosCompletos || enviando) ? 'opacity-50 cursor-not-allowed' : ''">
               <Icon v-if="!enviando" name="lucide:send" class="w-5 h-5" />
               <Icon v-else name="lucide:loader-2" class="w-5 h-5 animate-spin" />
               {{ enviando ? 'Enviando...' : 'Enviar para Validación' }}
@@ -268,7 +256,8 @@
             <div>
               <h4 class="font-semibold text-red-900">No se puede enviar para validación</h4>
               <p class="text-red-700 text-sm mt-1">
-                Faltan {{ documentosRequeridos?.filter(d => d.obligatorio && !getDocumentoCargado(d.id)).length || 0 }} documentos obligatorios por cargar.
+                Faltan {{documentosRequeridos?.filter(d => d.obligatorio && !getDocumentoCargado(d.id)).length || 0}}
+                documentos obligatorios por cargar.
               </p>
             </div>
           </div>

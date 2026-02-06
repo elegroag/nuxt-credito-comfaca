@@ -91,6 +91,10 @@
       <Input v-model.number="form.solicitante.salario" type="number" min="0" />
     </FormField>
 
+    <FormField label="Código categoría">
+      <Input v-model="form.solicitante.codigo_categoria" />
+    </FormField>
+
     <FormField label="Antigüedad (meses, opcional)">
       <Input v-model.number="form.solicitante.antiguedad_meses" type="number" min="0" />
     </FormField>

@@ -4,16 +4,12 @@ import type {
 
 export const useSolicitudCreditoForm = () => {
     const form = useState<SolicitudCreditoPayload>('solicitudCreditoForm', () => ({
-        version: '1.0',
-        encabezado: {
-            fecha_radicado: ''
-        },
         solicitud: {
             numero_solicitud: '',
             numero_comprobante: '',
             valor_solicitud: 0,
             categoria: '',
-            rol_en_solicitud: 'solicitante',
+            rol_en_solicitud: 'trabajador',
             valor_solicitado: 0,
             cuota_mensual: 0,
             plazo_meses: 0,
@@ -21,17 +17,13 @@ export const useSolicitudCreditoForm = () => {
             tipcre: '',
             modxml4: 0,
             detalle_modalidad: '',
-            foto_documento: { url: '' }
+            fecha_radicado: '',
+            producto_solicitado: {
+                tipo: 'vivienda',
+                ha_tenido_credito_comfaca: false
+            }
         },
         linea_credito: {
-            auxest: '',
-            codigo_cap: '',
-            codigo_cen: '',
-            codigo_con: '',
-            codigo_cre: '',
-            codigo_int: '',
-            codigo_mor: '',
-            codigo_ser: '',
             detalle_modalidad: '',
             estado: '',
             estcre: 0,
@@ -41,10 +33,6 @@ export const useSolicitudCreditoForm = () => {
             repdcr: '',
             tipcre: '',
             tipfin: ''
-        },
-        producto_solicitado: {
-            tipo: 'vivienda',
-            ha_tenido_credito_comfaca: false
         },
         solicitante: {
             tipo_persona: '',
@@ -70,7 +58,8 @@ export const useSolicitudCreditoForm = () => {
             salario: 0,
             antiguedad_meses: 0,
             tipo_contrato: '',
-            sector_economico: ''
+            sector_economico: '',
+            codigo_categoria: ''
         },
         conyuge: undefined,
         informacion_laboral: {
@@ -204,30 +193,26 @@ export const useSolicitudCreditoForm = () => {
 
     const reset = () => {
         form.value = {
-            version: '1.0',
-            encabezado: {
-                fecha_radicado: ''
-            },
             solicitud: {
                 numero_solicitud: '',
                 numero_comprobante: '',
                 valor_solicitud: 0,
                 categoria: '',
-                rol_en_solicitud: 'solicitante',
+                rol_en_solicitud: 'trabajador',
                 valor_solicitado: 0,
                 cuota_mensual: 0,
                 plazo_meses: 0,
-                moneda: 'COP'
+                moneda: 'COP',
+                tipcre: '',
+                modxml4: 0,
+                detalle_modalidad: '',
+                fecha_radicado: '',
+                producto_solicitado: {
+                    tipo: 'vivienda',
+                    ha_tenido_credito_comfaca: false
+                }
             },
             linea_credito: {
-                auxest: '',
-                codigo_cap: '',
-                codigo_cen: '',
-                codigo_con: '',
-                codigo_cre: '',
-                codigo_int: '',
-                codigo_mor: '',
-                codigo_ser: '',
                 detalle_modalidad: '',
                 estado: '',
                 estcre: 0,
@@ -237,10 +222,6 @@ export const useSolicitudCreditoForm = () => {
                 repdcr: '',
                 tipcre: '',
                 tipfin: ''
-            },
-            producto_solicitado: {
-                tipo: 'vivienda',
-                ha_tenido_credito_comfaca: false
             },
             solicitante: {
                 tipo_documento: '1',
@@ -266,6 +247,7 @@ export const useSolicitudCreditoForm = () => {
                 antiguedad_meses: 0,
                 tipo_contrato: '',
                 sector_economico: '',
+                codigo_categoria: '',
             },
             conyuge: undefined,
             informacion_laboral: {

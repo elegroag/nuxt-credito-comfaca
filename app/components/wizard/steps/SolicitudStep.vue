@@ -3,54 +3,45 @@
     <div class="grid gap-4 sm:grid-cols-2">
       <!-- Fecha radicado -->
       <FormField label="Fecha radicado" class="sm:col-span-2">
-        <Input :model-value="fechaRadicado" type="date" readonly />
+        <Input v-model="form.solicitud.fecha_radicado" type="date" :disabled="true" />
       </FormField>
-      
+
       <!-- Campos de solicitud -->
       <FormField label="Número solicitud">
-        <Input v-model="form.solicitud.numero_solicitud" />
+        <Input v-model="form.solicitud.numero_solicitud" :disabled="true" />
       </FormField>
       <FormField label="Número comprobante">
         <Input v-model="form.solicitud.numero_comprobante" />
       </FormField>
       <FormField label="Valor solicitud">
-        <Input v-model.number="form.solicitud.valor_solicitud" type="number" min="0" />
+        <Input v-model.number="form.solicitud.valor_solicitud" type="number" min="0" :disabled="true" />
       </FormField>
       <FormField label="Categoría">
-        <Input v-model="form.solicitud.categoria" />
+        <Input v-model="form.solicitante.codigo_categoria" :disabled="true" />
       </FormField>
       <FormField label="Rol en solicitud">
-        <CustomSelect
-          v-model="form.solicitud.rol_en_solicitud"
-          :options="rolesOptions"
-          placeholder="Seleccionar rol"
-        />
+        <CustomSelect v-model="form.solicitud.rol_en_solicitud" :options="rolesOptions" placeholder="Seleccionar rol" />
       </FormField>
       <FormField label="Valor mensual">
-        <Input v-model.number="form.solicitud.cuota_mensual" type="number" min="0" />
+        <Input v-model.number="form.solicitud.cuota_mensual" type="number" min="0" :disabled="true" />
       </FormField>
       <FormField label="Plazo (meses)">
-        <Input v-model.number="form.solicitud.plazo_meses" type="number" min="1" />
+        <Input v-model.number="form.solicitud.plazo_meses" type="number" min="1" :disabled="true" />
       </FormField>
       <FormField label="Producto">
-        <CustomSelect
-          v-model="form.producto_solicitado.tipo"
-          :options="productosOptions"
-          placeholder="Seleccionar producto"
-        />
+        <CustomSelect v-model="form.solicitud.producto_solicitado.tipo" :options="productosOptions"
+          placeholder="Seleccionar producto" />
       </FormField>
-      <FormField label="URL Foto documento (opcional)">
-        <Input v-model="form.solicitud.foto_documento!.url" placeholder="https://..." />
+      <FormField label="Linea de crédito">
+        <Input v-model="form.solicitud.detalle_modalidad" :disabled="true" placeholder="Seleccionar linea" />
       </FormField>
+
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2 mt-4">
       <label class="flex items-center gap-2 text-sm text-foreground">
-        <input 
-          v-model="form.producto_solicitado.ha_tenido_credito_comfaca" 
-          type="checkbox" 
-          class="h-4 w-4 rounded border-input text-primary focus:ring-primary" 
-        />
+        <input v-model="form.solicitud.producto_solicitado.ha_tenido_credito_comfaca" type="checkbox"
+          class="h-4 w-4 rounded border-input text-primary focus:ring-primary" />
         Ha tenido crédito con Comfaca
       </label>
     </div>
@@ -67,8 +58,8 @@ defineProps<SolicitudProps>()
 
 // Opciones para roles en solicitud
 const rolesOptions: SelectOption[] = [
-  { label: 'Solicitante', value: 'solicitante' },
-  { label: 'Codeudor', value: 'codeudor' }
+  { label: 'Trabajador', value: 'trabajador' },
+  { label: 'Empleador', value: 'empleador' }
 ]
 
 // Opciones para productos

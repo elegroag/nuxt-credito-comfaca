@@ -1,7 +1,7 @@
 
 export type Moneda = 'COP'
 
-export type RolEnSolicitud = 'solicitante' | 'codeudor'
+export type RolEnSolicitud = 'trabajador' | 'empleador'
 
 export type TipoIdentificacion = 'CC' | 'CE'
 
@@ -48,8 +48,8 @@ export interface Solicitante {
     numero_documento: string
     nombres: string
     apellidos: string
-    razon_social?: string
-    nit?: string
+    razon_social: string
+    nit: string
     fecha_nacimiento: string
     genero: string
     estado_civil: string
@@ -63,30 +63,32 @@ export interface Solicitante {
     ciudad: string
     departamento: string
     cargo: string
-    salario?: number
+    salario: number
     antiguedad_meses?: number
     tipo_contrato?: string
     sector_economico?: string
+    codigo_categoria: string
 }
 
 export interface LineaCredito {
-    auxest: string
-    codigo_cap: string
-    codigo_cen: string
-    codigo_con: string
-    codigo_cre: string
-    codigo_int: string
-    codigo_mor: string
-    codigo_ser: string
-    detalle_modalidad: string
-    estado: string
-    estcre: number
+    tipcre: string
+    pagseg: string
     modxml4: number
     numero_cuotas: number
-    pagseg: string
-    repdcr: string
-    tipcre: string
-    tipfin: string
+    estado: string
+    detalle_modalidad: string
+    codser?: string
+    auxest?: string
+    codigo_cap?: string
+    codigo_cen?: string
+    codigo_con?: string
+    codigo_cre?: string
+    codigo_int?: string
+    codigo_mor?: string
+    codigo_ser?: string
+    estcre?: number
+    repdcr?: string
+    tipfin?: string
 }
 
 export interface Solicitud {
@@ -102,6 +104,11 @@ export interface Solicitud {
     tipcre?: string
     modxml4?: number
     detalle_modalidad?: string
+    fecha_radicado: string
+    producto_solicitado: {
+        tipo: ProductoTipo
+        ha_tenido_credito_comfaca: boolean
+    }
 }
 
 export interface Conyuge {
@@ -178,16 +185,8 @@ export interface InformacionEconomica {
 }
 
 export interface SolicitudCreditoPayload {
-    version: string
-    encabezado: {
-        fecha_radicado: string
-    }
     solicitud: Solicitud
     linea_credito: LineaCredito
-    producto_solicitado: {
-        tipo: ProductoTipo
-        ha_tenido_credito_comfaca: boolean
-    }
     solicitante: Solicitante
     conyuge?: Conyuge
     informacion_laboral: InformacionLaboral
@@ -302,7 +301,6 @@ export interface SolocitanteProps {
 
 export interface SolicitudProps {
     form: any
-    fechaRadicado: string
 }
 
 export interface RevisionProps {
@@ -347,7 +345,6 @@ export interface ConyugeProps {
     form: any
     toggleConyuge: (checked: boolean) => void
     toggleEmpresaConyuge: (checked: boolean) => void
-    loadingConyuge?: boolean
 }
 
 
