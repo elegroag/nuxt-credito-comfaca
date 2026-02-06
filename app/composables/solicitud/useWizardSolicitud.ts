@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useSolicitudCreditoForm } from '~/composables/useSolicitudCreditoForm';
+import { useSolicitudCreditoForm } from '~/composables/solicitud/useSolicitudCreditoForm';
 import { useSolicitudXmlActions } from './useSolicitudXmlActions';
 import { usePDFGenerator } from './usePDFGenerator';
 import type { WizardStep } from '~/shared/types/solicitud-credito';
@@ -30,13 +30,6 @@ export function useWizardSolicitud() {
         downloadXml
     } = useSolicitudXmlActions();
 
-    const {
-        loading: loadingPdf,
-        error: errorPdf,
-        generarPDF,
-        descargarPDF,
-        pdfFilename
-    } = usePDFGenerator();
 
     // Steps configuration
     const steps: WizardStep[] = [
@@ -115,15 +108,15 @@ export function useWizardSolicitud() {
         // State
         step,
         loadingXml,
-        loadingPdf,
+
         xmlText,
         savedFilename,
         createdSolicitudId,
         errorMsg,
-        errorPdf,
+
         successModalOpen,
         pdfGenerado,
-        pdfFilename,
+
         mensajeProgreso,
         steps,
         prettyPayload,
@@ -156,6 +149,5 @@ export function useWizardSolicitud() {
         downloadXml,
 
         // PDF operations
-        descargarPDF
     };
 }

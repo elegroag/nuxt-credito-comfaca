@@ -1,35 +1,47 @@
 <template>
   <div class="grid gap-4 sm:grid-cols-2">
-    <FormField label="Fecha vinculación">
-      <Input v-model="form.solicitante.fecha_vinculacion" type="date" />
-    </FormField>
-
-    <FormField label="Tipo identificación">
-      <CustomSelect v-model="form.solicitante.tipo_identificacion" :options="tiposDocumentoOptions"
+    <FormField label="Tipo persona">
+      <CustomSelect v-model="form.solicitante.tipo_persona" :options="tiposPersonaOptions"
         placeholder="Seleccionar tipo" clearable required />
     </FormField>
 
-    <FormField label="Número identificación">
-      <Input v-model="form.solicitante.numero_identificacion" />
+    <FormField label="Tipo documento">
+      <CustomSelect v-model="form.solicitante.tipo_documento" :options="tiposDocumentoOptions"
+        placeholder="Seleccionar tipo" clearable required />
     </FormField>
+
+    <FormField label="Número documento">
+      <Input v-model="form.solicitante.numero_documento" />
+    </FormField>
+
+    <FormField label="Nombres">
+      <Input v-model="form.solicitante.nombres" />
+    </FormField>
+
+    <FormField label="Apellidos">
+      <Input v-model="form.solicitante.apellidos" />
+    </FormField>
+
+    <FormField label="Razón social (opcional)">
+      <Input v-model="form.informacion_laboral.empresa_razon_social" />
+    </FormField>
+
+    <FormField label="NIT (opcional)">
+      <Input v-model="form.informacion_laboral.empresa_nit" />
+    </FormField>
+
     <FormField label="Fecha nacimiento">
       <Input v-model="form.solicitante.fecha_nacimiento" type="date" />
     </FormField>
-    <FormField label="País nacimiento">
-      <Input v-model="form.solicitante.pais_nacimiento" />
+
+    <FormField label="Género">
+      <CustomSelect v-model="form.solicitante.genero" :options="sexosOptions" placeholder="Seleccionar género"
+        clearable />
     </FormField>
-    <FormField label="Nombres y apellidos">
-      <Input v-model="form.solicitante.nombres_apellidos" />
-    </FormField>
-    <FormField label="Fecha expedición documento">
-      <Input v-model="form.solicitante.fecha_expedicion_documento" type="date" />
-    </FormField>
-    <FormField label="Profesión/Ocupación">
-      <CustomSelect v-model="form.solicitante.profesion_ocupacion" :options="ocupacionesOptions"
-        placeholder="Seleccionar ocupación" clearable searchable />
-    </FormField>
-    <FormField label="Sexo">
-      <CustomSelect v-model="form.solicitante.sexo" :options="sexosOptions" placeholder="Seleccionar sexo" clearable />
+
+    <FormField label="Estado civil">
+      <CustomSelect v-model="form.solicitante.estado_civil" :options="estadoCivilesOptions"
+        placeholder="Seleccionar estado civil" clearable />
     </FormField>
 
     <FormField label="Nivel educativo">
@@ -37,46 +49,58 @@
         placeholder="Seleccionar nivel" clearable searchable />
     </FormField>
 
-    <FormField label="Barrio residencia">
-      <Input v-model="form.solicitante.barrio_residencia" />
+    <FormField label="Profesión">
+      <CustomSelect v-model="form.solicitante.profesion" :options="ocupacionesOptions"
+        placeholder="Seleccionar profesión" clearable searchable />
     </FormField>
 
-    <FormField label="Ciudad residencia">
-      <CustomSelect v-model="form.solicitante.ciudad_residencia" :options="ciudadesOptions"
-        placeholder="Seleccionar ciudad" clearable searchable @option:selected="handleCiudadChange" />
-    </FormField>
-
-    <FormField label="País residencia">
-      <Input v-model="form.solicitante.pais_residencia" />
-    </FormField>
-    <FormField label="Estado civil">
-      <CustomSelect v-model="form.solicitante.estado_civil" :options="estadoCivilesOptions"
-        placeholder="Seleccionar estado civil" clearable />
-    </FormField>
-
-    <FormField label="Teléfono fijo (opcional)">
-      <Input v-model="form.solicitante.telefono_fijo" />
-    </FormField>
-    <FormField label="Teléfono móvil">
-      <Input v-model="form.solicitante.telefono_movil" />
-    </FormField>
     <FormField label="Email">
       <Input v-model="form.solicitante.email" type="email" />
     </FormField>
 
-    <FormField label="Tipo vivienda">
-      <CustomSelect v-model="form.solicitante.tipo_vivienda" :options="tiposViviendaOptions"
-        placeholder="Seleccionar tipo" clearable />
+    <FormField label="Teléfono (opcional)">
+      <Input v-model="form.solicitante.telefono" />
     </FormField>
 
-    <label class="flex items-center gap-2 text-sm text-foreground">
-      <input v-model="form.solicitante.vive_con_nucleo_familiar" type="checkbox"
-        class="h-4 w-4 rounded border-input text-primary focus:ring-primary" />
-      Vive con núcleo familiar
-    </label>
+    <FormField label="Celular">
+      <Input v-model="form.solicitante.celular" />
+    </FormField>
 
-    <FormField label="Personas a cargo">
-      <Input v-model.number="form.solicitante.personas_a_cargo" type="number" min="0" />
+    <FormField label="Dirección">
+      <Input v-model="form.solicitante.direccion" />
+    </FormField>
+
+    <FormField label="Barrio">
+      <Input v-model="form.solicitante.barrio" />
+    </FormField>
+
+    <FormField label="Ciudad">
+      <CustomSelect v-model="form.solicitante.ciudad" :options="ciudadesOptions" placeholder="Seleccionar ciudad"
+        clearable searchable @option:selected="handleCiudadChange" />
+    </FormField>
+
+    <FormField label="Departamento">
+      <Input v-model="form.solicitante.departamento" />
+    </FormField>
+
+    <FormField label="Cargo">
+      <Input v-model="form.solicitante.cargo" />
+    </FormField>
+
+    <FormField label="Salario (opcional)">
+      <Input v-model.number="form.solicitante.salario" type="number" min="0" />
+    </FormField>
+
+    <FormField label="Antigüedad (meses, opcional)">
+      <Input v-model.number="form.solicitante.antiguedad_meses" type="number" min="0" />
+    </FormField>
+
+    <FormField label="Tipo contrato (opcional)">
+      <Input v-model="form.solicitante.tipo_contrato" />
+    </FormField>
+
+    <FormField label="Sector económico (opcional)">
+      <Input v-model="form.solicitante.sector_economico" />
     </FormField>
   </div>
 </template>
@@ -97,6 +121,12 @@ const props = withDefaults(defineProps<SolocitanteProps>(), {
   ocupaciones: () => [],
   estadoCiviles: () => []
 });
+
+// Opciones para tipo persona
+const tiposPersonaOptions = computed(() => [
+  { label: 'Natural', value: 'natural' },
+  { label: 'Jurídica', value: 'juridica' }
+]);
 
 // Convertir datos a formato SelectOption
 const tiposDocumentoOptions = computed(() =>

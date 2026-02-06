@@ -279,7 +279,7 @@ export interface SolicitudCredito {
 
 export interface SelectOption {
     label: string
-    value: string | number
+    value: string | number | boolean
     description?: string
 }
 
@@ -314,8 +314,6 @@ export interface RevisionProps {
     loadingPdf?: boolean
     pdfGenerado?: boolean
     pdfFilename?: string | null
-    downloadXml: () => void
-    descargarPdf?: () => void
 }
 
 export interface PropiedadesProps {

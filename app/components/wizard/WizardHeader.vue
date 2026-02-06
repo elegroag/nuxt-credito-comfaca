@@ -11,34 +11,18 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          :disabled="currentStep === 0"
-          @click="$emit('prev')"
-          type="button"
-        >
+        <Button variant="outline" size="sm" :disabled="currentStep === 0" @click="$emit('prev')" type="button">
           <ChevronLeft class="mr-2 h-4 w-4" />
           {{ prevText }}
         </Button>
-        
-        <Button
-          v-if="currentStep < totalSteps - 1"
-          size="sm"
-          @click="$emit('next')"
-          type="button"
-        >
+
+        <Button v-if="currentStep < totalSteps - 1" size="sm" @click="$emit('next')" type="button">
           {{ nextText }}
           <ChevronRight class="ml-2 h-4 w-4" />
         </Button>
-        
+
         <template v-else>
-          <Button
-            size="sm"
-            :disabled="primaryButtonDisabled"
-            @click="$emit('primary-action')"
-            type="button"
-          >
+          <Button size="sm" :disabled="primaryButtonDisabled" @click="$emit('primary-action')" type="button">
             <Send class="mr-2 h-4 w-4" />
             {{ primaryButtonText }}
           </Button>
@@ -47,16 +31,11 @@
     </div>
 
     <div class="mt-6 flex flex-wrap gap-2">
-      <button
-        v-for="(step, index) in steps"
-        :key="step.key"
-        class="rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition-all"
-        :class="index === currentStep 
-          ? 'bg-primary text-primary-foreground shadow-sm' 
+      <button v-for="(step, index) in steps" :key="step.key"
+        class="rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition-all" :class="index === currentStep
+          ? 'bg-primary text-primary-foreground shadow-sm'
           : 'bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground'"
-        @click="$emit('step-change', index)"
-        type="button"
-      >
+        @click="$emit('step-change', index)" type="button">
         {{ step.short }}
       </button>
     </div>

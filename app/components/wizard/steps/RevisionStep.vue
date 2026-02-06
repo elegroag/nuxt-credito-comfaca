@@ -153,12 +153,7 @@
             <FileCode class="h-4 w-4" />
             Payload (JSON)
           </CardTitle>
-          <Button
-            variant="outline"
-            size="sm"
-            class="h-8 gap-2 bg-background"
-            @click="togglePayload"
-          >
+          <Button variant="outline" size="sm" class="h-8 gap-2 bg-background" @click="togglePayload">
             <PenTool class="h-3.5 w-3.5" />
             {{ mostrarPayload ? 'Ocultar' : 'Mostrar' }}
           </Button>
@@ -171,69 +166,9 @@
       </CardContent>
     </Card>
 
-    <Card v-if="xmlText" class="border-primary/20 bg-primary/5 shadow-none animate-in fade-in slide-in-from-bottom-2">
-      <CardHeader class="flex flex-row items-center justify-between py-3">
-        <CardTitle class="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
-          <FileCode class="h-4 w-4" />
-          XML generado
-        </CardTitle>
-        <Button
-          variant="outline"
-          size="sm"
-          class="h-8 gap-2 bg-background"
-          @click="downloadXml"
-        >
-          <Download class="h-3.5 w-3.5" />
-          Descargar
-        </Button>
-      </CardHeader>
-      <CardContent class="pb-4 space-y-3">
-        <div v-if="savedFilename" class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-secondary/20 text-secondary-foreground text-[10px] font-bold uppercase tracking-wider">
-          <CheckCircle2 class="h-3 w-3" />
-          Guardado en: {{ savedFilename }}
-        </div>
-        <div class="rounded-lg bg-background p-4 border border-border">
-          <pre class="overflow-auto text-[10px] text-foreground font-mono leading-relaxed">{{ xmlText }}</pre>
-        </div>
-      </CardContent>
-    </Card>
-
-    <!-- Mensaje de progreso -->
-    <div v-if="mensajeProgreso" class="rounded-lg border border-primary/50 bg-primary/10 p-4 text-sm text-primary flex items-center gap-3">
-      <Loader2 v-if="loadingPdf" class="h-5 w-5 shrink-0 animate-spin" />
-      <CheckCircle2 v-else class="h-5 w-5 shrink-0" />
-      <span class="font-medium">{{ mensajeProgreso }}</span>
-    </div>
-
-    <!-- Card de PDF generado -->
-    <Card v-if="pdfGenerado && pdfFilename" class="border-secondary/20 bg-secondary/5 shadow-none animate-in fade-in slide-in-from-bottom-2">
-      <CardHeader class="flex flex-row items-center justify-between py-3">
-        <CardTitle class="text-xs font-bold uppercase tracking-wider text-secondary flex items-center gap-2">
-          <FileText class="h-4 w-4" />
-          PDF generado
-        </CardTitle>
-        <Button
-          variant="outline"
-          size="sm"
-          class="h-8 gap-2 bg-background"
-          @click="descargarPdf"
-        >
-          <Download class="h-3.5 w-3.5" />
-          Descargar PDF
-        </Button>
-      </CardHeader>
-      <CardContent class="space-y-2">
-        <div class="text-xs text-muted-foreground">
-          Archivo: {{ pdfFilename }}
-        </div>
-        <div class="text-xs text-secondary font-medium">
-          ✓ PDF listo para descarga y firma digital
-        </div>
-      </CardContent>
-    </Card>
-
     <!-- Error de XML -->
-    <div v-if="errorMsg" class="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive flex items-center gap-3">
+    <div v-if="errorMsg"
+      class="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive flex items-center gap-3">
       <AlertCircle class="h-5 w-5 shrink-0" />
       <span class="font-medium">{{ errorMsg }}</span>
     </div>
@@ -242,15 +177,11 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { 
-  FileCode, 
-  Download, 
-  CheckCircle2, 
-  AlertCircle, 
-  ClipboardList, 
-  PenTool, 
-  FileText, 
-  Loader2 
+import {
+  FileCode,
+  AlertCircle,
+  ClipboardList,
+  PenTool,
 } from 'lucide-vue-next'
 import Card from '@/components/ui/Card.vue'
 import CardHeader from '@/components/ui/CardHeader.vue'
@@ -292,23 +223,24 @@ const getResumenSolicitud = () => {
 
 const getResumenSolicitante = () => {
   const data = parsePayload()
+  console.log('Data solicitante', data.solicitante)
   return data.solicitante || {}
 }
 
 const getResumenSimulador = () => {
   if (typeof window === 'undefined') return null
-  
+
   try {
     const simuladorData = localStorage.getItem('comfaca_simulador_data')
     if (!simuladorData) return null
-    
+
     // Decodificar los datos para corregir problemas de codificación
     const decodedData = decodeURIComponent(simuladorData)
     const parsed = JSON.parse(decodedData)
     const lineaCredito = parsed.lineaCredito
-    
+
     if (!lineaCredito) return null
-    
+
     // Función para corregir texto
     const corregirTexto = (texto: string | undefined) => {
       if (!texto) return ''
@@ -319,7 +251,7 @@ const getResumenSimulador = () => {
         return texto
       }
     }
-    
+
     // Extraer campos relevantes del simulador con corrección de codificación
     return {
       'linea_credito': corregirTexto(lineaCredito.detalle),
