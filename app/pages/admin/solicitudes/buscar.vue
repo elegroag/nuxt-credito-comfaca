@@ -1,7 +1,7 @@
 <template>
   <div class="admin-solicitudes">
     <div class="admin-header">
-      <div class="flex items-center gap-4">        
+      <div class="flex items-center gap-4">
         <Button variant="ghost" size="sm" @click="navigateTo('/admin/solicitudes')" class="text-muted-foreground">
           ← Volver a solicitudes
         </Button>
@@ -37,58 +37,31 @@
             <!-- Filtros de usuario -->
             <div class="form-group">
               <label>Número de Documento</label>
-              <input
-                v-model="filtrosForm.numero_documento"
-                type="text"
-                placeholder="Buscar por documento..."
-                class="form-control"
-              />
+              <input v-model="filtrosForm.numero_documento" type="text" placeholder="Buscar por documento..."
+                class="form-control" />
             </div>
             <div class="form-group">
               <label>Nombre de Usuario</label>
-              <input
-                v-model="filtrosForm.nombre_usuario"
-                type="text"
-                placeholder="Buscar por nombre..."
-                class="form-control"
-              />
+              <input v-model="filtrosForm.nombre_usuario" type="text" placeholder="Buscar por nombre..."
+                class="form-control" />
             </div>
 
             <!-- Filtros de solicitud -->
             <div class="form-group">
               <label>Radicado de Solicitud</label>
-              <input
-                v-model="filtrosForm.id"
-                type="text"
-                placeholder="Buscar solicitud..."
-                class="form-control"
-              />
+              <input v-model="filtrosForm.id" type="text" placeholder="Buscar solicitud..." class="form-control" />
             </div>
             <div class="form-group">
               <label>Fecha desde</label>
-              <input
-                v-model="filtrosForm.fecha_desde"
-                type="date"
-                class="form-control"
-              />
+              <input v-model="filtrosForm.fecha_desde" type="date" class="form-control" />
             </div>
             <div class="form-group">
               <label>Fecha hasta</label>
-              <input
-                v-model="filtrosForm.fecha_hasta"
-                type="date"
-                class="form-control"
-              />
+              <input v-model="filtrosForm.fecha_hasta" type="date" class="form-control" />
             </div>
             <div class="form-group">
               <label>Límite (máx. 1000)</label>
-              <input
-                v-model.number="filtrosForm.limit"
-                type="number"
-                min="1"
-                max="1000"
-                class="form-control"
-              />
+              <input v-model.number="filtrosForm.limit" type="number" min="1" max="1000" class="form-control" />
             </div>
             <div class="form-group">
               <label>Estado</label>
@@ -126,12 +99,8 @@
 
       <div v-else class="table-container p-2">
         <ClientOnly>
-          <DataTable
-            class="display solicitudes-table"
-            :data="solicitudes"
-            :columns="columnas"
-            :options="datatableOpciones"
-          />
+          <DataTable class="display solicitudes-table" :data="solicitudes" :columns="columnas"
+            :options="datatableOpciones" />
         </ClientOnly>
       </div>
     </div>
@@ -140,6 +109,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import { navigateTo } from '#imports'
 import DataTable from 'datatables.net-vue3'
 import DataTablesCore from 'datatables.net-dt'
 import 'datatables.net-dt/css/dataTables.dataTables.css'
@@ -357,7 +327,7 @@ definePageMeta({
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding:1rem;
+  padding: 1rem;
   border-bottom: 1px solid #e5e7eb;
 }
 

@@ -373,3 +373,4 @@ coverage/
 tmp/
 temp/
 android/app/src/main/res/*
+.windsurf/

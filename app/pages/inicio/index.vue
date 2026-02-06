@@ -33,7 +33,8 @@
       <CardContent class="p-6">
         <div class="flex items-center justify-between gap-3">
           <div class="flex items-start gap-3 flex-1">
-            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-border bg-card p-2">
+            <div
+              class="flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-border bg-card p-2">
               <ClipboardList class="h-full w-full text-foreground" />
             </div>
             <div class="flex-1">
@@ -52,21 +53,16 @@
                 <template v-else>
                   <template v-for="(estado, i) in estadosConColores" :key="estado.nombre">
                     <div class="flex items-center gap-1.5">
-                      <div 
-                        class="flex items-center gap-1 px-2 py-1 rounded-md border"
-                        :style="{
-                          borderColor: estado.color + '40',
-                          backgroundColor: estado.color + '20',
-                          color: estado.color
-                        }"
-                      >
-                        <div 
-                          class="w-2 h-2 rounded-full"
-                          :style="{ backgroundColor: estado.color }"
-                        ></div>
+                      <div class="flex items-center gap-1 px-2 py-1 rounded-md border" :style="{
+                        borderColor: estado.color + '40',
+                        backgroundColor: estado.color + '20',
+                        color: estado.color
+                      }">
+                        <div class="w-2 h-2 rounded-full" :style="{ backgroundColor: estado.color }"></div>
                         <span class="font-medium">{{ estado.nombre }}</span>
                       </div>
-                      <ChevronRight v-if="i < estadosConColores.length - 1" class="h-3.5 w-3.5 text-muted-foreground/40" />
+                      <ChevronRight v-if="i < estadosConColores.length - 1"
+                        class="h-3.5 w-3.5 text-muted-foreground/40" />
                     </div>
                   </template>
                 </template>
@@ -74,12 +70,8 @@
             </div>
           </div>
 
-          <Button
-            variant="outline"
-            @click="cargarSolicitudes"
-            :disabled="loadingSolicitudes"
-            class="shrink-0 bg-transparent"
-          >
+          <Button variant="outline" @click="cargarSolicitudes" :disabled="loadingSolicitudes"
+            class="shrink-0 bg-transparent">
             <RefreshCw :class="['h-5 w-5 mr-2', loadingSolicitudes ? 'animate-spin' : '']" />
             Actualizar
           </Button>
@@ -92,7 +84,8 @@
           <div v-else-if="solicitudesError" class="text-sm text-destructive">
             {{ solicitudesError }}
           </div>
-          <div v-else-if="solicitudes.length === 0" class="rounded-md border border-border bg-muted/30 p-4 text-sm text-muted-foreground">
+          <div v-else-if="solicitudes.length === 0"
+            class="rounded-md border border-border bg-muted/30 p-4 text-sm text-muted-foreground">
             Aún no tienes solicitudes registradas.
           </div>
           <div v-else class="overflow-hidden rounded-md border border-border">
@@ -112,10 +105,10 @@
                   <td class="px-4 py-3 text-foreground">{{ fmtMoney(s?.payload?.solicitud?.valor_solicitud || 0) }}</td>
                   <td class="px-4 py-3">
                     <div class="flex flex-col gap-2">
-                        <Badge :class="`w-fit ${estadoBadgeClass(String(s.estado || ''))}`">
-                            {{ getEstadoData(String(s.estado || ''))?.nombre || s.estado || '-' }}
-                        </Badge>
-                        <Progress :model-value="estadoProgressPercent(String(s.estado || ''))" class="w-32 h-1.5" />
+                      <Badge :class="`w-fit ${estadoBadgeClass(String(s.estado || ''))}`">
+                        {{ getEstadoData(String(s.estado || ''))?.nombre || s.estado || '-' }}
+                      </Badge>
+                      <Progress :model-value="estadoProgressPercent(String(s.estado || ''))" class="w-32 h-1.5" />
                     </div>
                   </td>
                   <td class="px-4 py-3 text-foreground">{{ fmtDate(s.created_at) }}</td>
@@ -137,13 +130,12 @@
 
     <!-- Action Cards Grid -->
     <div class="grid gap-4 sm:grid-cols-2">
-      <NuxtLink
-        to="/simulador/lineas-credito"
-        class="group block rounded-xl border border-border bg-card p-5 shadow-sm transition-colors hover:border-primary/50 hover:bg-card/80"
-      >
+      <NuxtLink to="/simulador/lineas-credito"
+        class="group block rounded-xl border border-border bg-card p-5 shadow-sm transition-colors hover:border-primary/50 hover:bg-card/80">
         <div class="flex items-start justify-between gap-3">
           <div class="flex min-w-0 items-start gap-3">
-            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-border bg-card p-2">
+            <div
+              class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-border bg-card p-2">
               <Calculator class="h-full w-full text-foreground" />
             </div>
             <div class="min-w-0">
@@ -159,13 +151,12 @@
         </div>
       </NuxtLink>
 
-      <NuxtLink
-        to="/solicitud"
-        class="group block rounded-xl border border-border bg-card p-5 shadow-sm transition-colors hover:border-primary/50 hover:bg-card/80"
-      >
+      <NuxtLink to="/solicitud"
+        class="group block rounded-xl border border-border bg-card p-5 shadow-sm transition-colors hover:border-primary/50 hover:bg-card/80">
         <div class="flex items-start justify-between gap-3">
           <div class="flex min-w-0 items-start gap-3">
-            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-border bg-card p-2">
+            <div
+              class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-border bg-card p-2">
               <FilePlus class="h-full w-full text-foreground" />
             </div>
             <div class="min-w-0">
@@ -181,45 +172,6 @@
         </div>
       </NuxtLink>
 
-      <NuxtLink
-        v-if="!esTrabajador"
-        to="/firmas"
-        class="group block rounded-xl border border-border bg-card p-5 shadow-sm transition-colors hover:border-primary/50 hover:bg-card/80"
-      >
-        <div class="flex items-start justify-between gap-3">
-          <div class="flex min-w-0 items-start gap-3">
-            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-border bg-card p-2">
-              <PenTool class="h-full w-full text-foreground" />
-            </div>
-            <div class="min-w-0">
-              <div class="text-base font-semibold text-foreground group-hover:text-primary">Firmas</div>
-              <div class="mt-1 text-sm text-muted-foreground">Firmar y visualizar solicitudes</div>
-            </div>
-          </div>
-          <ChevronRight class="h-5 w-5 shrink-0 text-muted-foreground group-hover:text-primary" />
-        </div>
-      </NuxtLink>
-
-      <NuxtLink
-        v-if="!esTrabajador"
-        to="/firmas-compartir"
-        class="group block rounded-xl border border-border bg-card p-5 shadow-sm transition-colors hover:border-primary/50 hover:bg-card/80"
-      >
-        <div class="flex items-start justify-between gap-3">
-          <div class="flex min-w-0 items-start gap-3">
-            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-border bg-card p-2">
-              <Share2 class="h-full w-full text-foreground" />
-            </div>
-            <div class="min-w-0">
-              <div class="text-base font-semibold text-foreground group-hover:text-primary">
-                Compartir firmas
-              </div>
-              <div class="mt-1 text-sm text-muted-foreground">Generar enlaces y QR para firma digital</div>
-            </div>
-          </div>
-          <ChevronRight class="h-5 w-5 shrink-0 text-muted-foreground group-hover:text-primary" />
-        </div>
-      </NuxtLink>
     </div>
   </div>
 </template>
@@ -231,8 +183,6 @@ import { useInicio } from '~/composables/inicio/useInicio'
 import {
   Calculator,
   FileText,
-  PenTool,
-  Share2,
   Key,
   ChevronRight,
   RefreshCw,

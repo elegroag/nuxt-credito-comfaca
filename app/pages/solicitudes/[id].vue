@@ -9,7 +9,7 @@
 
       <!-- Error State -->
       <div v-else-if="error"
-        class="bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 border-2 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 p-8 rounded-2xl text-center shadow-lg">
+        class="bg-linear-to-r from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 border-2 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 p-8 rounded-2xl text-center shadow-lg">
         <Icon name="lucide:alert-circle" class="w-12 h-12 mx-auto mb-4 text-red-500 dark:text-red-400" />
         <h3 class="text-xl font-bold mb-2">Error al cargar la solicitud</h3>
         <p class="mb-4">{{ error }}</p>
@@ -37,19 +37,19 @@
           :linea-credito="solicitud?.payload?.linea_credito?.detalle_modalidad || '-'" />
 
         <!-- Datos del Solicitante -->
-        <DatosSolicitante :nombres-apellidos="solicitud.solicitante?.nombres_apellidos || '-'"
-          :tipo-identificacion="buscarTipoIdentificacion(solicitud.solicitante?.tipo_identificacion) || '-'"
-          :numero-identificacion="solicitud.solicitante?.numero_identificacion || '-'"
+        <DatosSolicitante
+          :nombres-apellidos="`${solicitud?.payload?.solicitante?.nombres || ''} ${solicitud?.payload?.solicitante?.apellidos || ''}`.trim() || '-'"
+          :tipo-identificacion="buscarTipoIdentificacion(solicitud?.payload?.solicitante?.tipo_documento) || '-'"
+          :numero-identificacion="solicitud?.payload?.solicitante?.numero_documento || '-'"
           :fecha-nacimiento="solicitud?.payload?.solicitante?.fecha_nacimiento || '-'"
-          :telefono="solicitud.solicitante?.telefono_movil || '-'" :email="solicitud.solicitante?.email || '-'"
-          :direccion="solicitud?.payload?.solicitante?.barrio_residencia || '-'"
-          :ciudad="buscarCiudad(solicitud?.payload?.solicitante?.ciudad_residencia) || '-'"
-          :tipo-vivienda="buscarTipoVivienda(solicitud?.payload?.solicitante?.tipo_vivienda) || '-'"
-          :personas-a-cargo="solicitud?.payload?.solicitante?.personas_a_cargo || 0"
-          :categoria="solicitud?.payload?.solicitante?.codigo_categoria || '-'"
+          :telefono="solicitud?.payload?.solicitante?.telefono || solicitud?.payload?.solicitante?.celular || '-'"
+          :email="solicitud?.payload?.solicitante?.email || '-'"
+          :direccion="solicitud?.payload?.solicitante?.direccion || '-'"
+          :ciudad="buscarCiudad(solicitud?.payload?.solicitante?.ciudad) || '-'" :tipo-vivienda="'-'"
+          :personas-a-cargo="0" :categoria="solicitud?.payload?.solicitud?.categoria || '-'"
           :salario="fmtMoney(solicitud?.payload?.solicitante?.salario || 0)"
-          :empresa-nit="solicitud?.payload?.solicitante?.empresa_nit || '-'"
-          :empresa-razon-social="solicitud?.payload?.solicitante?.empresa_razon_social || '-'" />
+          :empresa-nit="solicitud?.payload?.solicitante?.nit || '-'"
+          :empresa-razon-social="solicitud?.payload?.solicitante?.razon_social || '-'" />
 
         <!-- Información Laboral -->
         <InfoLaboral :empresa-razon-social="solicitud?.payload?.informacion_laboral?.empresa_razon_social || '-'"

@@ -1,49 +1,29 @@
-export type RolFirmante =
-    | 'solicitante'
-    | 'codeudor'
-    | 'empleador'
-    | 'analista'
-    | 'aprobador'
-    | 'auditor'
-    | 'notario'
-    | 'sistema';
-
-export type TipoIdentificacionFirma = 'CC' | 'CE' | 'NIT' | 'PAS';
+// Types para FirmaPlus API (no generación XML local)
 
 export interface FirmanteData {
     nombre_apellidos: string;
-    tipo_identificacion: TipoIdentificacionFirma;
+    tipo_identificacion: string;
     numero_identificacion: string;
+    email: string;
+    rol: string;
 }
 
-export interface FirmaData {
-    rol_firmante: RolFirmante;
-    aprobado: boolean;
-    firmante: FirmanteData;
-    fecha_firma?: string;
+export interface FirmaPlusRequest {
+    solicitud_id: string;
+    firmantes: FirmanteData[];
 }
 
-export interface FirmaRequestPayload {
-    firma: FirmaData;
-    clave_firma: string;
-    save_xml?: boolean;
-}
-
-export interface FirmaShareRequest {
-    solicitud_filename: string;
-    firmas_filename?: string;
-}
-
-export interface FirmaShareResponse {
-    token: string;
-    expires_at: string;
+export interface FirmaPlusResponse {
     success: boolean;
-    error?: string;
+    transaccion_id: string;
+    url_firmantes: string[];
+    message: string;
 }
 
-export interface FirmaShareTokenInfo {
-    solicitud_filename: string;
-    firmas_filename?: string;
-    created_at: string;
-    expires_at: string;
+export interface EstadoFirmadoResponse {
+    success: boolean;
+    estado: string;
+    firmantes_completados: number;
+    firmantes_pendientes: number;
+    fecha_consulta: string;
 }

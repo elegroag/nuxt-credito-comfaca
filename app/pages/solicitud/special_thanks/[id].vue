@@ -48,15 +48,15 @@
               <div class="mt-1 text-sm text-gray-600">
                 <ul class="space-y-2">
                   <li class="flex items-start">
-                    <CheckCircle class="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <CheckCircle class="h-4 w-4 text-green-500 mr-2 mt-0.5 shrink-0" />
                     <span>Revisión por equipo de asesores</span>
                   </li>
                   <li class="flex items-start">
-                    <Clock class="h-4 w-4 text-blue-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <Clock class="h-4 w-4 text-blue-500 mr-2 mt-0.5 shrink-0" />
                     <span>Validación de documentos</span>
                   </li>
                   <li class="flex items-start">
-                    <Mail class="h-4 w-4 text-purple-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <Mail class="h-4 w-4 text-purple-500 mr-2 mt-0.5 shrink-0" />
                     <span>Notificación por correo electrónico</span>
                   </li>
                 </ul>
@@ -75,7 +75,7 @@
       <Card class="bg-yellow-50 border-yellow-300">
         <CardContent class="p-4">
           <div class="flex items-start gap-3">
-            <AlertCircle class="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+            <AlertCircle class="h-5 w-5 text-yellow-600 shrink-0 mt-0.5" />
             <div>
               <p class="text-sm text-yellow-800">{{ mensajeAlerta }}</p>
             </div>
@@ -88,7 +88,7 @@
     <Card v-if="estadoPdf && tienePDF" class="mb-6 mt-6 bg-blue-50 border-blue-300">
       <CardContent class="p-4">
         <div class="flex items-start gap-3">
-          <FileText class="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+          <FileText class="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
           <div class="flex-1">
             <p class="text-sm font-medium text-blue-900">Documento PDF disponible</p>
             <p class="text-xs text-blue-700 mt-1">{{ estadoPdf.pdf_generado?.filename }}</p>

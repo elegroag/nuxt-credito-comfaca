@@ -1,4 +1,3 @@
-import type { FirmaData } from './firmas'
 
 export type Moneda = 'COP'
 
@@ -43,144 +42,159 @@ export interface WizardState {
     successModalOpen: boolean;
 }
 
+export interface Solicitante {
+    tipo_persona: string
+    tipo_documento: string
+    numero_documento: string
+    nombres: string
+    apellidos: string
+    razon_social?: string
+    nit?: string
+    fecha_nacimiento: string
+    genero: string
+    estado_civil: string
+    nivel_educativo: string
+    profesion: string
+    email: string
+    telefono?: string
+    celular: string
+    direccion: string
+    barrio: string
+    ciudad: string
+    departamento: string
+    cargo: string
+    salario?: number
+    antiguedad_meses?: number
+    tipo_contrato?: string
+    sector_economico?: string
+}
+
+export interface LineaCredito {
+    auxest: string
+    codigo_cap: string
+    codigo_cen: string
+    codigo_con: string
+    codigo_cre: string
+    codigo_int: string
+    codigo_mor: string
+    codigo_ser: string
+    detalle_modalidad: string
+    estado: string
+    estcre: number
+    modxml4: number
+    numero_cuotas: number
+    pagseg: string
+    repdcr: string
+    tipcre: string
+    tipfin: string
+}
+
+export interface Solicitud {
+    numero_solicitud: string
+    numero_comprobante: string
+    valor_solicitud: number
+    categoria: string
+    rol_en_solicitud: RolEnSolicitud
+    valor_solicitado: number
+    cuota_mensual: number
+    plazo_meses: number
+    moneda: Moneda
+    tipcre?: string
+    modxml4?: number
+    detalle_modalidad?: string
+}
+
+export interface Conyuge {
+    identificacion: string
+    nombres_apellidos: string
+    ingresos_laborales: number
+    trabaja: boolean
+    moneda?: Moneda
+    telefono_movil: string
+    empresa?: {
+        nombre: string
+        direccion: string
+        telefono: string
+        email: string
+    }
+}
+
+export interface InformacionLaboral {
+    empresa_razon_social: string
+    empresa_nit: string
+    empresa_telefono: string
+    empresa_direccion: string
+    empresa_ciudad: string
+    cargo: string
+    fecha_ingreso: string
+    tipo_contrato: string
+    nombramiento_o_pagador: string
+    tiempo_servicio: number
+    tiempo_servicio_unidad?: TiempoServicioUnidad
+}
+
+export interface IngresosDescuentos {
+    moneda: Moneda
+    salario_basico_mensual: number
+    subsidio_transporte: number
+    horas_extras: number
+    comisiones: number
+    otros_ingresos: number
+    total_ingresos: number
+    salud_pension: number
+    libranzas_comfaca: number
+    otras_libranzas: number
+    judiciales: number
+    otras_deducciones: number
+    total_descuentos: number
+    total_neto_recibido: number
+}
+
+export interface Deuda {
+    acreedor_nombre: string
+    concepto: string
+    valor_cuota: number
+    saldo_obligacion: number
+}
+
+export interface Propiedad {
+    tipo_bien: TipoBien
+    descripcion: string
+    ciudad: string
+    matricula_inmobiliaria?: string
+    modelo_o_matricula?: string
+    valor_comercial: number
+}
+
+export interface InformacionEconomica {
+    moneda: Moneda
+    arrendamientos: number
+    otros: number
+    descripcion: string
+    total_gastos: number
+    gastos_descripcion: string
+    total_activos: number
+    total_pasivos: number
+}
+
 export interface SolicitudCreditoPayload {
     version: string
     encabezado: {
         fecha_radicado: string
     }
-    solicitud: {
-        numero_solicitud: string
-        numero_comprobante: string
-        valor_solicitud: number
-        categoria: string
-        rol_en_solicitud: RolEnSolicitud
-        valor_solicitado: number
-        cuota_mensual: number
-        plazo_meses: number
-        moneda: Moneda
-        tipcre?: string
-        modxml4?: number
-        detalle_modalidad?: string
-        foto_documento?: {
-            url: string
-        }
-    }
-    linea_credito: {
-        auxest: string
-        codigo_cap: string
-        codigo_cen: string
-        codigo_con: string
-        codigo_cre: string
-        codigo_int: string
-        codigo_mor: string
-        codigo_ser: string
-        detalle_modalidad: string
-        estado: string
-        estcre: number
-        modxml4: number
-        numero_cuotas: number
-        pagseg: string
-        repdcr: string
-        tipcre: string
-        tipfin: string
-    }
+    solicitud: Solicitud
+    linea_credito: LineaCredito
     producto_solicitado: {
         tipo: ProductoTipo
         ha_tenido_credito_comfaca: boolean
     }
-    solicitante: {
-        fecha_vinculacion: string
-        tipo_identificacion: string // Cambiado de TipoIdentificacion a string para aceptar '1', '2', etc.
-        numero_identificacion: string
-        fecha_nacimiento: string
-        pais_nacimiento: string
-        nombres_apellidos: string
-        fecha_expedicion_documento: string
-        profesion_ocupacion: string
-        sexo: Sexo
-        nivel_educativo: NivelEducativo
-        barrio_residencia: string
-        ciudad_residencia: string
-        pais_residencia: string
-        telefono_fijo?: string
-        telefono_movil: string
-        email: string
-        tipo_vivienda: TipoVivienda
-        vive_con_nucleo_familiar: boolean
-        personas_a_cargo: number
-        codigo_categoria?: string
-        salario?: number
-        empresa_nit?: string
-        empresa_razon_social?: string,
-        estado_civil?: string,
-    }
-    conyuge?: {
-        identificacion: string
-        nombres_apellidos: string
-        ingresos_laborales: number
-        trabaja: boolean
-        moneda?: Moneda
-        empresa?: {
-            nombre: string
-            direccion: string
-            telefono: string
-            email: string
-        }
-        telefono_movil: string
-    }
-    informacion_laboral: {
-        empresa_razon_social: string
-        empresa_nit: string
-        empresa_telefono: string
-        empresa_direccion: string
-        empresa_ciudad: string
-        cargo: string
-        fecha_ingreso: string
-        tipo_contrato: string
-        nombramiento_o_pagador: string
-        tiempo_servicio: number
-        tiempo_servicio_unidad?: TiempoServicioUnidad
-    }
-    ingresos_descuentos: {
-        moneda: Moneda
-        salario_basico_mensual: number
-        subsidio_transporte: number
-        horas_extras: number
-        comisiones: number
-        otros_ingresos: number
-        total_ingresos: number
-        salud_pension: number
-        libranzas_comfaca: number
-        otras_libranzas: number
-        judiciales: number
-        otras_deducciones: number
-        total_descuentos: number
-        total_neto_recibido: number
-    }
-    informacion_economica: {
-        moneda: Moneda
-        arrendamientos: number
-        otros: number
-        descripcion: string
-        total_gastos: number
-        gastos_descripcion: string
-        total_activos: number
-        total_pasivos: number
-    }
-    propiedades: Array<{
-        tipo_bien: TipoBien
-        descripcion: string
-        ciudad: string
-        matricula_inmobiliaria?: string
-        modelo_o_matricula?: string
-        valor_comercial: number
-    }>
-    deudas: Array<{
-        acreedor_nombre: string
-        concepto: string
-        valor_cuota: number
-        saldo_obligacion: number
-    }>
+    solicitante: Solicitante
+    conyuge?: Conyuge
+    informacion_laboral: InformacionLaboral
+    ingresos_descuentos: IngresosDescuentos
+    informacion_economica: InformacionEconomica
+    propiedades: Array<Propiedad>
+    deudas: Array<Deuda>
     referencias: {
         familiares: Array<{
             nombre_apellidos: string
