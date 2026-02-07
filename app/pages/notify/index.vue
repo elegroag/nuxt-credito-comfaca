@@ -10,24 +10,13 @@
                     </p>
                 </div>
                 <div class="flex items-center gap-3">
-                    <Button
-                        v-if="hasUnread"
-                        variant="outline"
-                        @click="handleMarkAllRead"
-                        :disabled="loading"
-                    >
+                    <Button v-if="hasUnread" variant="outline" @click="handleMarkAllRead" :disabled="loading">
                         <Icon name="lucide:check-check" class="h-4 w-4 mr-2" />
                         Marcar todas como leídas
                     </Button>
-                    <Button
-                        variant="outline"
-                        @click="handleRefresh"
-                        :disabled="loading"
-                    >
-                        <Icon
-                            :name="loading ? 'lucide:loader-2' : 'lucide:refresh-cw'"
-                            :class="loading ? 'h-4 w-4 animate-spin' : 'h-4 w-4'"
-                        />
+                    <Button variant="outline" @click="handleRefresh" :disabled="loading">
+                        <Icon :name="loading ? 'lucide:loader-2' : 'lucide:refresh-cw'"
+                            :class="loading ? 'h-4 w-4 animate-spin' : 'h-4 w-4'" />
                     </Button>
                 </div>
             </div>
@@ -87,17 +76,13 @@
                         <span class="text-sm font-medium text-gray-700">Filtrar:</span>
                     </div>
                     <div class="flex flex-wrap gap-2">
-                        <button
-                            v-for="filter in filters"
-                            :key="filter.value"
-                            @click="currentFilter = filter.value"
+                        <button v-for="filter in filters" :key="filter.value" @click="handleFilterChange(filter.value)"
                             :class="[
                                 'px-3 py-1.5 text-sm font-medium rounded-md border transition-colors',
                                 currentFilter === filter.value
                                     ? 'bg-blue-600 text-white border-blue-600'
                                     : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                            ]"
-                        >
+                            ]">
                             {{ filter.label }}
                         </button>
                     </div>
@@ -106,10 +91,8 @@
         </Card>
 
         <!-- Loading State -->
-        <div
-            v-if="loading && notifications.length === 0"
-            class="flex flex-col items-center justify-center py-16 space-y-4"
-        >
+        <div v-if="loading && notifications.length === 0"
+            class="flex flex-col items-center justify-center py-16 space-y-4">
             <Icon name="lucide:loader-2" class="h-12 w-12 animate-spin text-blue-600" />
             <p class="text-gray-600">Cargando notificaciones...</p>
         </div>
@@ -123,30 +106,20 @@
         </div>
 
         <!-- Empty State -->
-        <div
-            v-else-if="filteredNotifications.length === 0"
-            class="flex flex-col items-center justify-center py-16 space-y-4"
-        >
+        <div v-else-if="filteredNotifications.length === 0"
+            class="flex flex-col items-center justify-center py-16 space-y-4">
             <Icon name="lucide:inbox" class="h-16 w-16 text-gray-400" />
             <p class="text-gray-600 text-lg">No hay notificaciones</p>
-            <p class="text-gray-500 text-sm">
-                {{ currentFilter === 'unread' ? 'No tienes notificaciones sin leer' : 'Todas tus notificaciones aparecerán aquí' }}
-            </p>
+            <p class="text-gray-500 text-sm">{{ getEmptyStateMessage() }}</p>
         </div>
 
         <!-- Lista de Notificaciones -->
         <div v-else class="space-y-3">
-            <Card
-                v-for="notification in filteredNotifications"
-                :key="notification.id"
-                class="border-0 shadow-sm hover:shadow-md transition-shadow"
-            >
+            <Card v-for="notification in filteredNotifications" :key="notification.id"
+                class="border-0 shadow-sm hover:shadow-md transition-shadow">
                 <CardContent class="p-0">
-                    <NotificationItem
-                        :notification="notification"
-                        @mark-as-read="handleMarkAsRead"
-                        @delete="handleDelete"
-                    />
+                    <NotificationItem :notification="notification" @mark-as-read="handleMarkAsRead"
+                        @delete="handleDelete" />
                 </CardContent>
             </Card>
         </div>
@@ -154,12 +127,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import Button from '@/components/ui/Button.vue';
 import Card from '@/components/ui/Card.vue';
 import CardContent from '@/components/ui/CardContent.vue';
 import NotificationItem from '@/components/notifications/NotificationItem.vue';
-import { useNotifications } from '~/composables/useNotifications';
+import { useNotifyPage } from '~/composables/notify/useNotifyPage';
 
 definePageMeta({
     layout: 'dashboard',
@@ -167,6 +140,9 @@ definePageMeta({
 });
 
 const {
+    currentFilter,
+    filters,
+    filteredNotifications,
     notifications,
     unreadCount,
     loading,
@@ -174,52 +150,15 @@ const {
     hasUnread,
     unreadNotifications,
     readNotifications,
+    handleRefresh,
+    handleMarkAsRead,
+    handleMarkAllRead,
+    handleDelete,
+    handleFilterChange,
+    getEmptyStateMessage,
     loadNotifications,
-    markAsRead,
-    markAllAsRead,
-    deleteNotification,
-    startPolling,
-    stopPolling
-} = useNotifications();
-
-const currentFilter = ref<'all' | 'unread' | 'read'>('all');
-
-const filters = [
-    { value: 'all', label: 'Todas' },
-    { value: 'unread', label: 'No leídas' },
-    { value: 'read', label: 'Leídas' }
-];
-
-const filteredNotifications = computed(() => {
-    switch (currentFilter.value) {
-        case 'unread':
-            return unreadNotifications.value;
-        case 'read':
-            return readNotifications.value;
-        default:
-            return notifications.value;
-    }
-});
-
-const handleRefresh = async () => {
-    await loadNotifications();
-};
-
-const handleMarkAsRead = async (notificationId: string) => {
-    await markAsRead(notificationId);
-};
-
-const handleMarkAllRead = async () => {
-    const confirmed = confirm('¿Marcar todas las notificaciones como leídas?');
-    if (confirmed) {
-        await markAllAsRead();
-        await loadNotifications();
-    }
-};
-
-const handleDelete = async (notificationId: string) => {
-    await deleteNotification(notificationId);
-};
+    startPolling
+} = useNotifyPage();
 
 onMounted(async () => {
     await loadNotifications();

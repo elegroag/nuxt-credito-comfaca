@@ -13,17 +13,11 @@
         </div>
         <div class="flex items-center gap-3 ml-auto">
           <div v-if="lineaSeleccionada" class="text-right">
-            <Badge 
-              :variant="lineaSeleccionada.estado === 'A' ? 'default' : 'destructive'" 
-              class="text-sm mb-1"
-            >
+            <Badge :variant="lineaSeleccionada.estado === 'A' ? 'default' : 'destructive'" class="text-sm mb-1">
               {{ lineaSeleccionada.detalle }}
             </Badge>
             <div class="text-sm">
-              <Badge 
-                :variant="lineaSeleccionada.estado === 'A' ? 'secondary' : 'outline'"
-                class="text-xs"
-              >
+              <Badge :variant="lineaSeleccionada.estado === 'A' ? 'secondary' : 'outline'" class="text-xs">
                 {{ lineaSeleccionada.estado === 'A' ? 'Activo' : 'Inactivo' }}
               </Badge>
             </div>
@@ -66,7 +60,7 @@
           <div class="flex items-center gap-3">
             <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
             <p class="text-sm text-orange-800">
-              <strong>{{ lineaSeleccionada.detalle }}</strong> se encuentra temporalmente inactiva. 
+              <strong>{{ lineaSeleccionada.detalle }}</strong> se encuentra temporalmente inactiva.
               No es posible solicitar este crédito en este momento.
             </p>
           </div>
@@ -76,21 +70,16 @@
 
     <!-- Alerta de convenio -->
     <div v-if="convenioVerificado && isElegible && lineaSeleccionada.estado === 'A'" class="mb-6">
-      <ConvenioAlert
-        :titulo="'🎉 ¡Elegible para Crédito Convenio Empresarial!'"
+      <ConvenioAlert :titulo="'🎉 ¡Elegible para Crédito Convenio Empresarial!'"
         :descripcion="'Su empresa tiene convenio con COMFACA. Beneficios: Tasa reducida, plazo extendido y más.'"
-        tipo="success"
-        :dismissible="false"
-      />
+        tipo="success" :dismissible="false" />
     </div>
 
     <!-- Alerta de error de convenio -->
-    <div v-else-if="convenioVerificado && !isElegible && getMensajeError && lineaSeleccionada.estado === 'A'" class="mb-6">
-      <ConvenioAlert
-        :titulo="getMensajeError.titulo"
-        :descripcion="getMensajeError.descripcion"
-        :tipo="getMensajeError.tipo"
-      />
+    <div v-else-if="convenioVerificado && !isElegible && getMensajeError && lineaSeleccionada.estado === 'A'"
+      class="mb-6">
+      <ConvenioAlert :titulo="getMensajeError.titulo" :descripcion="getMensajeError.descripcion"
+        :tipo="getMensajeError.tipo" />
     </div>
 
     <!-- Contenido principal -->
@@ -104,58 +93,33 @@
         <CardContent class="space-y-6">
           <div class="space-y-2">
             <Label for="monto">Monto (COP)</Label>
-            <Input
-              id="monto"
-              type="number"
-              v-model.number="monto"
-              class="text-base"
-              step="10000"
-              min="0"
-              :disabled="lineaSeleccionada?.estado !== 'A'"
-            />
+            <Input id="monto" type="number" v-model.number="monto" class="text-base" step="10000" min="0"
+              :disabled="lineaSeleccionada?.estado !== 'A'" />
           </div>
 
           <div class="grid gap-4 sm:grid-cols-2">
             <div class="space-y-2">
-            <Label for="plazo">Plazo (meses)</Label>
-            <Input
-              id="plazo"
-              type="number"
-              v-model.number="plazoMeses"
-              class="text-base"
-              step="1"
-              min="1"
-              :max="lineaSeleccionada?.numcuo || 999"
-              :disabled="lineaSeleccionada?.estado !== 'A'"
-            />
-            <p class="text-xs text-muted-foreground">
-              Plazo máximo: {{ lineaSeleccionada?.numcuo || 'N/A' }} meses
-            </p>
-          </div>
+              <Label for="plazo">Plazo (meses)</Label>
+              <Input id="plazo" type="number" v-model.number="plazoMeses" class="text-base" step="1" min="1"
+                :max="lineaSeleccionada?.numcuo || 999" :disabled="lineaSeleccionada?.estado !== 'A'" />
+              <p class="text-xs text-muted-foreground">
+                Plazo máximo: {{ lineaSeleccionada?.numcuo || 'N/A' }} meses
+              </p>
+            </div>
 
             <div class="space-y-2">
               <Label>Tipo de tasa</Label>
               <div class="flex gap-4">
                 <div class="flex items-center space-x-2">
-                  <input
-                    id="tasaAnual"
-                    type="radio"
-                    :checked="tipoTasa === 'anual'"
-                    @change="cambiarTipoTasa('anual')"
-                    class="text-primary"
-                  />
+                  <input id="tasaAnual" type="radio" :checked="tipoTasa === 'anual'" @change="cambiarTipoTasa('anual')"
+                    class="text-primary" />
                   <Label for="tasaAnual" class="text-sm font-normal cursor-pointer">
                     Anual (EA)
                   </Label>
                 </div>
                 <div class="flex items-center space-x-2">
-                  <input
-                    id="tasaMensual"
-                    type="radio"
-                    :checked="tipoTasa === 'mensual'"
-                    @change="cambiarTipoTasa('mensual')"
-                    class="text-primary"
-                  />
+                  <input id="tasaMensual" type="radio" :checked="tipoTasa === 'mensual'"
+                    @change="cambiarTipoTasa('mensual')" class="text-primary" />
                   <Label for="tasaMensual" class="text-sm font-normal cursor-pointer">
                     Mensual
                   </Label>
@@ -168,34 +132,21 @@
             <Label for="tasa">
               {{ tipoTasa === 'anual' ? 'Tasa efectiva anual (EA %)' : 'Tasa mensual (%)' }}
             </Label>
-            <Input
-              id="tasa"
-              type="number"
-              step="0.1"
-              v-model.number="tasaInput"
-              class="text-base"
-              min="0"
+            <Input id="tasa" type="number" step="0.1" v-model.number="tasaInput" class="text-base" min="0"
               :readonly="trabajador?.codigo_categoria && lineaSeleccionada?.categorias ? true : false"
-              :placeholder="trabajador?.codigo_categoria ? `Tasa según categoría ${String(trabajador.codigo_categoria)}` : ''"
-            />
-            <p v-if="trabajador?.codigo_categoria && lineaSeleccionada?.categorias" class="text-xs text-muted-foreground">
+              :placeholder="trabajador?.codigo_categoria ? `Tasa según categoría ${String(trabajador.codigo_categoria)}` : ''" />
+            <p v-if="trabajador?.codigo_categoria && lineaSeleccionada?.categorias"
+              class="text-xs text-muted-foreground">
               💡 Tasa aplicada automáticamente según categoría del trabajador
             </p>
           </div>
 
-            <div class="grid gap-4 sm:grid-cols-2">
+          <div class="grid gap-4 sm:grid-cols-2">
             <div class="space-y-2">
               <Label for="ingresos">Ingresos mensuales <br><small>Salario bruto.</small></Label>
-              <Input
-                id="ingresos"
-                type="number"
-                v-model.number="ingresosMensuales"
-                class="text-base"
-                step="10000"
-                min="0"
-                :readonly="trabajador?.salario ? true : false"
-                :placeholder="trabajador?.salario ? `Salario: ${fmt(trabajador.salario)}` : ''"
-              />
+              <Input id="ingresos" type="number" v-model.number="ingresosMensuales" class="text-base" step="10000"
+                min="0" :readonly="trabajador?.salario ? true : false"
+                :placeholder="trabajador?.salario ? `Salario: ${fmt(trabajador.salario)}` : ''" />
               <p v-if="trabajador?.salario" class="text-xs text-muted-foreground">
                 💡 Salario del trabajador cargado automáticamente
               </p>
@@ -206,27 +157,15 @@
 
             <div class="space-y-2">
               <Label for="descuentos">Descuentos mensuales <small>Obligaciones adquiridas.</small></Label>
-              <Input
-                id="descuentos"
-                type="number"
-                v-model.number="descuentosMensuales"
-                class="text-base"
-                step="10000"
-                min="0"
-              />
+              <Input id="descuentos" type="number" v-model.number="descuentosMensuales" class="text-base" step="10000"
+                min="0" />
             </div>
           </div>
 
           <div class="space-y-2">
             <Label for="maxEndeudamiento">Máximo endeudamiento por ley (50%)</Label>
-            <Input
-              id="maxEndeudamiento"
-              type="number"
-              v-model.number="maxEndeudamientoPct"
-              class="text-base"
-              min="0"
-              max="100"
-            />
+            <Input id="maxEndeudamiento" type="number" v-model.number="maxEndeudamientoPct" class="text-base" min="0"
+              max="100" />
             <p class="text-xs text-muted-foreground">
               Porcentaje de la capacidad disponible que se permite destinar a la cuota.
             </p>
@@ -275,8 +214,7 @@
         </Card>
 
         <Card
-          :class="`border-2 ${apto ? 'border-secondary/50 bg-secondary/5' : 'border-destructive/50 bg-destructive/5'}`"
-        >
+          :class="`border-2 ${apto ? 'border-secondary/50 bg-secondary/5' : 'border-destructive/50 bg-destructive/5'}`">
           <CardHeader>
             <div class="flex items-start gap-3">
               <CheckCircle2 v-if="apto" class="h-5 w-5 text-secondary mt-0.5" />
@@ -337,22 +275,12 @@
         </Card>
 
         <div class="flex gap-3">
-          <NuxtLink 
-            v-if="lineaSeleccionada?.estado === 'A'" 
-            to="/solicitud" 
-            class="flex-1"
-          >
+          <NuxtLink v-if="lineaSeleccionada?.estado === 'A'" to="/solicitud" class="flex-1">
             <Button variant="primary" class="w-full" size="lg">
               Continuar con solicitud
             </Button>
           </NuxtLink>
-          <Button 
-            v-else 
-            variant="secondary" 
-            class="w-full" 
-            size="lg" 
-            disabled
-          >
+          <Button v-else variant="secondary" class="w-full" size="lg" disabled>
             No disponible para solicitud
           </Button>
           <Button variant="outline" size="lg" @click="navigateToLineas">
@@ -368,12 +296,8 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
-import { useSimuladorWithLinea } from '~/composables/simulador/useSimuladorWithLinea'
-import { useTrabajador } from '~/composables/useTrabajador'
-import { useSimuladorStorage } from '~/composables/useSimuladorStorage'
-import { useSimuladorConConvenio } from '~/composables/simulador/useSimuladorConConvenio'
+import { AlertCircle, CheckCircle2 } from 'lucide-vue-next'
+import { useSimuladorConLineaPage } from '~/composables/simulador/useSimuladorConLineaPage'
 import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
 import Label from '@/components/ui/Label.vue'
@@ -390,35 +314,22 @@ definePageMeta({
   middleware: ['auth']
 })
 
-const route = useRoute()
-const { getJson } = useApi()
-const { trabajador, salario } = useTrabajador()
-const { saveSimuladorDataSilent } = useSimuladorStorage()
-
-// Composable de convenio
 const {
-  nitEmpresa,
-  cedulaTrabajador,
+  // Estado y datos de la página
+  loading,
+  error,
+  lineaSeleccionada,
+  trabajador,
+
+  // Datos del convenio
   convenioVerificado,
   isElegible,
   getMensajeError,
-  validarConvenioAntesDSimular
-} = useSimuladorConConvenio()
 
-const tipcre = computed(() => route.params.tipcre as string)
-const loading = ref(true)
-const error = ref<string | null>(null)
-const lineaSeleccionada = ref<any>(null)
-
-// Cache para líneas de crédito
-const lineasCache = ref<Map<string, any>>(new Map())
-
-// Usar el hook especializado para líneas de crédito
-const {
+  // Datos del simulador
   monto,
   plazoMeses,
   tasaEfectivaAnual,
-  tasaMensualInput,
   tipoTasa,
   ingresosMensuales,
   descuentosMensuales,
@@ -441,146 +352,11 @@ const {
   fmt,
   fmtPct,
   reset,
-  cambiarTipoTasa
-} = useSimuladorWithLinea(lineaSeleccionada)
+  cambiarTipoTasa,
 
-const navigateToLineas = () => {
-  navigateTo('/simulador/lineas-credito')
-}
-
-// Cargar datos de la línea de crédito
-const cargarLineaCredito = async () => {
-  try {
-    loading.value = true
-    error.value = null
-    
-    // Verificar cache primero
-    if (lineasCache.value.has(tipcre.value)) {
-      lineaSeleccionada.value = lineasCache.value.get(tipcre.value)
-      console.log('Usando cache para línea:', tipcre.value)
-    } else {
-      // Consultar API si no está en cache
-      const response = await getJson<{
-        success: boolean
-        message: string
-        data: any[]
-      }>('/api/lineas_credito/tipo_creditos', { auth: true })
-      
-      if (response.success) {
-        // Guardar todas las líneas en cache
-        response.data.forEach(linea => {
-          lineasCache.value.set(linea.tipcre, linea)
-        })
-        
-        // Obtener la línea específica
-        lineaSeleccionada.value = response.data.find(linea => linea.tipcre === tipcre.value)
-        
-        if (!lineaSeleccionada.value) {
-          error.value = 'Línea de crédito no encontrada'
-        }
-      } else {
-        error.value = response.message || 'Error al cargar la línea de crédito'
-      }
-    }
-    
-    // Establecer ingresos mensuales del trabajador si está disponible
-    if (trabajador.value && trabajador.value.salario) {
-      ingresosMensuales.value = trabajador.value.salario
-    }
-    
-    // Establecer descuentos mensuales por defecto en 0
-    descuentosMensuales.value = 0
-    
-    // Establecer tasa según categoría del trabajador
-    if (trabajador.value?.codigo_categoria && lineaSeleccionada.value?.categorias) {
-      const categoriaTrabajador = String(trabajador.value.codigo_categoria).toLowerCase()
-      const categoriaLinea = lineaSeleccionada.value.categorias.find(
-        (cat: any) => cat && cat.codcat && String(cat.codcat).toLowerCase() === categoriaTrabajador
-      )
-      
-      if (categoriaLinea && categoriaLinea.facfin) {
-        tasaEfectivaAnual.value = parseFloat(categoriaLinea.facfin)
-      }
-    }
-
-    // Validar convenio automáticamente si tiene datos del trabajador
-    if (trabajador.value?.empresa?.nit && trabajador.value?.cedula) {
-      nitEmpresa.value = trabajador.value.empresa.nit
-      cedulaTrabajador.value = trabajador.value.cedula
-      await validarConvenioAntesDSimular()
-    }
-  } catch (err) {
-    console.error('Error cargando línea crédito:', err)
-    error.value = 'No se pudo cargar la línea de crédito. Por favor, intenta nuevamente.'
-  } finally {
-    loading.value = false
-  }
-}
-
-// Computed para manejar el v-model del input de tasa
-const tasaInput = computed({
-  get: () => tipoTasa.value === 'anual' ? tasaEfectivaAnual.value : tasaMensualInput.value,
-  set: (value) => {
-    if (tipoTasa.value === 'anual') {
-      tasaEfectivaAnual.value = value
-    } else {
-      tasaMensualInput.value = value
-    }
-  }
-})
-
-// Watch para guardar datos cuando cambien los valores del simulador (con debounce para evitar recursión)
-let saveTimeout: NodeJS.Timeout | null = null
-
-watch(
-  [
-    monto,
-    plazoMeses,
-    tasaEfectivaAnual,
-    ingresosMensuales,
-    descuentosMensuales,
-    cuotaMensual,
-    totalPagar,
-    intereses,
-    lineaSeleccionada,
-    isElegible,
-    convenioVerificado
-  ],
-  () => {
-    if (saveTimeout) {
-      clearTimeout(saveTimeout)
-    }
-    
-    saveTimeout = setTimeout(() => {
-      if (lineaSeleccionada.value && monto.value > 0) {
-        saveSimuladorDataSilent({
-          lineaCredito: lineaSeleccionada.value,
-          monto: monto.value,
-          montoCredito: monto.value,
-          plazoMeses: plazoMeses.value,
-          tasaEfectivaAnual: tasaEfectivaAnual.value,
-          ingresosMensuales: ingresosMensuales.value,
-          descuentosMensuales: descuentosMensuales.value,
-          maxEndeudamientoPct: maxEndeudamientoPct.value,
-          tasaInteresAnual: tasaEfectivaAnual.value,
-          cuotaMensual: cuotaMensual.value,
-          totalIntereses: intereses.value,
-          totalPagar: totalPagar.value,
-          fechaSimulacion: new Date().toISOString(),
-          // Datos del convenio
-          tieneConvenio: isElegible.value,
-          convenioVerificado: convenioVerificado.value,
-          nitEmpresa: nitEmpresa.value,
-          cedulaTrabajador: cedulaTrabajador.value
-        })
-      }
-    }, 500) // 500ms de debounce
-  },
-  { deep: true }
-)
-
-// Cargar datos al montar el componente
-onMounted(() => {
-  cargarLineaCredito()
-})
+  // Computed y funciones específicas
+  tasaInput,
+  navigateToLineas,
+  cargarLineaCredito
+} = useSimuladorConLineaPage()
 </script>

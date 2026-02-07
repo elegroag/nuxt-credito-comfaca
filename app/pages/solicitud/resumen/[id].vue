@@ -252,7 +252,7 @@
         <!-- Alerta si faltan documentos -->
         <div v-if="!todosDocumentosCompletos" class="bg-red-50 border border-red-200 rounded-xl p-4">
           <div class="flex items-start gap-3">
-            <Icon name="lucide:alert-triangle" class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+            <Icon name="lucide:alert-triangle" class="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
             <div>
               <h4 class="font-semibold text-red-900">No se puede enviar para validación</h4>
               <p class="text-red-700 text-sm mt-1">

@@ -1,3 +1,33 @@
+
+export interface LineaCredito {
+    tipcre: string
+    codcre: string
+    detalle: string
+    modxml4: number
+    tipfin: string
+    pagseg: string
+    codcap: string
+    codint: string
+    codmor: string
+    repdcr: string
+    codcon: string
+    codser: string
+    numcuo: number
+    estcre: number
+    auxest: string
+    estado: string
+    codcen: string
+}
+
+export interface Modalidad {
+    modxml4: number
+    nombre: string
+    descripcion: string
+    icono: string
+    lineas: LineaCredito[]
+}
+
+
 export interface SimuladorData {
     monto: number;
     plazoMeses: number;
