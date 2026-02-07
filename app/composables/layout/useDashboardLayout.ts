@@ -11,7 +11,8 @@ import {
     User,
     Users,
     List,
-    Building
+    Building,
+    Bell
 } from 'lucide-vue-next'
 
 // Estado compartido (singleton)
@@ -41,9 +42,10 @@ export function useDashboardLayout() {
     }
 
     const navItems: NavItem[] = [
-        { label: 'Inicio', to: '/', abbr: _abbr('Inicio'), icon: Home },
+        { label: 'Inicio', to: '/inicio', abbr: _abbr('Inicio'), icon: Home },
         { label: 'Simulador', to: '/simulador/lineas-credito', abbr: _abbr('Simulador'), icon: Calculator },
         { label: 'Solicitud', to: '/solicitud', abbr: _abbr('Solicitud'), icon: FilePlus, category: 'user' },
+        { label: 'Notificaciones', to: '/notify', abbr: _abbr('Notificaciones'), icon: Bell },
         { label: 'Gestión firmas', to: '/admin/firmas', abbr: _abbr('Gestión firmas'), icon: Share2, requiredPermissions: ['firmas.view'], category: 'admin' },
         { label: 'Solicitudes', to: '/admin/solicitudes', abbr: _abbr('Solicitudes'), icon: List, requiredPermissions: ['solicitudes.view'], category: 'admin' },
         { label: 'Usuarios', to: '/admin/users', abbr: _abbr('Usuarios'), icon: Users, adminOnly: true, category: 'admin' },
@@ -52,7 +54,7 @@ export function useDashboardLayout() {
     ]
 
     const isActive = (to: string) => {
-        if (to === '/') return route.path === '/'
+        if (to === '/inicio') return route.path === '/inicio' || route.path === '/' || route.path === '/index' || route.name === 'index'
         return route.path.startsWith(to)
     }
 
