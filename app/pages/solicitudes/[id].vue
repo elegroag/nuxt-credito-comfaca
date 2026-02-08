@@ -23,8 +23,7 @@
         <!-- Header -->
         <SolicitudHeader :numero-solicitud="numeroSolicitudDisplay"
           :estado-nombre="getEstadoNombre(String(solicitud.estado || ''))"
-          :badge-class="getEstadoBadgeClass(String(solicitud.estado || ''))"
-          :progress="getEstadoProgress(String(solicitud.estado || ''))" />
+          :badge-class="getEstadoBadgeClass(String(solicitud.estado || ''))" />
 
         <!-- Timeline del Proceso -->
         <SolicitudTimeline :estados="estadosTimelineConFechas" :estado-actual-id="solicitud?.estado"
@@ -163,7 +162,6 @@ const {
   buscarTipoContrato,
   getEstadoNombre,
   getEstadoBadgeClass,
-  getEstadoProgress,
 
   // Funciones de utilidad
   fmtMoney,

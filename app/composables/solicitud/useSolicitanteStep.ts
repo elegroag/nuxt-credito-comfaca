@@ -59,6 +59,33 @@ export const useSolicitanteStep = (props: SolocitanteProps) => {
     }))
   )
 
+  // Opciones para países (lista básica, puede ser expandida)
+  const paisesOptions = computed(() => [
+    { label: 'Colombia', value: 'CO' },
+    { label: 'Argentina', value: 'AR' },
+    { label: 'Brasil', value: 'BR' },
+    { label: 'Chile', value: 'CL' },
+    { label: 'Ecuador', value: 'EC' },
+    { label: 'Estados Unidos', value: 'US' },
+    { label: 'España', value: 'ES' },
+    { label: 'México', value: 'MX' },
+    { label: 'Perú', value: 'PE' },
+    { label: 'Venezuela', value: 'VE' }
+  ])
+
+  // Opciones para booleanos
+  const booleanOptions = computed(() => [
+    { label: 'Sí', value: true },
+    { label: 'No', value: false }
+  ])
+
+  // Opciones para tipo de contrato
+  const tiposContratoOptions = computed(() => [
+    { label: 'Fijo', value: 'fijo' },
+    { label: 'Término Indefinido', value: 'termino_indefinido' },
+    { label: 'Tiempo Parcial', value: 'tiempo_parcial' }
+  ])
+
   // Event handlers
   const handleCiudadChange = (option: SelectOption) => {
     console.log('Ciudad seleccionada:', option)
@@ -75,6 +102,9 @@ export const useSolicitanteStep = (props: SolocitanteProps) => {
     tiposViviendaOptions,
     estadoCivilesOptions,
     ciudadesOptions,
+    paisesOptions,
+    booleanOptions,
+    tiposContratoOptions,
 
     // Event handlers
     handleCiudadChange

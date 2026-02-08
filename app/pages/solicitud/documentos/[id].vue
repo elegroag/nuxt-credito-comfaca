@@ -150,7 +150,7 @@
         <!-- Action Buttons -->
         <div class="p-8">
           <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-            <UiButton variant="outline" @click="handleBack" class="w-full md:w-auto gap-2 h-12 px-6 bg-gray-300">
+            <UiButton variant="outline" @click="router.back()" class="w-full md:w-auto gap-2 h-12 px-6 bg-gray-300">
               <ArrowLeftIcon class="w-4 h-4" />
               Volver a la Solicitud
             </UiButton>
@@ -235,4 +235,6 @@ definePageMeta({
   layout: 'dashboard',
   middleware: ['auth']
 })
+
+const router = useRouter();
 </script>

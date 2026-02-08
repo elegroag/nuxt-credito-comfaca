@@ -83,6 +83,47 @@
       <Input v-model="form.solicitante.departamento" />
     </FormField>
 
+    <FormField label="País de residencia">
+      <CustomSelect v-model="form.solicitante.pais_residencia" :options="paisesOptions" 
+        placeholder="Seleccionar país" clearable searchable />
+    </FormField>
+
+    <FormField label="Tipo de vivienda">
+      <CustomSelect v-model="form.solicitante.tipo_vivienda" :options="tiposViviendaOptions"
+        placeholder="Seleccionar tipo" clearable />
+    </FormField>
+
+    <FormField label="¿Vive con núcleo familiar?">
+      <div class="flex gap-4">
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input
+            type="radio"
+            :value="true"
+            v-model="form.solicitante.vive_con_nucleo_familiar"
+            class="text-blue-600 focus:ring-blue-500"
+          />
+          <span>Sí</span>
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input
+            type="radio"
+            :value="false"
+            v-model="form.solicitante.vive_con_nucleo_familiar"
+            class="text-blue-600 focus:ring-blue-500"
+          />
+          <span>No</span>
+        </label>
+      </div>
+    </FormField>
+
+    <FormField label="Personas a cargo">
+      <Input v-model.number="form.solicitante.personas_a_cargo" type="number" min="0" />
+    </FormField>
+
+    <FormField label="Fecha de vinculación">
+      <Input v-model="form.solicitante.fecha_vinculacion" type="date" />
+    </FormField>
+
     <FormField label="Cargo">
       <Input v-model="form.solicitante.cargo" />
     </FormField>
@@ -100,7 +141,8 @@
     </FormField>
 
     <FormField label="Tipo contrato (opcional)">
-      <Input v-model="form.solicitante.tipo_contrato" />
+      <CustomSelect v-model="form.solicitante.tipo_contrato" :options="tiposContratoOptions"
+        placeholder="Seleccionar tipo" clearable />
     </FormField>
 
     <FormField label="Sector económico (opcional)">
@@ -136,6 +178,9 @@ const {
   tiposViviendaOptions,
   estadoCivilesOptions,
   ciudadesOptions,
+  paisesOptions,
+  booleanOptions,
+  tiposContratoOptions,
 
   // Event handlers
   handleCiudadChange

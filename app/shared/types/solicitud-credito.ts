@@ -62,6 +62,11 @@ export interface Solicitante {
     barrio: string
     ciudad: string
     departamento: string
+    pais_residencia?: string
+    tipo_vivienda?: string
+    vive_con_nucleo_familiar?: boolean
+    personas_a_cargo?: number
+    fecha_vinculacion?: string
     cargo: string
     salario: number
     antiguedad_meses?: number

@@ -21,8 +21,7 @@ export const useSolicitudDetailsPage = () => {
     buscarTipoVivienda,
     buscarTipoContrato,
     getEstadoNombre,
-    getEstadoBadgeClass,
-    estadoProgressPercent: getEstadoProgress
+    getEstadoBadgeClass
   } = useParametrosDetalles()
 
   const solicitudId = route.params.id as string
@@ -217,7 +216,6 @@ export const useSolicitudDetailsPage = () => {
     buscarTipoContrato,
     getEstadoNombre,
     getEstadoBadgeClass,
-    getEstadoProgress,
 
     // Funciones de utilidad
     fmtMoney,

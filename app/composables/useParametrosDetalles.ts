@@ -218,7 +218,6 @@ export function useParametrosDetalles() {
     getEstadoColor,
     getEstadoNombre,
     getEstadoBadgeClass,
-    estadoProgressPercent,
     flujoAprobacion,
 
     // Funciones helper

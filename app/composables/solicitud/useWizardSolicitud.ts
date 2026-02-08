@@ -148,6 +148,8 @@ export function useWizardSolicitud(props?: WizardProps) {
             form.value.solicitante.salario = trabajador.salario || 0;
             form.value.solicitante.codigo_categoria = trabajador.codigo_categoria || '';
             form.value.solicitud.categoria = trabajador.codigo_categoria || '';
+            form.value.solicitante.pais_residencia = 'CO';
+            form.value.solicitante.departamento = 'Caquetá';
 
             // Cargar datos de la empresa en información laboral
             if (trabajador.empresa && form.value.informacion_laboral) {

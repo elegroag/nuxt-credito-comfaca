@@ -1,19 +1,22 @@
 <template>
+  <h2 class="text-xl font-semibold mb-2 bg-linear-to-r from-sky-400 to-blue-700 bg-clip-text text-transparent">
+    Estado del proceso</h2>
+  <p>Aquí podras encontrar el estado actual de tu solicitud. Como tambien la informacion relacionada con el proceso y lo
+    documentos cargados.</p>
   <Card class="border-0 shadow-md hover:shadow-lg transition-shadow duration-200 bg-white dark:bg-gray-800">
     <CardContent class="p-6">
-      <h2 class="text-xl font-semibold mb-6 text-center bg-gradient-to-r from-sky-400 to-blue-500 bg-clip-text text-transparent">Estado del proceso</h2>
-      
+
+
       <div class="relative">
-        <div class="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-sky-200 to-blue-200 dark:from-sky-700 dark:to-blue-700"></div>
-        
+        <div
+          class="absolute left-8 top-0 bottom-0 w-0.5 bg-linear-to-b from-sky-200 to-blue-200 dark:from-sky-700 dark:to-blue-700">
+        </div>
+
         <div class="space-y-6">
           <!-- Estados completados -->
-          <div
-            v-for="estado in estadosCompletados"
-            :key="estado.id"
-            class="flex items-start"
-          >
-            <div class="relative z-10 flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-100 to-green-100 dark:from-emerald-900/30 dark:to-green-900/30 rounded-full shadow-sm">
+          <div v-for="estado in estadosCompletados" :key="estado.id" class="flex items-start">
+            <div
+              class="relative z-10 flex items-center justify-center w-16 h-16 bg-linear-to-br from-emerald-100 to-green-100 dark:from-emerald-900/30 dark:to-green-900/30 rounded-full shadow-sm">
               <CheckCircle class="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
             </div>
             <div class="ml-6 flex-1">
@@ -22,13 +25,11 @@
               <p v-if="estado.fecha" class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ estado.fecha }}</p>
             </div>
           </div>
-          
+
           <!-- Estado actual -->
-          <div
-            v-if="estadoActual"
-            class="flex items-start"
-          >
-            <div class="relative z-10 flex items-center justify-center w-16 h-16 bg-gradient-to-br from-sky-100 to-blue-100 dark:from-sky-900/30 dark:to-blue-900/30 rounded-full shadow-sm animate-pulse">
+          <div v-if="estadoActual" class="flex items-start">
+            <div
+              class="relative z-10 flex items-center justify-center w-16 h-16 bg-gradient-to-br from-sky-100 to-blue-100 dark:from-sky-900/30 dark:to-blue-900/30 rounded-full shadow-sm animate-pulse">
               <Clock class="h-8 w-8 text-sky-600 dark:text-sky-400 animate-pulse" />
             </div>
             <div class="ml-6 flex-1">
@@ -39,14 +40,11 @@
               </p>
             </div>
           </div>
-          
+
           <!-- Estados futuros -->
-          <div
-            v-for="estado in estadosFuturos"
-            :key="estado.id"
-            class="flex items-start opacity-50"
-          >
-            <div class="relative z-10 flex items-center justify-center w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-full shadow-sm">
+          <div v-for="estado in estadosFuturos" :key="estado.id" class="flex items-start opacity-50">
+            <div
+              class="relative z-10 flex items-center justify-center w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-full shadow-sm">
               <FileText class="h-8 w-8 text-gray-400 dark:text-gray-500" />
             </div>
             <div class="ml-6 flex-1">
@@ -88,10 +86,10 @@ const props = withDefaults(defineProps<Props>(), {
 // Computar estados según su posición
 const estadosCompletados = computed(() => {
   if (!props.estadoActualId) return []
-  
+
   const currentIndex = props.estados.findIndex(e => e.id === props.estadoActualId)
   if (currentIndex === -1) return []
-  
+
   return props.estados.slice(0, currentIndex).map(estado => ({
     ...estado,
     fecha: estado.id === 'DOCUMENTOS_CARGADOS' ? props.fechaEnvio : undefined
@@ -100,10 +98,10 @@ const estadosCompletados = computed(() => {
 
 const estadoActual = computed(() => {
   if (!props.estadoActualId) return null
-  
+
   const estado = props.estados.find(e => e.id === props.estadoActualId)
   if (!estado) return null
-  
+
   return {
     ...estado,
     tiempoEstimado: getTiempoEstimado(estado.id)
@@ -112,10 +110,10 @@ const estadoActual = computed(() => {
 
 const estadosFuturos = computed(() => {
   if (!props.estadoActualId) return props.estados
-  
+
   const currentIndex = props.estados.findIndex(e => e.id === props.estadoActualId)
   if (currentIndex === -1) return []
-  
+
   return props.estados.slice(currentIndex + 1)
 })
 
@@ -131,7 +129,7 @@ const getTiempoEstimado = (estadoId: string): string => {
     'APROBADO': '1-2 días hábiles',
     'DESEMBOLSADO': 'Inmediato'
   }
-  
+
   return tiempos[estadoId] || ''
 }
 </script>
