@@ -42,18 +42,18 @@ export function useAdminDashboard() {
 
   // Utilidades de formateo
   const fmtMoney = (value: number) => {
-    return new Intl.NumberFormat('es-CO', { 
-      style: 'currency', 
-      currency: 'COP', 
-      maximumFractionDigits: 0 
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      maximumFractionDigits: 0
     }).format(value);
   };
 
   const fmtPercent = (value: number) => {
-    return new Intl.NumberFormat('es-CO', { 
-      style: 'percent', 
+    return new Intl.NumberFormat('es-CO', {
+      style: 'percent',
       minimumFractionDigits: 1,
-      maximumFractionDigits: 1 
+      maximumFractionDigits: 1
     }).format(value / 100);
   };
 
@@ -63,9 +63,9 @@ export function useAdminDashboard() {
 
   const fmtDate = (dateString: string) => {
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('es-CO', { 
+    return new Intl.DateTimeFormat('es-CO', {
       dateStyle: 'short',
-      timeStyle: 'short' 
+      timeStyle: 'short'
     }).format(date);
   };
 
@@ -92,13 +92,13 @@ export function useAdminDashboard() {
 
       if (Array.isArray(data)) {
         stats.value.conveniosActivos = data.filter(c => c.activo).length;
-        
+
         // Top empresas con más trabajadores
         stats.value.topEmpresas = data
           .filter(c => c.activo)
-          .sort((a, b) => (b.trabajadores_count || 0) - (a.trabajadores_count || 0))
+          .sort((a: any, b: any) => (b.trabajadores_count || 0) - (a.trabajadores_count || 0))
           .slice(0, 5)
-          .map(c => ({
+          .map((c: any) => ({
             nombre: c.nombre_empresa,
             trabajadores: c.trabajadores_count || 0,
             convenio: c.nombre_convenio
@@ -112,72 +112,23 @@ export function useAdminDashboard() {
   // Función para cargar estadísticas de solicitudes
   const cargarEstadisticasSolicitudes = async () => {
     try {
-      // Cargar todas las solicitudes
-      const response = await getJson<any>('/api/solicitudes-credito/all', { auth: true });
-      const solicitudes = Array.isArray(response.data) ? response.data : [];
+      const response = await getJson<any>('/api/admin/dashboard/estadisticas', { auth: true });
+      const data = response.data;
 
-      // Calcular estadísticas
-      const total = solicitudes.length;
-      const aprobadas = solicitudes.filter(s => s.estado === 'APROBADA').length;
-      const activas = solicitudes.filter(s => 
-        s.estado !== 'FINALIZADA' && s.estado !== 'DESISTE' && s.estado !== 'RECHAZADA'
-      ).length;
-      const pendientesFirma = solicitudes.filter(s => 
-        s.estado === 'ENVIADO_FIRMA' || s.estado === 'FIRMA_PENDIENTE'
-      ).length;
+      if (data && data.solicitudes) {
+        const solicitudes = data.solicitudes;
 
-      // Monto total aprobado
-      const montoAprobado = solicitudes
-        .filter(s => s.estado === 'APROBADA' && s.monto_aprobado)
-        .reduce((sum, s) => sum + Number(s.monto_aprobado), 0);
+        stats.value.totalSolicitudes = solicitudes.total || 0;
+        stats.value.solicitudesActivas = solicitudes.activas || 0;
+        stats.value.solicitudesPendientesFirma = solicitudes.pendientesFirma || 0;
+        stats.value.tasaAprobacion = solicitudes.tasaAprobacion || 0;
+        stats.value.montoTotalAprobado = solicitudes.montoTotalAprobado || 0;
+        stats.value.solicitudesPorEstado = solicitudes.porEstado || [];
+      }
 
-      // Distribución por estado
-      const estadosMap = new Map<string, number>();
-      solicitudes.forEach(s => {
-        const estado = s.estado || 'SIN_ESTADO';
-        estadosMap.set(estado, (estadosMap.get(estado) || 0) + 1);
-      });
-
-      const coloresPorEstado: Record<string, string> = {
-        'POSTULADO': '#F59E0B',
-        'ENVIADO_VALIDACION': '#3B82F6',
-        'EN_VALIDACION': '#8B5CF6',
-        'APROBADA': '#10B981',
-        'ENVIADO_FIRMA': '#F97316',
-        'FIRMA_PENDIENTE': '#F97316',
-        'FIRMADA': '#06B6D4',
-        'DESEMBOLSADA': '#84CC16',
-        'FINALIZADA': '#6B7280',
-        'RECHAZADA': '#EF4444',
-        'DESISTE': '#EF4444'
-      };
-
-      const solicitudesPorEstado = Array.from(estadosMap.entries()).map(([estado, count]) => ({
-        estado,
-        count,
-        color: coloresPorEstado[estado] || '#6B7280'
-      }));
-
-      // Actividad reciente (últimas 5 solicitudes)
-      const actividadReciente = solicitudes
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .slice(0, 5)
-        .map(s => ({
-          id: s.numero_solicitud,
-          tipo: 'Solicitud',
-          descripcion: `Solicitud ${s.numero_solicitud} - ${s.estado}`,
-          fecha: s.created_at
-        }));
-
-      // Actualizar estadísticas
-      stats.value.totalSolicitudes = total;
-      stats.value.solicitudesActivas = activas;
-      stats.value.solicitudesPendientesFirma = pendientesFirma;
-      stats.value.tasaAprobacion = total > 0 ? Math.round((aprobadas / total) * 100) : 0;
-      stats.value.montoTotalAprobado = montoAprobado;
-      stats.value.solicitudesPorEstado = solicitudesPorEstado;
-      stats.value.actividadReciente = actividadReciente;
-
+      if (data && data.actividadReciente) {
+        stats.value.actividadReciente = data.actividadReciente || [];
+      }
     } catch (e: any) {
       console.error('Error cargando estadísticas de solicitudes:', e);
       throw e;
@@ -214,9 +165,9 @@ export function useAdminDashboard() {
   };
 
   // Computed properties para facilitar el uso
-  const tieneDatos = computed(() => 
-    stats.value.totalSolicitudes > 0 || 
-    stats.value.conveniosActivos > 0 || 
+  const tieneDatos = computed(() =>
+    stats.value.totalSolicitudes > 0 ||
+    stats.value.conveniosActivos > 0 ||
     stats.value.trabajadoresRegistrados > 0
   );
 
@@ -224,13 +175,13 @@ export function useAdminDashboard() {
     if (!lastUpdated.value) return null;
     const ahora = new Date();
     const diffMinutos = Math.floor((ahora.getTime() - lastUpdated.value.getTime()) / (1000 * 60));
-    
+
     if (diffMinutos < 1) return 'Actualizado ahora';
     if (diffMinutos < 60) return `Actualizado hace ${diffMinutos} min`;
-    
+
     const diffHoras = Math.floor(diffMinutos / 60);
     if (diffHoras < 24) return `Actualizado hace ${diffHoras} h`;
-    
+
     const diffDias = Math.floor(diffHoras / 24);
     return `Actualizado hace ${diffDias} días`;
   });
