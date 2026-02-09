@@ -7,7 +7,8 @@
     <CardContent class="p-4 sm:p-6">
       <form class="grid gap-4" @submit.prevent>
         <!-- Componentes destructurados por paso -->
-        <SolicitudStep v-if="steps[step]?.key === 'solicitud'" :form="form" />
+        <SolicitudStep v-if="steps[step]?.key === 'solicitud'" :form="form"
+          :tipos-inversion="props.parametros?.tipos_de_inversion || []" />
 
         <SolicitanteStep v-else-if="steps[step]?.key === 'solicitante'" :form="form"
           :ciudades="props.parametros?.ciudades || []" :tipos-documento="props.parametros?.codigos_tipo_documento || []"

@@ -85,21 +85,21 @@
                 <dl class="space-y-2">
                   <div class="flex justify-between">
                     <dt class="text-gray-600">Nombre completo:</dt>
-                    <dd class="font-medium">{{ solicitud?.payload?.solicitante?.nombres || 'N/A' }} {{
+                    <dd class="font-medium">{{ solicitud?.solicitante?.nombres || 'N/A' }} {{
                       solicitud?.payload?.solicitante?.apellidos || 'N/A' }}</dd>
                   </div>
                   <div class="flex justify-between">
                     <dt class="text-gray-600">Tipo/No. Identificación:</dt>
-                    <dd class="font-medium">{{ solicitud?.payload?.solicitante?.tipo_documento }} - {{
+                    <dd class="font-medium">{{ solicitud?.solicitante?.tipo_documento }} - {{
                       solicitud?.payload?.solicitante?.numero_documento || 'N/A' }}</dd>
                   </div>
                   <div class="flex justify-between">
                     <dt class="text-gray-600">Fecha de nacimiento:</dt>
-                    <dd class="font-medium">{{ solicitud?.payload?.solicitante?.fecha_nacimiento || 'N/A' }}</dd>
+                    <dd class="font-medium">{{ solicitud?.solicitante?.fecha_nacimiento || 'N/A' }}</dd>
                   </div>
                   <div class="flex justify-between">
                     <dt class="text-gray-600">Género:</dt>
-                    <dd class="font-medium">{{ solicitud?.payload?.solicitante?.genero || 'N/A' }}</dd>
+                    <dd class="font-medium">{{ solicitud?.solicitante?.genero || 'N/A' }}</dd>
                   </div>
                 </dl>
               </div>
@@ -108,19 +108,19 @@
                 <dl class="space-y-2">
                   <div class="flex justify-between">
                     <dt class="text-gray-600">Categoría:</dt>
-                    <dd class="font-medium">{{ solicitud?.payload?.solicitud?.categoria || 'N/A' }}</dd>
+                    <dd class="font-medium">{{ solicitud?.solicitante?.codigo_categoria || 'N/A' }}</dd>
                   </div>
                   <div class="flex justify-between">
                     <dt class="text-gray-600">Fecha de nacimiento:</dt>
-                    <dd class="font-medium">{{ solicitud?.payload?.solicitante?.fecha_nacimiento || 'N/A' }}</dd>
+                    <dd class="font-medium">{{ solicitud?.solicitante?.fecha_nacimiento || 'N/A' }}</dd>
                   </div>
                   <div class="flex justify-between">
                     <dt class="text-gray-600">Profesión/Ocupación:</dt>
-                    <dd class="font-medium">{{ solicitud?.payload?.solicitante?.cargo || 'N/A' }}</dd>
+                    <dd class="font-medium">{{ solicitud?.solicitante?.cargo || 'N/A' }}</dd>
                   </div>
                   <div class="flex justify-between">
                     <dt class="text-gray-600">Nivel educativo:</dt>
-                    <dd class="font-medium">{{ solicitud?.payload?.solicitante?.nivel_educativo || 'N/A' }}</dd>
+                    <dd class="font-medium">{{ solicitud?.solicitante?.nivel_educativo || 'N/A' }}</dd>
                   </div>
                 </dl>
               </div>
@@ -146,7 +146,7 @@
                   <span class="text-sm font-medium">Valor solicitado</span>
                 </div>
                 <p class="text-2xl font-bold text-blue-900">
-                  ${{ formatCurrencyIntl(solicitud?.payload?.solicitud?.valor_solicitado || 0) }}
+                  ${{ formatCurrencyIntl(solicitud?.valor_solicitud || 0) }}
                 </p>
               </div>
               <div class="bg-green-50 rounded-lg p-4">
@@ -155,7 +155,7 @@
                   <span class="text-sm font-medium">Plazo</span>
                 </div>
                 <p class="text-2xl font-bold text-green-900">
-                  {{ solicitud?.payload?.solicitud?.plazo_meses || 0 }} meses
+                  {{ solicitud?.plazo_meses || 0 }} meses
                 </p>
               </div>
               <div class="bg-purple-50 rounded-lg p-4">
@@ -164,7 +164,7 @@
                   <span class="text-sm font-medium">Cuota mensual</span>
                 </div>
                 <p class="text-2xl font-bold text-purple-900">
-                  ${{ formatCurrencyIntl(solicitud?.payload?.solicitud?.cuota_mensual || 0) }}
+                  ${{ formatCurrencyIntl(solicitud?.cuota_mensual || 0) }}
                 </p>
               </div>
             </div>
@@ -172,11 +172,11 @@
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <h4 class="font-semibold text-gray-700 mb-2">Línea de Crédito</h4>
-                  <p class="text-gray-600">{{ solicitud?.payload?.solicitud?.detalle_modalidad || 'N/A' }}</p>
+                  <p class="text-gray-600">{{ solicitud?.detalle_modalidad || 'N/A' }}</p>
                 </div>
                 <div>
                   <h4 class="font-semibold text-gray-700 mb-2">Tipo de Crédito</h4>
-                  <p class="text-gray-600">{{ solicitud?.payload?.solicitud?.tipcre || 'N/A' }}</p>
+                  <p class="text-gray-600">{{ solicitud?.tipo_credito || 'N/A' }}</p>
                 </div>
               </div>
             </div>

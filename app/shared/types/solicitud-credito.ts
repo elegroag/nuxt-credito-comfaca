@@ -110,10 +110,8 @@ export interface Solicitud {
     modxml4?: number
     detalle_modalidad?: string
     fecha_radicado: string
-    producto_solicitado: {
-        tipo: ProductoTipo
-        ha_tenido_credito_comfaca: boolean
-    }
+    producto_tipo: ProductoTipo
+    ha_tenido_credito: boolean
 }
 
 export interface Conyuge {
@@ -254,15 +252,26 @@ export interface Firmante {
 export interface SolicitanteBasic {
     email: string;
     nombres_apellidos: string;
-    numero_identificacion: string;
+    numero_documento: string;
     telefono_movil: string;
-    tipo_identificacion: string;
+    tipo_documento: string;
+    fecha_nacimiento?: string;
+    genero?: string;
+    codigo_categoria?: string;
+    cargo?: string;
+    nivel_educativo?: string;
+    nombres?: string;
+    apellidos?: string;
 }
 
 export interface SolicitudCredito {
     id: string;
     created_at: string;
     updated_at: string;
+    cuota_mensual: number;
+    valor_solicitud: number;
+    detalle_modalidad: string;
+    tipo_credito: string;
     estado: EstadoSolicitud;
     monto_solicitado: number;
     plazo_meses: number;
@@ -306,6 +315,7 @@ export interface SolocitanteProps {
 
 export interface SolicitudProps {
     form: any
+    tiposInversion?: Array<{ tipinv: string; detalle: string }>
 }
 
 export interface RevisionProps {

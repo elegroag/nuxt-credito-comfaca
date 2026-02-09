@@ -18,10 +18,8 @@ export const useSolicitudCreditoForm = () => {
             modxml4: 0,
             detalle_modalidad: '',
             fecha_radicado: '',
-            producto_solicitado: {
-                tipo: 'vivienda',
-                ha_tenido_credito_comfaca: false
-            }
+            producto_tipo: 'vivienda',
+            ha_tenido_credito: false
         },
         linea_credito: {
             detalle_modalidad: '',
@@ -207,10 +205,8 @@ export const useSolicitudCreditoForm = () => {
                 modxml4: 0,
                 detalle_modalidad: '',
                 fecha_radicado: '',
-                producto_solicitado: {
-                    tipo: 'vivienda',
-                    ha_tenido_credito_comfaca: false
-                }
+                producto_tipo: 'vivienda',
+                ha_tenido_credito: false
             },
             linea_credito: {
                 detalle_modalidad: '',

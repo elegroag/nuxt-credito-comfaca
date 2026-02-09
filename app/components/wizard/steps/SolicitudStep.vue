@@ -29,7 +29,7 @@
         <Input v-model.number="form.solicitud.plazo_meses" type="number" min="1" :disabled="true" />
       </FormField>
       <FormField label="Producto">
-        <CustomSelect v-model="form.solicitud.producto_solicitado.tipo" :options="productosOptions"
+        <CustomSelect v-model="form.solicitud.producto_tipo" :options="productosOptions"
           placeholder="Seleccionar producto" />
       </FormField>
       <FormField label="Linea de crédito">
@@ -40,7 +40,7 @@
 
     <div class="grid gap-4 sm:grid-cols-2 mt-4">
       <label class="flex items-center gap-2 text-sm text-foreground">
-        <input v-model="form.solicitud.producto_solicitado.ha_tenido_credito_comfaca" type="checkbox"
+        <input v-model="form.solicitud.ha_tenido_credito" type="checkbox"
           class="h-4 w-4 rounded border-input text-primary focus:ring-primary" />
         Ha tenido crédito con Comfaca
       </label>
@@ -54,7 +54,9 @@ import Input from '@/components/ui/Input.vue'
 import CustomSelect from '~/components/ui/CustomSelect.vue'
 import type { SelectOption, SolicitudProps } from '~/shared/types/solicitud-credito'
 
-defineProps<SolicitudProps>()
+interface Props extends SolicitudProps { }
+
+const props = defineProps<Props>()
 
 // Opciones para roles en solicitud
 const rolesOptions: SelectOption[] = [
@@ -62,15 +64,11 @@ const rolesOptions: SelectOption[] = [
   { label: 'Empleador', value: 'empleador' }
 ]
 
-// Opciones para productos
-const productosOptions: SelectOption[] = [
-  { label: 'Educación', value: 'educacion' },
-  { label: 'Salud', value: 'salud' },
-  { label: 'Vivienda', value: 'vivienda' },
-  { label: 'Electrodomésticos', value: 'electrodomesticos' },
-  { label: 'Productos del hogar', value: 'productos_hogar' },
-  { label: 'Vestuario', value: 'vestuario' },
-  { label: 'Recreación', value: 'recreacion' },
-  { label: 'Turismo', value: 'turismo' }
-]
+// Opciones para productos basadas en tiposInversion
+const productosOptions = computed<SelectOption[]>(() => {
+  return (props.tiposInversion || []).map(tipo => ({
+    label: tipo.detalle,
+    value: tipo.tipinv
+  }))
+})
 </script>
