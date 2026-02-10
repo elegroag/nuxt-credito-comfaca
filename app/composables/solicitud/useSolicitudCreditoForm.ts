@@ -9,7 +9,7 @@ export const useSolicitudCreditoForm = () => {
             numero_comprobante: '',
             valor_solicitud: 0,
             categoria: '',
-            rol_en_solicitud: 'trabajador',
+            rol_en_solicitud: 'T',
             valor_solicitado: 0,
             cuota_mensual: 0,
             plazo_meses: 0,
@@ -18,7 +18,7 @@ export const useSolicitudCreditoForm = () => {
             modxml4: 0,
             detalle_modalidad: '',
             fecha_radicado: '',
-            producto_tipo: 'vivienda',
+            producto_tipo: '',
             ha_tenido_credito: false
         },
         linea_credito: {
@@ -30,7 +30,10 @@ export const useSolicitudCreditoForm = () => {
             pagseg: '',
             repdcr: '',
             tipcre: '',
-            tipfin: ''
+            tipfin: '',
+            tasa_interes: 0,
+            total_intereses: 0,
+            total_pagar: 0
         },
         solicitante: {
             tipo_persona: '',
@@ -196,7 +199,7 @@ export const useSolicitudCreditoForm = () => {
                 numero_comprobante: '',
                 valor_solicitud: 0,
                 categoria: '',
-                rol_en_solicitud: 'trabajador',
+                rol_en_solicitud: 'T',
                 valor_solicitado: 0,
                 cuota_mensual: 0,
                 plazo_meses: 0,
@@ -205,7 +208,7 @@ export const useSolicitudCreditoForm = () => {
                 modxml4: 0,
                 detalle_modalidad: '',
                 fecha_radicado: '',
-                producto_tipo: 'vivienda',
+                producto_tipo: '',
                 ha_tenido_credito: false
             },
             linea_credito: {
@@ -217,7 +220,10 @@ export const useSolicitudCreditoForm = () => {
                 pagseg: '',
                 repdcr: '',
                 tipcre: '',
-                tipfin: ''
+                tipfin: '',
+                total_pagar: 0,
+                tasa_interes: 0,
+                total_intereses: 0
             },
             solicitante: {
                 tipo_documento: '1',

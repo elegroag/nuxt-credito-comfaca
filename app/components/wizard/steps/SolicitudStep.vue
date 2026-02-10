@@ -77,8 +77,10 @@ const props = defineProps<Props>()
 
 // Opciones para roles en solicitud
 const rolesOptions: SelectOption[] = [
-  { label: 'Trabajador', value: 'trabajador' },
-  { label: 'Empleador', value: 'empleador' }
+  { label: 'Trabajador', value: 'T' },
+  { label: 'Solicitante', value: 'S' },
+  { label: 'Codeudor', value: 'C' },
+  { label: 'Empleador', value: 'E' }
 ]
 
 // Opciones para productos basadas en tiposInversion

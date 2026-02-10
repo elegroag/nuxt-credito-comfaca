@@ -1,17 +1,17 @@
 
-export interface LineaCredito {
+export interface LineaCreditoSimulador {
     tipcre: string
     codcre: string
     detalle: string
     modxml4: number
-    tipfin: string
+    tipfin?: string
     pagseg: string
-    codcap: string
-    codint: string
-    codmor: string
-    repdcr: string
-    codcon: string
-    codser: string
+    codcap?: string
+    codint?: string
+    codmor?: string
+    repdcr?: string
+    codcon?: string
+    codser?: string
     numcuo: number
     estcre: number
     auxest: string
@@ -24,7 +24,7 @@ export interface Modalidad {
     nombre: string
     descripcion: string
     icono: string
-    lineas: LineaCredito[]
+    lineas: LineaCreditoSimulador[]
 }
 
 
@@ -49,7 +49,7 @@ export interface SimuladorResultados {
 
 // Interface extendida para almacenamiento en localStorage
 export interface SimuladorStorageData extends SimuladorData {
-    lineaCredito: any; // Datos de la línea de crédito seleccionada
+    lineaCredito: LineaCreditoSimulador; // Datos de la línea de crédito seleccionada
     montoCredito: number; // Alias para monto
     tasaInteresAnual: number; // Alias para tasaEfectivaAnual
     cuotaMensual: number; // Resultado del cálculo

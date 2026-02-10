@@ -1,19 +1,11 @@
 
 export type Moneda = 'COP'
 
-export type RolEnSolicitud = 'trabajador' | 'empleador'
+export type RolEnSolicitud = 'T' | 'S' | 'C' | 'E'
 
 export type TipoIdentificacion = 'CC' | 'CE'
 
-export type ProductoTipo =
-    | 'educacion'
-    | 'salud'
-    | 'vivienda'
-    | 'electrodomesticos'
-    | 'productos_hogar'
-    | 'vestuario'
-    | 'recreacion'
-    | 'turismo'
+export type ProductoTipo = string
 
 export type Sexo = 'M' | 'F'
 
@@ -75,6 +67,44 @@ export interface Solicitante {
     codigo_categoria: string
 }
 
+// Tipo específico para datos del solicitante del backend (API response)
+export interface SolicitanteBackend {
+    id: number
+    solicitud_id: string
+    tipo_persona: string
+    tipo_documento: string
+    numero_documento: string
+    nombres: string
+    apellidos: string
+    razon_social: string
+    nit: string
+    fecha_nacimiento: string
+    pais_nacimiento?: string
+    fecha_expedicion?: string
+    genero: string
+    estado_civil: string
+    nivel_educativo: string
+    profesion: string
+    email: string
+    telefono_fijo?: string
+    telefono_movil?: string
+    direccion: string
+    barrio: string
+    ciudad: string
+    departamento: string
+    pais_residencia?: string
+    tipo_vivienda?: string
+    vive_con_nucleo_familiar?: boolean
+    personas_a_cargo?: number
+    fecha_vinculacion?: string
+    cargo: string
+    salario: number
+    antiguedad_meses?: number
+    tipo_contrato?: string
+    sector_economico?: string
+    codigo_categoria: string
+}
+
 export interface LineaCredito {
     tipcre: string
     pagseg: string
@@ -94,6 +124,9 @@ export interface LineaCredito {
     estcre?: number
     repdcr?: string
     tipfin?: string
+    tasa_interes: number
+    total_intereses: number
+    total_pagar: number
 }
 
 export interface Solicitud {
@@ -288,6 +321,11 @@ export interface SolicitudCredito {
         fecha: string;
         detalle: string;
     }>;
+}
+
+// Tipo para respuesta del API de consulta de solicitudes
+export interface SolicitudCreditoResponse extends Omit<SolicitudCredito, 'solicitante'> {
+    solicitante: SolicitanteBackend;
 }
 
 export interface SelectOption {

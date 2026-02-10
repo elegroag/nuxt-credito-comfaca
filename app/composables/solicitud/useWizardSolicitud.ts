@@ -112,12 +112,13 @@ export function useWizardSolicitud(props?: WizardProps) {
                         auxest: datosSimulador.lineaCredito.auxest,
                         estcre: datosSimulador.lineaCredito.estcre,
                         pagseg: datosSimulador.lineaCredito.pagseg,
-                        repdcr: datosSimulador.lineaCredito.repdcr,
-                        tipfin: datosSimulador.lineaCredito.tipfin
+                        tasa_interes: datosSimulador.tasaInteres,
+                        total_intereses: datosSimulador.totalIntereses,
+                        total_pagar: datosSimulador.totalPagar,
                     }
-                    form.value.solicitud.tipcre = datosSimulador.lineaCredito.tipcre || '';
-                    form.value.solicitud.modxml4 = datosSimulador.lineaCredito.modxml4 || '';
-                    form.value.solicitud.detalle_modalidad = datosSimulador.lineaCredito.detalle || '';
+                    form.value.solicitud.tipcre = datosSimulador.lineaCredito.tipcre;
+                    form.value.solicitud.modxml4 = datosSimulador.lineaCredito.modxml4;
+                    form.value.solicitud.detalle_modalidad = datosSimulador.lineaCredito.detalle;
                 }
             }
         }
@@ -214,9 +215,10 @@ export function useWizardSolicitud(props?: WizardProps) {
             // Preparar el payload con los datos del simulador
             const payload = {
                 ...form,
-                // Agregar datos del simulador si están disponibles
+                // Agregar datos del simulador si están disponibles, pero preservar campos financieros
                 ...(simuladorData?.lineaCredito && {
                     linea_credito: {
+                        ...form.linea_credito, // Preservar todos los campos existentes incluyendo financieros
                         tipcre: simuladorData.lineaCredito.tipcre,
                         modxml4: simuladorData.lineaCredito.modxml4,
                         detalle_modalidad: simuladorData.lineaCredito.detalle,

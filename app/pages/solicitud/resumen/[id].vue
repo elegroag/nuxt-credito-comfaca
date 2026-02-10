@@ -86,16 +86,17 @@
                   <div class="flex justify-between">
                     <dt class="text-gray-600">Nombre completo:</dt>
                     <dd class="font-medium">{{ solicitud?.solicitante?.nombres || 'N/A' }} {{
-                      solicitud?.payload?.solicitante?.apellidos || 'N/A' }}</dd>
+                      solicitud?.solicitante?.apellidos || 'N/A' }}</dd>
                   </div>
                   <div class="flex justify-between">
                     <dt class="text-gray-600">Tipo/No. Identificación:</dt>
                     <dd class="font-medium">{{ solicitud?.solicitante?.tipo_documento }} - {{
-                      solicitud?.payload?.solicitante?.numero_documento || 'N/A' }}</dd>
+                      solicitud?.solicitante?.numero_documento || 'N/A' }}</dd>
                   </div>
                   <div class="flex justify-between">
                     <dt class="text-gray-600">Fecha de nacimiento:</dt>
-                    <dd class="font-medium">{{ solicitud?.solicitante?.fecha_nacimiento || 'N/A' }}</dd>
+                    <dd class="font-medium">{{ solicitud?.solicitante?.fecha_nacimiento ?
+                      formatDate(solicitud?.solicitante?.fecha_nacimiento) : 'N/A' }}</dd>
                   </div>
                   <div class="flex justify-between">
                     <dt class="text-gray-600">Género:</dt>
@@ -109,10 +110,6 @@
                   <div class="flex justify-between">
                     <dt class="text-gray-600">Categoría:</dt>
                     <dd class="font-medium">{{ solicitud?.solicitante?.codigo_categoria || 'N/A' }}</dd>
-                  </div>
-                  <div class="flex justify-between">
-                    <dt class="text-gray-600">Fecha de nacimiento:</dt>
-                    <dd class="font-medium">{{ solicitud?.solicitante?.fecha_nacimiento || 'N/A' }}</dd>
                   </div>
                   <div class="flex justify-between">
                     <dt class="text-gray-600">Profesión/Ocupación:</dt>
@@ -271,7 +268,7 @@
 import { onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useResumenSolicitud } from '~/composables/solicitud/useResumenSolicitud'
-import { formatCurrencyIntl } from '~/shared/formatters'
+import { formatCurrencyIntl, formatDate } from '~/shared/formatters'
 const route = useRoute()
 
 const {

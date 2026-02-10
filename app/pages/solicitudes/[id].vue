@@ -37,18 +37,19 @@
 
         <!-- Datos del Solicitante -->
         <DatosSolicitante
-          :nombres-apellidos="`${solicitud?.payload?.solicitante?.nombres || ''} ${solicitud?.payload?.solicitante?.apellidos || ''}`.trim() || '-'"
-          :tipo-identificacion="buscarTipoIdentificacion(solicitud?.payload?.solicitante?.tipo_documento) || '-'"
-          :numero-identificacion="solicitud?.payload?.solicitante?.numero_documento || '-'"
-          :fecha-nacimiento="solicitud?.payload?.solicitante?.fecha_nacimiento || '-'"
-          :telefono="solicitud?.payload?.solicitante?.telefono || solicitud?.payload?.solicitante?.celular || '-'"
-          :email="solicitud?.payload?.solicitante?.email || '-'"
-          :direccion="solicitud?.payload?.solicitante?.direccion || '-'"
-          :ciudad="buscarCiudad(solicitud?.payload?.solicitante?.ciudad) || '-'" :tipo-vivienda="'-'"
-          :personas-a-cargo="0" :categoria="solicitud?.payload?.solicitud?.categoria || '-'"
-          :salario="fmtMoney(solicitud?.payload?.solicitante?.salario || 0)"
-          :empresa-nit="solicitud?.payload?.solicitante?.nit || '-'"
-          :empresa-razon-social="solicitud?.payload?.solicitante?.razon_social || '-'" />
+          :nombres-apellidos="`${solicitud?.solicitante?.nombres || ''} ${solicitud?.solicitante?.apellidos || ''}`.trim() || '-'"
+          :tipo-identificacion="buscarTipoIdentificacion(solicitud?.solicitante?.tipo_documento) || '-'"
+          :numero-identificacion="solicitud?.solicitante?.numero_documento || '-'"
+          :fecha-nacimiento="solicitud?.solicitante?.fecha_nacimiento || '-'"
+          :telefono="solicitud?.solicitante?.telefono_movil || solicitud?.solicitante?.telefono_fijo || '-'"
+          :email="solicitud?.solicitante?.email || '-'" :direccion="solicitud?.solicitante?.direccion || '-'"
+          :ciudad="buscarCiudad(solicitud?.solicitante?.ciudad) || '-'"
+          :tipo-vivienda="solicitud?.solicitante?.tipo_vivienda || '-'"
+          :personas-a-cargo="solicitud?.solicitante?.personas_a_cargo || 0"
+          :categoria="solicitud?.solicitante?.codigo_categoria || '-'"
+          :salario="fmtMoney(solicitud?.payload?.ingresos_descuentos?.salario_basico_mensual || 0)"
+          :empresa-nit="solicitud?.solicitante?.nit || '-'"
+          :empresa-razon-social="solicitud?.solicitante?.razon_social || '-'" />
 
         <!-- Información Laboral -->
         <InfoLaboral :empresa-razon-social="solicitud?.payload?.informacion_laboral?.empresa_razon_social || '-'"

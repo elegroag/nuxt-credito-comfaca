@@ -3,7 +3,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useApi } from '~/composables/useApi'
 import { useSession } from '~/composables/useSession'
 import { useParametrosDetalles } from '~/composables/useParametrosDetalles'
-import type { SolicitudCredito } from '~/shared/types/solicitud-credito'
+import type { SolicitudCreditoResponse } from '~/shared/types/solicitud-credito'
 
 export const useSolicitudDetailsPage = () => {
   const route = useRoute()
@@ -25,7 +25,7 @@ export const useSolicitudDetailsPage = () => {
   } = useParametrosDetalles()
 
   const solicitudId = route.params.id as string
-  const solicitud = ref<SolicitudCredito | null>(null)
+  const solicitud = ref<SolicitudCreditoResponse | null>(null)
   const loading = ref(true)
   const error = ref<string | null>(null)
   const mostrarModalEliminar = ref(false)
@@ -110,7 +110,7 @@ export const useSolicitudDetailsPage = () => {
       await ready
       const response = await getJson<{
         success: boolean
-        data: SolicitudCredito
+        data: SolicitudCreditoResponse
       }>(`/api/solicitudes-credito/${solicitudId}`, { auth: true })
       solicitud.value = response.data
     } catch (e: any) {
