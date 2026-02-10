@@ -39,11 +39,28 @@
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2 mt-4">
-      <label class="flex items-center gap-2 text-sm text-foreground">
-        <input v-model="form.solicitud.ha_tenido_credito" type="checkbox"
-          class="h-4 w-4 rounded border-input text-primary focus:ring-primary" />
-        Ha tenido crédito con Comfaca
-      </label>
+      <FormField label="¿Ha tenido crédito con Comfaca?">
+        <div class="flex gap-4">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              :value="true"
+              v-model="form.solicitud.ha_tenido_credito"
+              class="text-primary focus:ring-primary"
+            />
+            <span>SI</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              :value="false"
+              v-model="form.solicitud.ha_tenido_credito"
+              class="text-primary focus:ring-primary"
+            />
+            <span>NO</span>
+          </label>
+        </div>
+      </FormField>
     </div>
   </div>
 </template>

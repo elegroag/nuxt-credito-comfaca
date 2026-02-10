@@ -102,7 +102,8 @@ export const useLineasCredito = () => {
       }>('/api/lineas_credito/tipo_creditos', { auth: true })
 
       if (response.success) {
-        lineasCredito.value = response.data
+        //filtra las lineas en estado ='A'
+        lineasCredito.value = response.data.filter(linea => linea.estado === 'A')
       } else {
         error.value = response.message || 'Error al cargar las líneas de crédito'
       }
