@@ -295,6 +295,10 @@ export interface SolicitanteBasic {
     nivel_educativo?: string;
     nombres?: string;
     apellidos?: string;
+    nit?: string;
+    razon_social?: string;
+    direccion?: string;
+    pais_residencia?: string;
 }
 
 export interface SolicitudCredito {

@@ -31,9 +31,8 @@
 
         <!-- Información General -->
         <InfoGeneral :numero-solicitud="numeroSolicitudDisplay"
-          :monto-solicitado="fmtMoney(solicitud?.payload?.solicitud?.valor_solicitud || 0)"
-          :plazo-meses="solicitud.plazo_meses || 0" :fecha-creacion="fmtDate(solicitud.created_at)"
-          :linea-credito="solicitud?.payload?.linea_credito?.detalle_modalidad || '-'" />
+          :monto-solicitado="fmtMoney(solicitud?.valor_solicitud || 0)" :plazo-meses="solicitud.plazo_meses || 0"
+          :fecha-creacion="fmtDate(solicitud.created_at)" :linea-credito="solicitud?.detalle_modalidad || '-'" />
 
         <!-- Datos del Solicitante -->
         <DatosSolicitante

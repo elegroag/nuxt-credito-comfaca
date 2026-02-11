@@ -146,6 +146,8 @@ export const useAdminSolicitudes = () => {
      * Cambia la página
      */
     const cambiarPagina = (pagina: number) => {
+        if (pagina < 1) return
+        if (pagina > totalPaginas.value) return
         const skip = (pagina - 1) * (filtrosActivos.value.limit || 20)
         filtrosActivos.value.skip = skip
         cargarSolicitudes()
@@ -300,7 +302,8 @@ export const useAdminSolicitudes = () => {
 
     const totalPaginas = computed(() => {
         const limite = filtrosActivos.value.limit || 20
-        return Math.ceil(totalItems.value / limite)
+        const total = Math.ceil(totalItems.value / limite)
+        return totalItems.value > 0 ? Math.max(1, total) : 1
     })
 
     const paginaActual = computed(() => {
@@ -356,6 +359,16 @@ export const useAdminSolicitudes = () => {
         })
     }
 
+    /**
+     * Limpia el filtro por estado
+     */
+    const limpiarFiltroEstado = () => {
+        aplicarFiltroPaginacion({
+            estados: [],
+            skip: 0
+        })
+    }
+
     // Cargar datos iniciales
     onMounted(async () => {
         await cargarEstadosDisponibles()
@@ -405,6 +418,7 @@ export const useAdminSolicitudes = () => {
         cerrarEstadoModal,
         confirmarCambioEstado,
         eliminarSolicitudConfirm,
-        filtrarPorEstado
+        filtrarPorEstado,
+        limpiarFiltroEstado
     }
 }

@@ -1,6 +1,6 @@
 <template>
-  <div class="w-full min-w-[220px] max-w-lg">
-    <div class="bg-white shadow-xl rounded-2xl ">  
+  <div class="w-full min-w-[220px] max-w-lg mx-auto">
+    <div class="bg-white shadow-xl rounded-2xl ">
       <div class="pb-4">
         <div class="p-6 lg:p-8 xl:p-10 space-y-6">
           <div class="text-center p-3">
@@ -13,36 +13,21 @@
           <form @submit.prevent="login" class="space-y-4">
             <div class="space-y-2">
               <Label for="username">Usuario</Label>
-              <Input 
-                id="username"
-                v-model="username" 
-                type="text" 
-                placeholder="Tu nombre de usuario"
-                required
-              />
+              <Input id="username" v-model="username" type="text" placeholder="Tu nombre de usuario" required />
             </div>
 
             <div class="space-y-2">
               <Label for="password">Contraseña</Label>
-              <Input 
-                id="password"
-                v-model="password" 
-                type="password" 
-                placeholder="••••••••"
-                required
-              />
+              <Input id="password" v-model="password" type="password" placeholder="••••••••" required />
             </div>
 
-            <Button
-              type="submit"
-              class="w-full"
-              :disabled="loading || !isConnected"
-            >
+            <Button type="submit" class="w-full" :disabled="loading || !isConnected">
               <Loader2 v-if="loading" class="mr-2 h-4 w-4 animate-spin" />
               {{ loading ? 'Ingresando...' : 'Ingresar' }}
             </Button>
 
-            <div v-if="errorMsg" class="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive flex items-center gap-2">
+            <div v-if="errorMsg"
+              class="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive flex items-center gap-2">
               <AlertCircle class="h-4 w-4" />
               {{ errorMsg }}
             </div>
@@ -65,9 +50,7 @@
       </div>
 
       <!-- Estado de conexión -->
-      <div 
-          :class="cn('border-t px-4 py-1 text-xs transition-colors', connectionStatusClass)"
-        >
+      <div :class="cn('border-t px-4 py-1 text-xs transition-colors', connectionStatusClass)">
         <div class="flex items-center justify-center gap-1">
           <ArrowPathIcon v-if="checkingConnection" class="h-3 w-3 animate-spin" />
           <CheckCircleIcon v-else-if="isConnected" class="h-3 w-3" />
@@ -94,12 +77,12 @@ definePageMeta({
 })
 
 const { username, password, loading, errorMsg, login, checkAuthAndRedirect } = useLogin()
-const { 
-  isConnected, 
-  checkingConnection, 
-  connectionMessage, 
-  connectionStatusClass, 
-  checkConnection 
+const {
+  isConnected,
+  checkingConnection,
+  connectionMessage,
+  connectionStatusClass,
+  checkConnection
 } = useHealthCheck()
 
 onMounted(async () => {

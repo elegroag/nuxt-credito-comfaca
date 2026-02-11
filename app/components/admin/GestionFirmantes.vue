@@ -1,52 +1,67 @@
 <template>
 
-    <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
-        <Icon name="lucide:file-signature" class="h-5 w-5" />
-        Gestión de Firmantes para Firma Digital
-    </h2>
-    
     <!-- Lista de Firmantes Actuales -->
     <div v-if="firmantes.length > 0" class="mb-6">
-        <h3 class="text-sm font-medium text-gray-700 mb-3">
+        <h3 class="text-sm font-medium text-slate-700 mb-3">
             Firmantes Registrados ({{ firmantes.length }})
         </h3>
         <div class="space-y-2">
-            <div
-                v-for="(firmante, index) in firmantes"
-                :key="index"
-                class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border"
-            >
-                <div class="flex-1">
-                    <p class="font-medium text-gray-900">
-                        {{ firmante.nombre_completo }}
-                    </p>
-                    <div class="flex gap-4 text-sm text-gray-600 mt-1">
-                        <span>{{ getTipoDocumentoLabel(firmante.tipo_documento || getDefaultTipoDocumento()) }}: {{ firmante.numero_documento }}</span>
-                        <span>{{ firmante.email }}</span>
-                        <span v-if="firmante.rol" class="text-blue-600">{{ firmante.rol }}</span>
+            <div v-for="(firmante, index) in firmantes" :key="index"
+                class="flex items-start justify-between gap-4 p-4 bg-white/70 rounded-xl border border-emerald-100/70 shadow-sm">
+                <div class="flex items-start gap-3 flex-1 min-w-0">
+                    <div
+                        class="mt-0.5 h-9 w-9 rounded-full bg-linear-to-br from-emerald-100 to-teal-100 flex items-center justify-center border border-emerald-200/70 shrink-0">
+                        <Icon name="lucide:user" class="h-4 w-4 text-emerald-700" />
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                            <p class="font-semibold text-slate-900 truncate">
+                                {{ firmante.nombre_completo }}
+                            </p>
+                            <span v-if="firmante.rol"
+                                class="inline-flex w-fit items-center rounded-full border border-sky-200 bg-sky-50 px-2 py-0.5 text-xs font-medium text-sky-700">
+                                {{ firmante.rol }}
+                            </span>
+                        </div>
+                        <div class="mt-1 space-y-1 text-sm text-slate-600">
+                            <div class="flex items-center gap-2">
+                                <Icon name="lucide:badge-check" class="h-4 w-4 text-slate-400" />
+                                <span class="truncate">
+                                    {{ getTipoDocumentoLabel(firmante.tipo_documento || getDefaultTipoDocumento()) }}:
+                                    {{ firmante.numero_documento }}
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <Icon name="lucide:mail" class="h-4 w-4 text-slate-400" />
+                                <span class="truncate">{{ firmante.email }}</span>
+                            </div>
+                            <div v-if="firmante.telefono" class="flex items-center gap-2">
+                                <Icon name="lucide:phone" class="h-4 w-4 text-slate-400" />
+                                <span class="truncate">{{ firmante.telefono }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    @click="eliminarFirmante(index)"
-                    class="text-red-600 hover:text-red-700"
-                >
+                <Button variant="outline" size="sm" @click="eliminarFirmante(index)"
+                    class="shrink-0 border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-800"
+                    title="Eliminar firmante">
                     <Icon name="lucide:trash-2" class="h-4 w-4" />
                 </Button>
             </div>
         </div>
     </div>
-    
-    <div v-else class="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-        <p class="text-sm text-yellow-800">
+
+    <div v-else class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+        <p class="text-sm text-amber-800 flex items-start gap-2">
+            <Icon name="lucide:triangle-alert" class="h-4 w-4 mt-0.5 shrink-0" />
             No hay firmantes registrados. Agregue al menos un firmante para poder iniciar el proceso de firma digital.
         </p>
     </div>
-    
+
     <!-- Formulario para Agregar Nuevo Firmante -->
     <div class="border-t pt-6">
-        <h3 class="text-sm font-medium text-gray-700 mb-3">
+        <h3 class="text-sm font-medium text-slate-700 mb-3 flex items-center gap-2">
+            <Icon name="lucide:user-plus" class="h-4 w-4 text-emerald-700" />
             Agregar Nuevo Firmante
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -54,110 +69,72 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">
                     Nombre Completo *
                 </label>
-                <input
-                    v-model="nuevoFirmante.nombre_completo"
-                    type="text"
-                    class="input input-bordered w-full"
-                    placeholder="Nombre completo del firmante"
-                />
+                <input v-model="nuevoFirmante.nombre_completo" type="text" class="input input-bordered w-full"
+                    placeholder="Nombre completo del firmante" />
             </div>
-            
+
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">
                     Email *
                 </label>
-                <input
-                    v-model="nuevoFirmante.email"
-                    type="email"
-                    class="input input-bordered w-full"
-                    placeholder="correo@ejemplo.com"
-                />
+                <input v-model="nuevoFirmante.email" type="email" class="input input-bordered w-full"
+                    placeholder="correo@ejemplo.com" />
             </div>
-            
+
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">
                     Tipo de Documento
                 </label>
-                <select
-                    v-model="nuevoFirmante.tipo_documento"
-                    class="select select-bordered w-full"
-                >
+                <select v-model="nuevoFirmante.tipo_documento" class="select select-bordered w-full">
                     <option v-for="tipo in getTiposDocumentoOptions()" :key="tipo.value" :value="tipo.value">
                         {{ tipo.label }}
                     </option>
                 </select>
             </div>
-            
+
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">
                     Número de Documento *
                 </label>
-                <input
-                    v-model="nuevoFirmante.numero_documento"
-                    type="text"
-                    class="input input-bordered w-full"
-                    placeholder="Número de documento"
-                />
+                <input v-model="nuevoFirmante.numero_documento" type="text" class="input input-bordered w-full"
+                    placeholder="Número de documento" />
             </div>
-            
+
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">
                     Rol
                 </label>
-                <select
-                    v-model="nuevoFirmante.rol"
-                    class="select select-bordered w-full"
-                >
+                <select v-model="nuevoFirmante.rol" class="select select-bordered w-full">
                     <option value="Solicitante">Solicitante</option>
                     <option value="Codeudor">Codeudor</option>
                     <option value="Empleador">Empleador</option>
                     <option value="Firmante">Firmante</option>
                 </select>
             </div>
-            
+
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">
                     Teléfono
                 </label>
-                <input
-                    v-model="nuevoFirmante.telefono"
-                    type="tel"
-                    class="input input-bordered w-full"
-                    placeholder="Teléfono (opcional)"
-                />
+                <input v-model="nuevoFirmante.telefono" type="tel" class="input input-bordered w-full"
+                    placeholder="Teléfono (opcional)" />
             </div>
         </div>
-        
-        <Button
-            type="button"
-            variant="outline"
-            class="mt-4 gap-2"
-            @click="handleAgregarFirmante"
-        >
+
+        <Button type="button" variant="outline" class="mt-4 gap-2 border-emerald-200 bg-white/70 hover:bg-white"
+            @click="handleAgregarFirmante">
             <Icon name="lucide:user-plus" class="h-4 w-4" />
             Agregar Firmante
         </Button>
     </div>
-    
+
     <!-- Botón de Envío para Firma -->
     <div class="border-t mt-6 pt-6">
-        <Button
-            type="button"
-            variant="default"
-            class="gap-2"
-            :disabled="loadingFirmado || firmantes.length === 0"
-            @click="handleIniciarFirmado"
-        >
-            <Icon
-                v-if="loadingFirmado"
-                name="lucide:loader-2"
-                class="h-4 w-4 animate-spin"
-            />
-            <Icon
-                v-else
-                name="lucide:send"
-                class="h-4 w-4"
-            />
+        <Button type="button" variant="default"
+            class="gap-2 bg-linear-to-r from-indigo-500 to-fuchsia-500 hover:from-indigo-600 hover:to-fuchsia-600 text-white"
+            :disabled="loadingFirmado || firmantes.length === 0" @click="handleIniciarFirmado">
+            <Icon v-if="loadingFirmado" name="lucide:loader-2" class="h-4 w-4 animate-spin" />
+            <Icon v-else name="lucide:send" class="h-4 w-4" />
             {{ loadingFirmado ? 'Enviando...' : 'Enviar para Firma Digital' }}
         </Button>
         <p class="text-xs text-gray-500 mt-2">
@@ -225,7 +202,7 @@ const eliminarFirmante = (index: number) => {
 };
 
 
-    // Gestión de firmantes
+// Gestión de firmantes
 const agregarFirmante = () => {
     if (!nuevoFirmante.value.nombre_completo ||
         !nuevoFirmante.value.email ||
@@ -267,11 +244,11 @@ const iniciarProcesoDeFirmado = async () => {
         const response = await postJson<{
             success: boolean;
             message: string;
-            data?: any;
+            data?: unknown;
         }>(`/api/solicitudes/${solicitudId}/iniciar-firmado`, {}, { auth: true });
 
         if (response.success) {
-           
+
             return {
                 success: true,
                 message: response.message || 'Documento enviado para firma digital exitosamente'
@@ -279,11 +256,12 @@ const iniciarProcesoDeFirmado = async () => {
         } else {
             throw new Error(response.message || 'Error al iniciar proceso de firmado');
         }
-    } catch (e: any) {
+    } catch (e: unknown) {
         console.error('Error al iniciar proceso de firmado:', e);
+        const message = e instanceof Error ? e.message : 'Error al iniciar el proceso de firmado';
         return {
             success: false,
-            message: e.message || 'Error al iniciar el proceso de firmado'
+            message
         };
     } finally {
         loadingFirmado.value = false;
@@ -295,11 +273,11 @@ const handleIniciarFirmado = async () => {
     const confirmacion = confirm(
         `¿Está seguro de enviar el documento para firma digital a ${firmantes.value.length} firmante(s)?`
     );
-    
+
     if (!confirmacion) return;
-    
+
     const resultado = await iniciarProcesoDeFirmado();
-    
+
     if (resultado.success) {
         alert(resultado.message || 'Documento enviado para firma digital exitosamente');
     } else {

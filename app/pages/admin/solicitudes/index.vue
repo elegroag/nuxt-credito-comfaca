@@ -35,13 +35,8 @@
         <p>Cargando estados...</p>
       </div>
       <div v-else-if="Object.keys(estadosCount).length > 0" class="estados-grid">
-        <div 
-          v-for="(count, estado) in estadosCount" 
-          :key="estado" 
-          class="estado-card clickable"
-          @click="filtrarPorEstado(estado)"
-          :title="`Hacer clic para filtrar solicitudes en estado: ${estado}`"
-        >
+        <div v-for="(count, estado) in estadosCount" :key="estado" class="estado-card clickable"
+          @click="filtrarPorEstado(estado)" :title="`Hacer clic para filtrar solicitudes en estado: ${estado}`">
           <div class="estado-count">{{ count }}</div>
           <div class="estado-name">{{ estado }}</div>
           <div class="estado-percentage">
@@ -60,7 +55,12 @@
       <div class="table-header">
         <h2>Solicitudes ({{ totalItems }})</h2>
         <div class="table-actions">
-          <select :value="filtrosActivos.limit" @change="cambiarLimite(Number(($event.target as HTMLSelectElement).value))" class="form-select">
+          <button v-if="filtrosActivos.estados?.length" @click="limpiarFiltroEstado" class="btn btn-outline"
+            :disabled="loading" title="Quitar filtro por estado">
+            Quitar filtro de estado
+          </button>
+          <select :value="filtrosActivos.limit"
+            @change="cambiarLimite(Number(($event.target as HTMLSelectElement).value))" class="form-select">
             <option :value="10">10 por página</option>
             <option :value="20">20 por página</option>
             <option :value="50">50 por página</option>
@@ -101,40 +101,40 @@
             <tr v-for="solicitud in solicitudes" :key="solicitud.numero_solicitud">
               <td>
                 <div class="solicitante-info">
-                  <div class="nombre">{{ solicitud.solicitante?.nombres_apellidos || solicitud.payload?.solicitante?.nombres_apellidos || 'N/A' }}</div>
-                  <div class="email">{{ solicitud.solicitante?.email || solicitud.payload?.solicitante?.email || 'N/A' }}</div>
+                  <div class="nombre">{{ solicitud.solicitante?.nombres + ' ' + solicitud.solicitante?.apellidos ||
+                    'N/A' }}</div>
+                  <div class="email">{{ solicitud.solicitante?.email || solicitud.solicitante?.email || 'N/A' }}</div>
                 </div>
               </td>
               <td>
-                <span class="documento">{{ solicitud.solicitante?.numero_identificacion || solicitud.payload?.solicitante?.numero_identificacion || 'N/A' }}</span>
+                <span class="documento">{{ solicitud.solicitante?.numero_documento || 'N/A' }}</span>
               </td>
               <td>
-                <span :class="`estado-badge estado-${(solicitud.estado || 'desconocido').toLowerCase().replace(/\s+/g, '-')}`">
+                <span
+                  :class="`estado-badge estado-${(solicitud.estado || 'desconocido').toLowerCase().replace(/\s+/g, '-')}`">
                   {{ solicitud.estado || 'Desconocido' }}
                 </span>
               </td>
               <td>
-                <span class="monto">${{ formatCurrency((solicitud as any).payload?.solicitud?.valor_solicitud || (solicitud as any).valor_solicitud || 0) }}</span>
+                <span class="monto">${{ formatCurrency(solicitud?.valor_solicitud || 0) }}</span>
               </td>
               <td>
-                <span class="plazo">{{ (solicitud as any).plazo_meses || solicitud.payload?.solicitud?.plazo_meses || 0 }} meses</span>
+                <span class="plazo">{{ solicitud?.plazo_meses || 0 }} meses</span>
               </td>
               <td>
                 <span class="fecha">{{ formatDate(solicitud.created_at || new Date().toISOString()) }}</span>
               </td>
               <td>
                 <div class="acciones">
-                  <NuxtLink
-                    :to="`/admin/solicitudes/show/${solicitud.numero_solicitud}`"
-                    class="btn btn-sm btn-outline"
-                    title="Ver detalles"
-                  >
+                  <NuxtLink :to="`/admin/solicitudes/show/${solicitud.numero_solicitud}`" class="btn btn-sm btn-outline"
+                    title="Ver detalles">
                     <EyeIcon class="h-4 w-4" />
                   </NuxtLink>
                   <button @click="cambiarEstado(solicitud)" class="btn btn-sm btn-outline" title="Cambiar estado">
                     <PencilIcon class="h-4 w-4" />
                   </button>
-                  <button @click="eliminarSolicitudConfirm(solicitud)" class="btn btn-sm btn-outline text-red-500" title="Eliminar">
+                  <button @click="eliminarSolicitudConfirm(solicitud)" class="btn btn-sm btn-outline text-red-500"
+                    title="Eliminar">
                     <TrashIcon class="h-4 w-4" />
                   </button>
                 </div>
@@ -145,23 +145,15 @@
 
         <!-- Paginación -->
         <div class="pagination">
-          <button
-            @click="cambiarPagina(paginaActual - 1)"
-            :disabled="paginaActual === 1"
-            class="btn btn-outline"
-          >
+          <button @click="cambiarPagina(paginaActual - 1)" :disabled="!tienePaginaAnterior" class="btn btn-outline">
             <ChevronLeftIcon class="h-5 w-5" />
           </button>
-          
+
           <span class="pagination-info">
             Página {{ paginaActual }} de {{ totalPaginas }}
           </span>
-          
-          <button
-            @click="cambiarPagina(paginaActual + 1)"
-            :disabled="paginaActual === totalPaginas"
-            class="btn btn-outline"
-          >
+
+          <button @click="cambiarPagina(paginaActual + 1)" :disabled="!tieneSiguientePagina" class="btn btn-outline">
             <ChevronRightIcon class="h-5 w-5" />
           </button>
         </div>
@@ -180,12 +172,8 @@
         <div class="modal-body">
           <div class="form-group">
             <label>Solicitud</label>
-            <input
-                :value="solicitudSeleccionada?.numero_solicitud || solicitudSeleccionada?.payload?.solicitud?.numero_solicitud || 'N/A'"
-                type="text"
-                readonly
-                class="form-control"
-              />
+            <input :value="solicitudSeleccionada?.numero_solicitud || 'N/A'" type="text" readonly
+              class="form-control" />
           </div>
           <div class="form-group">
             <label>Nuevo Estado</label>
@@ -197,12 +185,8 @@
           </div>
           <div class="form-group">
             <label>Descripción (opcional)</label>
-            <textarea
-              v-model="estadoDescripcion"
-              rows="3"
-              placeholder="Describe el motivo del cambio..."
-              class="form-control"
-            ></textarea>
+            <textarea v-model="estadoDescripcion" rows="3" placeholder="Describe el motivo del cambio..."
+              class="form-control"></textarea>
           </div>
         </div>
         <div class="modal-footer">
@@ -249,6 +233,8 @@ const {
   loadingEstados,
   totalPaginas,
   paginaActual,
+  tieneSiguientePagina,
+  tienePaginaAnterior,
   showEstadoModal,
   solicitudSeleccionada,
   nuevoEstado,
@@ -264,7 +250,8 @@ const {
   cerrarEstadoModal,
   confirmarCambioEstado,
   eliminarSolicitudConfirm,
-  filtrarPorEstado
+  filtrarPorEstado,
+  limpiarFiltroEstado
 } = useAdminSolicitudes()
 
 definePageMeta({
@@ -274,5 +261,5 @@ definePageMeta({
 </script>
 
 <style scoped>
-  @import '~/assets/css/admin-solicitudes.css';
+@import '~/assets/css/admin-solicitudes.css';
 </style>

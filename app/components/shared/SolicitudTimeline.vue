@@ -1,13 +1,13 @@
 <template>
-  <h2 class="text-xl font-semibold mb-2 bg-linear-to-r from-sky-400 to-blue-700 bg-clip-text text-transparent">
-    Estado del proceso</h2>
-  <p>Aquí podras encontrar el estado actual de tu solicitud. Como tambien la informacion relacionada con el proceso y lo
-    documentos cargados.</p>
   <Card class="border-0 shadow-md hover:shadow-lg transition-shadow duration-200 bg-white dark:bg-gray-800">
     <CardContent class="p-6">
+      <h2 class="text-xl font-semibold mb-2">
+        Estado del proceso
+      </h2>
+      <p>Aquí podras encontrar el estado actual de tu solicitud. Como tambien la informacion relacionada con el proceso
+        y los documentos cargados.</p>
 
-
-      <div class="relative">
+      <div class="relative mt-8">
         <div
           class="absolute left-8 top-0 bottom-0 w-0.5 bg-linear-to-b from-sky-200 to-blue-200 dark:from-sky-700 dark:to-blue-700">
         </div>

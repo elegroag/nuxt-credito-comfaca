@@ -38,26 +38,19 @@ export interface SolicitudAdmin {
     created_at: string
     updated_at: string
     estado: string
-    payload: {
-        solicitante: {
-            email: string
-            nombres_apellidos: string
-            numero_identificacion: string
-            telefono_movil: string
-            tipo_identificacion: string
-        }
-        solicitud: {
-            valor_solicitado?: number
-            valor_solicitud?: number
-            plazo_meses?: number
-            numero_solicitud?: string
-            tipcre?: string
-            codigo_cre?: string
-            detalle_modalidad?: string
-        }
-    }
-    xml_filename?: string
+    valor_solicitud?: number
+    plazo_meses?: number
+    numero_solicitud?: string
+    tipcre?: string
+    tipo_credito?: string
+    detalle_modalidad?: string
     owner_username: string
+    payload?: {
+        informacion_laboral?: any,
+        ingresos_descuentos?: any,
+        informacion_economica?: any,
+        linea_credito?: any
+    }
     timeline: Array<{
         estado: string
         fecha: string
@@ -73,16 +66,13 @@ export interface SolicitudAdmin {
         tamano_bytes: number
         created_at: string
     }>
-    // Campos adicionales que vienen del backend
-    monto_solicitado?: number
-    plazo_meses?: number
-    numero_solicitud?: string
     solicitante?: {
         email: string
-        nombres_apellidos: string
-        numero_identificacion: string
+        nombres: string
+        apellidos: string
+        numero_documento: string
         telefono_movil: string
-        tipo_identificacion: string
+        tipo_documento: string
     }
 }
 
