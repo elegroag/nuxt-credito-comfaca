@@ -169,7 +169,14 @@ export const useSession = () => {
 
             const response = await api.getJson<{
                 success: boolean
-                data: { valid: boolean; user: any }
+                data: {
+                    valid: boolean
+                    user: {
+                        roles?: unknown
+                        permissions?: unknown
+                        trabajador?: Trabajador | null
+                    }
+                }
             }>('/api/auth/verify', { auth: true })
 
             const isValid = response.success && response.data.valid
@@ -180,12 +187,24 @@ export const useSession = () => {
 
                 // Actualizar roles y permisos del usuario
                 if (session.value.user) {
-                    session.value.user.roles = userData.roles || []
-                    session.value.user.permissions = userData.permissions || []
+                    session.value.user.roles = Array.isArray(userData.roles) ? userData.roles.filter((r) => typeof r === 'string') : []
+                    session.value.user.permissions = Array.isArray(userData.permissions)
+                        ? userData.permissions.filter((p) => typeof p === 'string')
+                        : []
 
-                    // Guardar los datos actualizados en storage
-                    const updatedUser = { ...session.value.user }
-                    await storage.setItem(STORAGE_USER_KEY, JSON.stringify(updatedUser))
+                    if ('trabajador' in userData) {
+                        session.value.user.trabajador = userData.trabajador ?? null
+                    }
+
+                    // Guardar los datos actualizados en storage (separando trabajador)
+                    const { trabajador, ...userWithoutTrabajador } = session.value.user
+                    await storage.setItem(STORAGE_USER_KEY, JSON.stringify(userWithoutTrabajador))
+
+                    if (trabajador) {
+                        await storage.setItem(STORAGE_TRABAJADOR_KEY, JSON.stringify(trabajador))
+                    } else {
+                        await storage.removeItem(STORAGE_TRABAJADOR_KEY)
+                    }
                 }
             }
 

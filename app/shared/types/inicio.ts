@@ -11,13 +11,11 @@ export interface EstadoSolicitudData {
 export type EstadoSolicitud = string;
 
 export interface SolicitudResumen {
-    id: string;
+    numero_solicitud: string;
+    detalle_modalidad: string | null;
+    valor_solicitud: number | string | null;
     estado: string;
-    numero_solicitud?: string;
-    monto_solicitado?: number;
-    plazo_meses?: number;
-    created_at?: string;
-    [key: string]: any;
+    created_at: string;
 }
 
 export interface InicioState {

@@ -72,14 +72,19 @@ export function useAdminDashboard() {
   // Función para cargar estadísticas de usuarios
   const cargarEstadisticasUsuarios = async () => {
     try {
-      const response = await getJson<any>('/api/admin/users/estadisticas', { auth: true });
+      type UsuariosStatsResponse = {
+        data: {
+          trabajadores?: number;
+          usuariosPorRol?: Array<{ rol: string; count: number }>;
+        };
+      };
+
+      const response = await getJson<UsuariosStatsResponse>('/api/admin/users/estadisticas', { auth: true });
       const data = response.data;
 
-      if (data) {
-        stats.value.trabajadoresRegistrados = data.trabajadores || 0;
-        stats.value.usuariosPorRol = data.usuariosPorRol || [];
-      }
-    } catch (e: any) {
+      stats.value.trabajadoresRegistrados = data?.trabajadores ?? 0;
+      stats.value.usuariosPorRol = data?.usuariosPorRol ?? [];
+    } catch (e: unknown) {
       console.error('Error cargando estadísticas de usuarios:', e);
     }
   };
@@ -87,24 +92,9 @@ export function useAdminDashboard() {
   // Función para cargar estadísticas de convenios
   const cargarEstadisticasConvenios = async () => {
     try {
-      const response = await getJson<any>('/api/admin/empresas-convenios', { auth: true });
-      const data = response.data;
-
-      if (Array.isArray(data)) {
-        stats.value.conveniosActivos = data.filter(c => c.activo).length;
-
-        // Top empresas con más trabajadores
-        stats.value.topEmpresas = data
-          .filter(c => c.activo)
-          .sort((a: any, b: any) => (b.trabajadores_count || 0) - (a.trabajadores_count || 0))
-          .slice(0, 5)
-          .map((c: any) => ({
-            nombre: c.nombre_empresa,
-            trabajadores: c.trabajadores_count || 0,
-            convenio: c.nombre_convenio
-          }));
-      }
-    } catch (e: any) {
+      const response = await getJson<{ data: unknown }>('/api/admin/empresas-convenios', { auth: true });
+      void response;
+    } catch (e: unknown) {
       console.error('Error cargando estadísticas de convenios:', e);
     }
   };
@@ -112,24 +102,51 @@ export function useAdminDashboard() {
   // Función para cargar estadísticas de solicitudes
   const cargarEstadisticasSolicitudes = async () => {
     try {
-      const response = await getJson<any>('/api/admin/dashboard/estadisticas', { auth: true });
+      type DashboardResponse = {
+        data: {
+          solicitudes?: {
+            total?: number;
+            activas?: number;
+            pendientesFirma?: number;
+            tasaAprobacion?: number;
+            montoTotalAprobado?: number;
+            porEstado?: Array<{ estado: string; count: number; color: string }>;
+          };
+          convenios?: {
+            activos?: number;
+            topEmpresas?: Array<{ nombre: string; convenio: string; trabajadores: number }>;
+          };
+          usuarios?: {
+            trabajadores?: number;
+            porRol?: Array<{ rol: string; count: number }>;
+          };
+          actividadReciente?: Array<{ id: string; tipo: string; descripcion: string; fecha: string }>;
+        };
+      };
+
+      const response = await getJson<DashboardResponse>('/api/admin/dashboard/estadisticas', { auth: true });
       const data = response.data;
 
-      if (data && data.solicitudes) {
-        const solicitudes = data.solicitudes;
+      const solicitudes = data?.solicitudes;
+      stats.value.totalSolicitudes = solicitudes?.total ?? 0;
+      stats.value.solicitudesActivas = solicitudes?.activas ?? 0;
+      stats.value.solicitudesPendientesFirma = solicitudes?.pendientesFirma ?? 0;
+      stats.value.tasaAprobacion = solicitudes?.tasaAprobacion ?? 0;
+      stats.value.montoTotalAprobado = solicitudes?.montoTotalAprobado ?? 0;
+      stats.value.solicitudesPorEstado = solicitudes?.porEstado ?? [];
 
-        stats.value.totalSolicitudes = solicitudes.total || 0;
-        stats.value.solicitudesActivas = solicitudes.activas || 0;
-        stats.value.solicitudesPendientesFirma = solicitudes.pendientesFirma || 0;
-        stats.value.tasaAprobacion = solicitudes.tasaAprobacion || 0;
-        stats.value.montoTotalAprobado = solicitudes.montoTotalAprobado || 0;
-        stats.value.solicitudesPorEstado = solicitudes.porEstado || [];
+      const convenios = data?.convenios;
+      stats.value.conveniosActivos = convenios?.activos ?? 0;
+      stats.value.topEmpresas = convenios?.topEmpresas ?? [];
+
+      const usuarios = data?.usuarios;
+      if (usuarios) {
+        stats.value.trabajadoresRegistrados = usuarios.trabajadores ?? stats.value.trabajadoresRegistrados;
+        stats.value.usuariosPorRol = usuarios.porRol ?? stats.value.usuariosPorRol;
       }
 
-      if (data && data.actividadReciente) {
-        stats.value.actividadReciente = data.actividadReciente || [];
-      }
-    } catch (e: any) {
+      stats.value.actividadReciente = data?.actividadReciente ?? [];
+    } catch (e: unknown) {
       console.error('Error cargando estadísticas de solicitudes:', e);
       throw e;
     }
@@ -143,16 +160,11 @@ export function useAdminDashboard() {
     error.value = '';
 
     try {
-      // Cargar en paralelo para mejor rendimiento
-      await Promise.all([
-        cargarEstadisticasUsuarios(),
-        cargarEstadisticasConvenios(),
-        cargarEstadisticasSolicitudes()
-      ]);
+      await cargarEstadisticasSolicitudes();
 
       lastUpdated.value = new Date();
-    } catch (e: any) {
-      error.value = e?.message || 'Error al cargar las estadísticas';
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : 'Error al cargar las estadísticas';
       console.error('Error en cargarEstadisticas:', e);
     } finally {
       loading.value = false;

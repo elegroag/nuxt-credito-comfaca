@@ -125,12 +125,27 @@ export function useInicio() {
         loadingSolicitudes.value = true;
         solicitudesError.value = '';
         try {
-            const response = await getJson<any>('/api/solicitudes-credito/all-user', { auth: true });
-            const data = response.data;
-            solicitudes.value = Array.isArray(data) ? data : [];
-        } catch (e: any) {
+            type MisSolicitudesResponse = {
+                data: {
+                    items: SolicitudResumen[];
+                    count: number;
+                    skip: number;
+                    limit: number;
+                };
+            };
+
+            const limit = 20;
+            const offset = 0;
+            const response = await getJson<MisSolicitudesResponse>(
+                `/api/solicitudes-credito/mis-solicitudes?limit=${limit}&offset=${offset}`,
+                { auth: true }
+            );
+
+            const items = response.data?.items;
+            solicitudes.value = Array.isArray(items) ? items : [];
+        } catch (e: unknown) {
             solicitudes.value = [];
-            solicitudesError.value = e?.message || 'No fue posible cargar las solicitudes';
+            solicitudesError.value = e instanceof Error ? e.message : 'No fue posible cargar las solicitudes';
         } finally {
             loadingSolicitudes.value = false;
         }
