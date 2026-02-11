@@ -75,13 +75,7 @@
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label class="text-sm font-medium text-gray-500">Número de Solicitud</label>
-                  <p class="text-lg font-semibold">
-                    {{
-                      solicitud?.payload?.solicitud?.numero_solicitud ||
-                      solicitud?.numero_solicitud ||
-                      '-'
-                    }}
-                  </p>
+                  <p class="text-lg font-semibold">{{ solicitud?.numero_solicitud }}</p>
                 </div>
                 <div>
                   <label class="text-sm font-medium text-gray-500">Estado</label>
@@ -103,7 +97,7 @@
                 </div>
                 <div>
                   <label class="text-sm font-medium text-gray-500">Fecha de Creación</label>
-                  <p class="text-lg">{{ fmtDate(solicitud.created_at) }}</p>
+                  <p class="text-lg">{{ fmtDate(solicitud.fecha_radicado) }}</p>
                 </div>
                 <div>
                   <label class="text-sm font-medium text-gray-500">Línea de Crédito</label>
@@ -111,7 +105,9 @@
                 </div>
                 <div>
                   <label class="text-sm font-medium text-gray-500">Usuario Propietario</label>
-                  <p class="text-lg font-semibold">{{ solicitud.solicitante.nombres_apellidos || '-' }}</p>
+                  <p class="text-lg font-semibold">{{ solicitud.solicitante.nombres }} {{
+                    solicitud.solicitante.apellidos
+                  }}</p>
                 </div>
               </div>
             </div>
@@ -131,8 +127,7 @@
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label class="text-sm font-medium text-gray-500">Nombres Completos</label>
-                  <p class="text-lg">{{ solicitud.solicitante?.nombres + ' ' + solicitud.solicitante?.apellidos || '-'
-                    }}
+                  <p class="text-lg">{{ solicitud.solicitante?.nombres + ' ' + solicitud.solicitante?.apellidos }}
                   </p>
                 </div>
                 <div>
@@ -166,7 +161,7 @@
                 <div>
                   <label class="text-sm font-medium text-gray-500">Código Categoría</label>
                   <p class="text-lg">
-                    {{ solicitud?.payload?.solicitante?.codigo_categoria || '-' }}
+                    {{ solicitud?.solicitante?.codigo_categoria || '-' }}
                   </p>
                 </div>
                 <div>
@@ -202,7 +197,7 @@
                   <p class="text-lg">
                     {{
                       getTipoVivienda(
-                        solicitud?.payload?.solicitante?.tipo_vivienda
+                        solicitud?.solicitante?.tipo_vivienda
                       ) || '-'
                     }}
                   </p>
@@ -210,7 +205,7 @@
                 <div>
                   <label class="text-sm font-medium text-gray-500">Personas a Cargo</label>
                   <p class="text-lg">
-                    {{ solicitud?.payload?.solicitante?.personas_a_cargo || 0 }}
+                    {{ solicitud?.solicitante?.personas_a_cargo || 0 }}
                   </p>
                 </div>
               </div>

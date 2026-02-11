@@ -79,6 +79,32 @@
                   <span class="font-medium">{{ linea.pagseg === 'S' ? 'Sí' : 'No' }}</span>
                 </div>
               </div>
+
+              <div class="mt-4 space-y-3">
+                <div>
+                  <div class="text-xs font-medium text-muted-foreground mb-2">Tasas por categoría</div>
+                  <div class="flex flex-wrap gap-2">
+                    <Badge v-for="cat in (linea.categorias || [])" :key="cat.codcat" variant="secondary"
+                      class="text-[11px]">
+                      {{ cat.codcat }}: {{ Number(cat.facfin).toFixed(2) }}%
+                    </Badge>
+                    <span v-if="!linea.categorias || linea.categorias.length === 0"
+                      class="text-xs text-muted-foreground">
+                      No disponible
+                    </span>
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-muted-foreground">Documentos requeridos:</span>
+                  <span class="font-medium">
+                    {{(linea.documentos || []).filter((d: any) => d?.obliga === 'S').length}} obligatorios
+                    <span class="text-muted-foreground">/</span>
+                    {{ (linea.documentos || []).length }} total
+                  </span>
+                </div>
+              </div>
+
               <Button variant="outline" size="sm" class="w-full mt-4 cursor-pointer hover:bg-primary/50"
                 @click.stop="simularLinea(linea)">
                 Simular esta línea

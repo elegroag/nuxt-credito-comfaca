@@ -84,8 +84,8 @@
     </FormField>
 
     <FormField label="País de residencia">
-      <CustomSelect v-model="form.solicitante.pais_residencia" :options="paisesOptions" 
-        placeholder="Seleccionar país" clearable searchable />
+      <CustomSelect v-model="form.solicitante.pais_residencia" :options="paisesOptions" placeholder="Seleccionar país"
+        clearable searchable />
     </FormField>
 
     <FormField label="Tipo de vivienda">
@@ -96,21 +96,13 @@
     <FormField label="¿Vive con núcleo familiar?">
       <div class="flex gap-4">
         <label class="flex items-center gap-2 cursor-pointer">
-          <input
-            type="radio"
-            :value="true"
-            v-model="form.solicitante.vive_con_nucleo_familiar"
-            class="text-blue-600 focus:ring-blue-500"
-          />
+          <input type="radio" :value="true" v-model="form.solicitante.vive_con_nucleo_familiar"
+            class="text-blue-600 focus:ring-blue-500" />
           <span>Sí</span>
         </label>
         <label class="flex items-center gap-2 cursor-pointer">
-          <input
-            type="radio"
-            :value="false"
-            v-model="form.solicitante.vive_con_nucleo_familiar"
-            class="text-blue-600 focus:ring-blue-500"
-          />
+          <input type="radio" :value="false" v-model="form.solicitante.vive_con_nucleo_familiar"
+            class="text-blue-600 focus:ring-blue-500" />
           <span>No</span>
         </label>
       </div>
@@ -120,12 +112,8 @@
       <Input v-model.number="form.solicitante.personas_a_cargo" type="number" min="0" />
     </FormField>
 
-    <FormField label="Fecha de vinculación">
-      <Input v-model="form.solicitante.fecha_vinculacion" type="date" />
-    </FormField>
-
     <FormField label="Cargo">
-      <Input v-model="form.solicitante.cargo" />
+      <Input v-model="form.solicitante.cargo" readonly />
     </FormField>
 
     <FormField label="Salario (opcional)">

@@ -11,7 +11,7 @@
                 <div class="flex items-start gap-3 flex-1 min-w-0">
                     <div
                         class="mt-0.5 h-9 w-9 rounded-full bg-linear-to-br from-emerald-100 to-teal-100 flex items-center justify-center border border-emerald-200/70 shrink-0">
-                        <Icon name="lucide:user" class="h-4 w-4 text-emerald-700" />
+                        <UserIcon class="h-4 w-4 text-emerald-700" />
                     </div>
                     <div class="min-w-0 flex-1">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
@@ -25,18 +25,18 @@
                         </div>
                         <div class="mt-1 space-y-1 text-sm text-slate-600">
                             <div class="flex items-center gap-2">
-                                <Icon name="lucide:badge-check" class="h-4 w-4 text-slate-400" />
+                                <CheckBadgeIcon class="h-4 w-4 text-slate-400" />
                                 <span class="truncate">
                                     {{ getTipoDocumentoLabel(firmante.tipo_documento || getDefaultTipoDocumento()) }}:
                                     {{ firmante.numero_documento }}
                                 </span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <Icon name="lucide:mail" class="h-4 w-4 text-slate-400" />
+                                <EnvelopeIcon class="h-4 w-4 text-slate-400" />
                                 <span class="truncate">{{ firmante.email }}</span>
                             </div>
                             <div v-if="firmante.telefono" class="flex items-center gap-2">
-                                <Icon name="lucide:phone" class="h-4 w-4 text-slate-400" />
+                                <PhoneIcon class="h-4 w-4 text-slate-400" />
                                 <span class="truncate">{{ firmante.telefono }}</span>
                             </div>
                         </div>
@@ -45,7 +45,7 @@
                 <Button variant="outline" size="sm" @click="eliminarFirmante(index)"
                     class="shrink-0 border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-800"
                     title="Eliminar firmante">
-                    <Icon name="lucide:trash-2" class="h-4 w-4" />
+                    <TrashIcon class="h-4 w-4" />
                 </Button>
             </div>
         </div>
@@ -53,77 +53,95 @@
 
     <div v-else class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
         <p class="text-sm text-amber-800 flex items-start gap-2">
-            <Icon name="lucide:triangle-alert" class="h-4 w-4 mt-0.5 shrink-0" />
+            <ExclamationTriangleIcon class="h-4 w-4 mt-0.5 shrink-0" />
             No hay firmantes registrados. Agregue al menos un firmante para poder iniciar el proceso de firma digital.
         </p>
     </div>
 
     <!-- Formulario para Agregar Nuevo Firmante -->
     <div class="border-t pt-6">
-        <h3 class="text-sm font-medium text-slate-700 mb-3 flex items-center gap-2">
-            <Icon name="lucide:user-plus" class="h-4 w-4 text-emerald-700" />
+        <h3 class="font-medium text-slate-700 mb-3 flex items-center gap-2">
+            <UserPlusIcon class="h-4 w-4 text-emerald-700" />
             Agregar Nuevo Firmante
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                    Nombre Completo *
-                </label>
-                <input v-model="nuevoFirmante.nombre_completo" type="text" class="input input-bordered w-full"
-                    placeholder="Nombre completo del firmante" />
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <label class="text-sm font-medium text-gray-700 sm:w-40 sm:shrink-0">
+                        Nombre Completo *
+                    </label>
+                    <input v-model="nuevoFirmante.nombre_completo" type="text"
+                        class="w-full sm:flex-1 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-xs outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        placeholder="Nombre completo del firmante" />
+                </div>
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                    Email *
-                </label>
-                <input v-model="nuevoFirmante.email" type="email" class="input input-bordered w-full"
-                    placeholder="correo@ejemplo.com" />
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <label class="text-sm font-medium text-gray-700 sm:w-40 sm:shrink-0">
+                        Email *
+                    </label>
+                    <input v-model="nuevoFirmante.email" type="email"
+                        class="w-full sm:flex-1 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-xs outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        placeholder="correo@ejemplo.com" />
+                </div>
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                    Tipo de Documento
-                </label>
-                <select v-model="nuevoFirmante.tipo_documento" class="select select-bordered w-full">
-                    <option v-for="tipo in getTiposDocumentoOptions()" :key="tipo.value" :value="tipo.value">
-                        {{ tipo.label }}
-                    </option>
-                </select>
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <label class="text-sm font-medium text-gray-700 sm:w-40 sm:shrink-0">
+                        Tipo de Documento
+                    </label>
+                    <select v-model="nuevoFirmante.tipo_documento"
+                        class="w-full sm:flex-1 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-xs outline-none focus:border-primary focus:ring-2 focus:ring-primary/20">
+                        <option v-for="tipo in getTiposDocumentoOptions()" :key="tipo.value" :value="tipo.value">
+                            {{ tipo.label }}
+                        </option>
+                    </select>
+                </div>
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                    Número de Documento *
-                </label>
-                <input v-model="nuevoFirmante.numero_documento" type="text" class="input input-bordered w-full"
-                    placeholder="Número de documento" />
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <label class="text-sm font-medium text-gray-700 sm:w-40 sm:shrink-0">
+                        Número de Documento *
+                    </label>
+                    <input v-model="nuevoFirmante.numero_documento" type="text"
+                        class="w-full sm:flex-1 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-xs outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        placeholder="Número de documento" />
+                </div>
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                    Rol
-                </label>
-                <select v-model="nuevoFirmante.rol" class="select select-bordered w-full">
-                    <option value="Solicitante">Solicitante</option>
-                    <option value="Codeudor">Codeudor</option>
-                    <option value="Empleador">Empleador</option>
-                    <option value="Firmante">Firmante</option>
-                </select>
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <label class="text-sm font-medium text-gray-700 sm:w-40 sm:shrink-0">
+                        Rol
+                    </label>
+                    <select v-model="nuevoFirmante.rol"
+                        class="w-full sm:flex-1 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-xs outline-none focus:border-primary focus:ring-2 focus:ring-primary/20">
+                        <option value="Solicitante">Solicitante</option>
+                        <option value="Codeudor">Codeudor</option>
+                        <option value="Empleador">Empleador</option>
+                        <option value="Firmante">Firmante</option>
+                    </select>
+                </div>
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                    Teléfono
-                </label>
-                <input v-model="nuevoFirmante.telefono" type="tel" class="input input-bordered w-full"
-                    placeholder="Teléfono (opcional)" />
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <label class="text-sm font-medium text-gray-700 sm:w-40 sm:shrink-0">
+                        Teléfono
+                    </label>
+                    <input v-model="nuevoFirmante.telefono" type="tel"
+                        class="w-full sm:flex-1 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-xs outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        placeholder="Teléfono (opcional)" />
+                </div>
             </div>
         </div>
 
         <Button type="button" variant="outline" class="mt-4 gap-2 border-emerald-200 bg-white/70 hover:bg-white"
             @click="handleAgregarFirmante">
-            <Icon name="lucide:user-plus" class="h-4 w-4" />
+            <UserPlusIcon class="h-4 w-4" />
             Agregar Firmante
         </Button>
     </div>
@@ -133,8 +151,8 @@
         <Button type="button" variant="default"
             class="gap-2 bg-linear-to-r from-indigo-500 to-fuchsia-500 hover:from-indigo-600 hover:to-fuchsia-600 text-white"
             :disabled="loadingFirmado || firmantes.length === 0" @click="handleIniciarFirmado">
-            <Icon v-if="loadingFirmado" name="lucide:loader-2" class="h-4 w-4 animate-spin" />
-            <Icon v-else name="lucide:send" class="h-4 w-4" />
+            <ArrowPathIcon v-if="loadingFirmado" class="h-4 w-4 animate-spin" />
+            <PaperAirplaneIcon v-else class="h-4 w-4" />
             {{ loadingFirmado ? 'Enviando...' : 'Enviar para Firma Digital' }}
         </Button>
         <p class="text-xs text-gray-500 mt-2">
@@ -150,6 +168,17 @@ import type { Firmante } from '~/shared/types/solicitud-credito';
 import { useApi } from '~/composables/useApi';
 import { useSession } from '~/composables/useSession';
 import Button from '../ui/Button.vue';
+import {
+    UserIcon,
+    CheckBadgeIcon,
+    EnvelopeIcon,
+    PhoneIcon,
+    TrashIcon,
+    ExclamationTriangleIcon,
+    UserPlusIcon,
+    ArrowPathIcon,
+    PaperAirplaneIcon
+} from '@heroicons/vue/24/outline';
 
 interface Props {
     solicitudId: string;
