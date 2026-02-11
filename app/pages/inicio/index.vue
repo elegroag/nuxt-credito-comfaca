@@ -20,7 +20,7 @@
               <RefreshCw :class="['h-5 w-5 mr-2', loading && 'animate-spin']" />
               Actualizar
             </Button>
-            <Button @click="navigateTo('/admin/solicitudes')"
+            <Button @click="router.push('/admin/solicitudes')"
               class="bg-primary text-primary-foreground hover:bg-primary/90">
               <Settings class="h-5 w-5 mr-2" />
               Administración
@@ -136,33 +136,6 @@
               <div class="flex-1">
                 <div class="text-base font-semibold text-foreground">Mis solicitudes</div>
                 <div class="mt-1 text-sm text-muted-foreground">Listado de tus solicitudes y estado actual.</div>
-
-                <div class="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
-                  <span class="font-semibold text-foreground">Flujo:</span>
-                  <div v-if="loadingEstados" class="text-muted-foreground">Cargando estados...</div>
-                  <template v-else-if="estadosError" class="text-destructive">
-                    <span>{{ estadosError }}</span>
-                    <Button variant="ghost" size="sm" @click="cargarEstados" class="ml-1 p-0 h-auto text-xs">
-                      Reintentar
-                    </Button>
-                  </template>
-                  <template v-else>
-                    <template v-for="(estado, i) in estadosConColores" :key="estado.nombre">
-                      <div class="flex items-center gap-1.5">
-                        <div class="flex items-center gap-1 px-2 py-1 rounded-md border" :style="{
-                          borderColor: estado.color + '40',
-                          backgroundColor: estado.color + '20',
-                          color: estado.color
-                        }">
-                          <div class="w-2 h-2 rounded-full" :style="{ backgroundColor: estado.color }"></div>
-                          <span class="font-medium">{{ estado.nombre }}</span>
-                        </div>
-                        <ChevronRight v-if="i < estadosConColores.length - 1"
-                          class="h-3.5 w-3.5 text-muted-foreground/40" />
-                      </div>
-                    </template>
-                  </template>
-                </div>
               </div>
             </div>
 
@@ -197,8 +170,8 @@
                 </thead>
                 <tbody>
                   <tr v-for="s in solicitudes" :key="s.numero_solicitud" class="border-t border-border">
-                    <td class="px-4 py-3 text-foreground">{{ s.payload?.linea_credito?.detalle_modalidad || '-' }}</td>
-                    <td class="px-4 py-3 text-foreground">{{ fmtMoney(s?.payload?.solicitud?.valor_solicitud || 0) }}
+                    <td class="px-4 py-3 text-foreground">{{ s?.detalle_modalidad || '-' }}</td>
+                    <td class="px-4 py-3 text-foreground">{{ fmtMoney(s?.valor_solicitud || 0) }}
                     </td>
                     <td class="px-4 py-3">
                       <div class="flex flex-col gap-2">
@@ -282,18 +255,14 @@ import { useAdminDashboard } from '~/composables/admin/useAdminDashboard'
 import { usePermissions } from '~/composables/usePermissions'
 import {
   Calculator,
-  FileText,
-  Key,
   ChevronRight,
   RefreshCw,
   ClipboardList,
   FilePlus,
   Eye,
-  Clock,
   Users,
   Settings,
-  AlertCircle,
-  Building
+  AlertCircle
 } from 'lucide-vue-next'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
@@ -310,27 +279,18 @@ definePageMeta({
 
 const { session } = useSession()
 const { isAdministrator } = usePermissions()
-const { navigateTo } = useRouter()
+const router = useRouter()
 
 // Composable para usuarios no administradores (vista original)
 const {
   solicitudes,
   loadingSolicitudes,
   solicitudesError,
-  flujoAprobacion,
-  estadosData,
-  loadingEstados,
-  estadosError,
   fmtMoney,
   fmtDate,
   estadoProgressPercent,
-  estadoProgressClass,
   estadoBadgeClass,
   getEstadoData,
-  getEstadoColor,
-  ultimaSolicitud,
-  estadoIndexUltima,
-  cargarEstados,
   cargarSolicitudes
 } = useInicio()
 
@@ -343,20 +303,6 @@ const {
   tiempoSinActualizar,
   refrescarEstadisticas
 } = useAdminDashboard()
-
-// Verificar si el usuario es trabajador para ocultar opciones de firmas
-const esTrabajador = computed(() => {
-  return session.value?.user?.roles?.includes('user_trabajador') || false
-})
-
-// Estados con colores para mostrar en la UI
-const estadosConColores = computed(() => {
-  return flujoAprobacion.value.map(estado => ({
-    nombre: estado,
-    color: getEstadoColor(estado),
-    data: getEstadoData(estado)
-  }))
-})
 
 // Total de usuarios para la gráfica
 const totalUsuarios = computed(() => {
