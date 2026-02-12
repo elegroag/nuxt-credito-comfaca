@@ -7,8 +7,8 @@ import type { SolicitudCredito } from '~/shared/types/solicitud-credito';
 export function useShowSolicitud() {
     const route = useRoute();
     const router = useRouter();
-    const { getJson, postJson } = useApi();
-    const { ready } = useSession();
+    const { getJson, postJson, urlFor } = useApi();
+    const { ready, authHeader } = useSession();
 
     const solicitudId = route.params.id as string;
     const solicitud = ref<SolicitudCredito | null>(null);
@@ -122,13 +122,43 @@ export function useShowSolicitud() {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
 
+    const getDocumentoNombre = (documento: { nombre_original?: unknown; id?: unknown }): string => {
+        if (typeof documento?.nombre_original === 'string' && documento.nombre_original.trim()) {
+            return documento.nombre_original;
+        }
+
+        if (typeof documento?.id === 'string' && documento.id.trim()) {
+            return documento.id;
+        }
+
+        return 'documento';
+    };
+
+    const fetchDocumentoBlob = async (path: string): Promise<Blob> => {
+        const headers: Record<string, string> = {
+            ...(authHeader.value as Record<string, string>)
+        };
+
+        const res = await fetch(urlFor(path), { method: 'GET', headers });
+        if (!res.ok) {
+            throw new Error(`No se pudo obtener el archivo (${res.status})`);
+        }
+
+        return await res.blob();
+    };
+
     // Funciones de manejo de documentos
     const descargarDocumento = async (documento: any) => {
         try {
-            const response = await getJson<{ url: string }>(`/api/documentos/${documento.id}/download`, { auth: true });
-            if (response.url) {
-                window.open(response.url, '_blank');
-            }
+            const blob = await fetchDocumentoBlob(`/api/documentos/${String(documento.id)}/download/${solicitudId}`);
+            const objectUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = objectUrl;
+            a.download = getDocumentoNombre(documento);
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(objectUrl);
         } catch (error) {
             console.error('Error al descargar documento:', error);
         }
@@ -136,10 +166,9 @@ export function useShowSolicitud() {
 
     const vistaPreviaDocumento = async (documento: any) => {
         try {
-            const response = await getJson<{ url: string }>(`/api/documentos/${documento.id}/preview`, { auth: true });
-            if (response.url) {
-                window.open(response.url, '_blank');
-            }
+            const blob = await fetchDocumentoBlob(`/api/documentos/${String(documento.id)}/preview/${solicitudId}`);
+            const objectUrl = URL.createObjectURL(blob);
+            window.open(objectUrl, '_blank');
         } catch (error) {
             console.error('Error al vista previa documento:', error);
         }
