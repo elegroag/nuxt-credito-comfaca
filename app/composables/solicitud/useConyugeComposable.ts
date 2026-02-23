@@ -11,7 +11,7 @@ export const useConyugeTrabajador = () => {
         error.value = null
 
         try {
-            const response = await postJson<ConyugeResponse>('/api/conyuge-trabajador', {
+            const response = await postJson<ConyugeResponse>('/api/postulante/conyuge-trabajador', {
                 cedtra: cedulaTrabajador,
                 estado: estado || 'A'
             }, {
