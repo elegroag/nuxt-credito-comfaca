@@ -99,7 +99,7 @@ export const useLineasCredito = () => {
         success: boolean
         message: string
         data: LineaCredito[]
-      }>('/api/lineas_credito/tipo_creditos', { auth: true })
+      }>('/api/lineas_credito/tipo-creditos', { auth: true })
 
       if (response.success) {
         //filtra las lineas en estado ='A'

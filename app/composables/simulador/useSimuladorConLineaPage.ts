@@ -81,7 +81,7 @@ export const useSimuladorConLineaPage = () => {
           success: boolean
           message: string
           data: any[]
-        }>('/api/lineas_credito/tipo_creditos', { auth: true })
+        }>('/api/lineas_credito/tipo-creditos', { auth: true })
 
         if (response.success) {
           // Guardar todas las líneas en cache
