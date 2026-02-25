@@ -1,21 +1,15 @@
 <template>
   <div class="w-full">
     <!-- Estado: No hay documento cargado -->
-    <div
-      v-if="!modelValue"
-      class="border-2 border-dashed rounded-lg p-6 text-center transition-colors duration-200"
+    <div v-if="!modelValue" class="border-2 border-dashed rounded-lg p-6 text-center transition-colors duration-200"
       :class="[
         isDragging ? 'border-primary bg-primary/5' : 'border-gray-300 hover:border-primary',
         error ? 'border-destructive' : ''
-      ]"
-      @dragenter.prevent="isDragging = true"
-      @dragleave.prevent="isDragging = false"
-      @dragover.prevent
-      @drop.prevent="handleDrop"
-    >
+      ]" @dragenter.prevent="isDragging = true" @dragleave.prevent="isDragging = false" @dragover.prevent
+      @drop.prevent="handleDrop">
       <div class="flex flex-col items-center justify-center gap-2">
         <div class="p-3 bg-gray-100 rounded-full">
-          <Icon name="lucide:upload-cloud" class="h-6 w-6 text-gray-500" />
+          <CloudArrowUpIcon class="h-6 w-6 text-gray-500" />
         </div>
         <div class="space-y-1">
           <p class="text-sm font-medium text-gray-700">
@@ -29,13 +23,7 @@
           </p>
         </div>
       </div>
-      <input
-        ref="fileInput"
-        type="file"
-        class="hidden"
-        accept=".pdf,.jpg,.jpeg,.png"
-        @change="handleFileSelect"
-      />
+      <input ref="fileInput" type="file" class="hidden" accept=".pdf,.jpg,.jpeg,.png" @change="handleFileSelect" />
     </div>
 
     <!-- Estado: Cargando -->
@@ -55,37 +43,31 @@
     <div v-else class="border rounded-lg p-4 bg-white shadow-sm group hover:border-primary transition-colors">
       <div class="flex items-start justify-between">
         <div class="flex items-center space-x-3 overflow-hidden">
-          <div class="p-2 bg-green-50 rounded-full flex-shrink-0">
-            <Icon name="lucide:file-check" class="h-5 w-5 text-green-600" />
+          <div class="p-2 bg-green-50 rounded-full shrink-0">
+            <DocumentCheckIcon class="h-5 w-5 text-green-600" />
           </div>
           <div class="min-w-0">
             <p class="text-sm font-medium text-gray-900 truncate">
-              {{ modelValue.filename }}
+              {{ modelValue.saved_filename }}
             </p>
             <p class="text-xs text-gray-500 flex items-center gap-1">
-              <span>{{ formatSize(modelValue.size) }}</span>
+              <span>{{ formatSize(modelValue.tamano_bytes ?? 0) }}</span>
               <span>•</span>
               <span class="text-green-600">Cargado exitosamente</span>
             </p>
           </div>
         </div>
-        
+
         <div class="flex items-center space-x-2 ml-4">
-          <a
-            :href="modelValue.url"
-            target="_blank"
+          <button type="button"
             class="p-1.5 text-gray-400 hover:text-primary hover:bg-gray-100 rounded-md transition-colors"
-            title="Ver documento"
-          >
-            <Icon name="lucide:eye" class="h-4 w-4" />
-          </a>
-          <button
-            type="button"
+            title="Descargar documento" @click="$emit('download', modelValue.documento_uuid)">
+            <ArrowDownTrayIcon class="h-4 w-4" />
+          </button>
+          <button type="button"
             class="p-1.5 text-gray-400 hover:text-destructive hover:bg-red-50 rounded-md transition-colors"
-            title="Eliminar documento"
-            @click="$emit('delete', modelValue.id)"
-          >
-            <Icon name="lucide:trash-2" class="h-4 w-4" />
+            title="Eliminar documento" @click="$emit('delete', modelValue.documento_uuid)">
+            <TrashIcon class="h-4 w-4" />
           </button>
         </div>
       </div>
@@ -93,7 +75,7 @@
 
     <!-- Mensaje de error -->
     <p v-if="error" class="mt-2 text-xs text-destructive flex items-center gap-1">
-      <Icon name="lucide:alert-circle" class="h-3 w-3" />
+      <ExclamationCircleIcon class="h-3 w-3" />
       {{ error }}
     </p>
   </div>
@@ -102,6 +84,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { DocumentoCargado } from '~/shared/types/solicitud-credito'
+import {
+  CloudArrowUpIcon,
+  DocumentCheckIcon,
+  ArrowDownTrayIcon,
+  TrashIcon,
+  ExclamationCircleIcon
+} from '@heroicons/vue/24/outline'
 
 const props = defineProps<{
   modelValue?: DocumentoCargado
@@ -114,6 +103,7 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: DocumentoCargado | undefined): void
   (e: 'upload', file: File): void
   (e: 'delete', id: string): void
+  (e: 'download', id: string): void
 }>()
 
 const fileInput = ref<HTMLInputElement | null>(null)

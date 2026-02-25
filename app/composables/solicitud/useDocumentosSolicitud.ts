@@ -9,7 +9,7 @@ export const useDocumentosSolicitud = () => {
   const route = useRoute()
   const router = useRouter()
   const { getJson } = useApi()
-  const { ready } = useSession()
+  const { ready, authHeader } = useSession()
 
   const solicitudId = route.params.id as string
 
@@ -96,7 +96,7 @@ export const useDocumentosSolicitud = () => {
 
   const handleDelete = async (docCargadoId: string) => {
     // Encontrar a qué requerimiento pertenece para mostrar loading si es necesario
-    const doc = documentosCargados.value?.find(d => d.id === docCargadoId)
+    const doc = documentosCargados.value?.find(d => d.documento_uuid === docCargadoId)
     if (doc) {
       cargandoId.value = doc.documento_requerido_id
     }
@@ -107,6 +107,56 @@ export const useDocumentosSolicitud = () => {
       console.error(e)
     } finally {
       cargandoId.value = null
+    }
+  }
+
+  const handleDownload = async (documentoUuid: string) => {
+    try {
+      // Crear una petición fetch para descargar el archivo directamente
+      const response = await fetch(`/api/solicitudes-credito/${solicitudId}/documentos/${documentoUuid}/download`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/octet-stream',
+          // Los headers de autenticación se manejan vía cookies
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error(`Error HTTP: ${response.status}`)
+      }
+
+      // Obtener el blob del archivo
+      const blob = await response.blob()
+
+      // Obtener el nombre del archivo desde los headers o usar un default
+      const contentDisposition = response.headers.get('content-disposition')
+      let fileName = 'documento'
+      if (contentDisposition) {
+        const fileNameMatch = contentDisposition.match(/filename="(.+)"/)
+        if (fileNameMatch && fileNameMatch[1]) {
+          fileName = fileNameMatch[1]
+        }
+      }
+
+      // Crear URL temporal y descargar
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = fileName
+      link.style.display = 'none'
+
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      // Limpiar URL temporal
+      window.URL.revokeObjectURL(url)
+
+    } catch (error) {
+      console.error('Error al descargar documento:', error)
+      // Fallback a window.open si hay error
+      const fallbackUrl = `/api/solicitudes-credito/${solicitudId}/documentos/${documentoUuid}/download`
+      window.open(fallbackUrl, '_blank')
     }
   }
 
@@ -145,6 +195,7 @@ export const useDocumentosSolicitud = () => {
     cargarSolicitud,
     handleUpload,
     handleDelete,
+    handleDownload,
     handleNavigation,
     handleBack,
     handleContinue,

@@ -254,9 +254,11 @@ export interface DocumentoCargado {
   nombre_original: string;
   created_at: string;
   documento_requerido_id?: string; // Para relacionar con el documento requerido (snake_case como en el backend)
-  saved_filename?: string;
-  tamano_bytes?: number;
+  saved_filename: string;
+  tamano_bytes: number;
   tipo_mime?: string;
+  ruta_archivo: string;
+  documento_uuid: string;
 }
 
 export type EstadoSolicitud =

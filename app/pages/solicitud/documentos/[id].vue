@@ -142,7 +142,8 @@
 
               <DocumentosUpload :model-value="getDocumentoCargado(docReq.id)" :loading="cargandoId === docReq.id"
                 :progress="progreso" :error="cargandoId === docReq.id ? errorUpload : null"
-                @upload="(file) => handleUpload(file, docReq.id)" @delete="(id) => handleDelete(id)" />
+                @upload="(file) => handleUpload(file, docReq.id)" @delete="(id) => handleDelete(id)"
+                @download="(id) => handleDownload(id)" />
             </div>
           </div>
         </div>
@@ -217,6 +218,7 @@ const {
   cargarSolicitud,
   handleUpload,
   handleDelete,
+  handleDownload,
   handleNavigation,
   handleBack,
   handleContinue,
