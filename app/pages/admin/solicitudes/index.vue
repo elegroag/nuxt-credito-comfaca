@@ -5,10 +5,6 @@
       <div class="header-content">
         <h1>Administración de Solicitudes</h1>
         <div class="header-actions">
-          <NuxtLink to="/admin/solicitudes/buscar" class="btn btn-secondary">
-            <FunnelIcon class="h-5 w-5 mr-2" />
-            Buscar
-          </NuxtLink>
           <button @click="exportarCSV" class="btn btn-secondary" :disabled="loading">
             <ArrowDownTrayIcon class="h-5 w-5 mr-2" />
             Exportar CSV

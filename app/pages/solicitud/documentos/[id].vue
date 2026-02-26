@@ -185,6 +185,25 @@
       </div>
     </div>
   </div>
+
+  <Dialog v-model:open="downloadErrorDialogOpen">
+    <DialogContent class="sm:max-w-md">
+      <DialogHeader>
+        <DialogTitle class="flex items-center gap-2 text-red-600">
+          <ExclamationCircleIcon class="w-5 h-5" />
+          Error al descargar documento
+        </DialogTitle>
+        <DialogDescription>
+          {{ downloadError || 'No fue posible descargar el documento. Intente nuevamente más tarde.' }}
+        </DialogDescription>
+      </DialogHeader>
+      <DialogFooter>
+        <UiButton variant="outline" @click="setDownloadErrorDialogOpen(false)">
+          Cerrar
+        </UiButton>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
@@ -204,6 +223,14 @@ import {
   ArrowRightIcon,
   ExclamationTriangleIcon
 } from '@heroicons/vue/24/outline'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog/exports'
 
 // Usar el composable
 const {
@@ -225,7 +252,10 @@ const {
   documentosCargados,
   documentosRequeridos,
   progreso,
-  errorUpload
+  errorUpload,
+  downloadError,
+  downloadErrorDialogOpen,
+  setDownloadErrorDialogOpen
 } = useDocumentosSolicitud()
 
 // Lifecycle

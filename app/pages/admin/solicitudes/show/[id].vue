@@ -107,7 +107,7 @@
                   <label class="text-sm font-medium text-gray-500">Usuario Propietario</label>
                   <p class="text-lg font-semibold">{{ solicitud.solicitante.nombres }} {{
                     solicitud.solicitante.apellidos
-                  }}</p>
+                    }}</p>
                 </div>
               </div>
             </div>
@@ -482,7 +482,7 @@
             <div class="space-y-4">
               <div v-if="solicitud.documentos && solicitud.documentos.length > 0"
                 class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div v-for="documento in solicitud.documentos" :key="documento.id"
+                <div v-for="documento in solicitud.documentos" :key="documento.documento_uuid"
                   class="border border-amber-100/70 bg-white/70 rounded-xl p-4 hover:shadow-md transition-shadow">
                   <div class="flex items-start gap-3">
                     <FileText class="h-8 w-8 text-blue-500 shrink-0 mt-1" />
@@ -506,11 +506,6 @@
                           class="gap-1 border-indigo-200/70 bg-white/70 hover:bg-white">
                           <Download class="h-3 w-3" />
                           Descargar
-                        </Button>
-                        <Button variant="outline" size="sm" @click="vistaPreviaDocumento(documento)"
-                          class="gap-1 border-indigo-200/70 bg-white/70 hover:bg-white">
-                          <Eye class="h-3 w-3" />
-                          Vista Previa
                         </Button>
                       </div>
                     </div>
@@ -568,7 +563,6 @@ const {
   getTipoVivienda,
   formatFileSize,
   descargarDocumento,
-  vistaPreviaDocumento,
   goBack,
   goToEdit,
   cargarSolicitud,

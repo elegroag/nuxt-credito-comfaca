@@ -134,27 +134,26 @@ export function useShowSolicitud() {
         return 'documento';
     };
 
-    const fetchDocumentoBlob = async (path: string): Promise<Blob> => {
-        const headers: Record<string, string> = {
-            ...(authHeader.value as Record<string, string>)
-        };
 
-        const res = await fetch(urlFor(path), { method: 'GET', headers });
-        if (!res.ok) {
-            throw new Error(`No se pudo obtener el archivo (${res.status})`);
-        }
-
-        return await res.blob();
-    };
 
     // Funciones de manejo de documentos
     const descargarDocumento = async (documento: any) => {
         try {
-            const blob = await fetchDocumentoBlob(`/api/documentos/${String(documento.id)}/download/${solicitudId}`);
+            const path = urlFor(`/api/solicitudes-credito/${solicitudId}/documentos/${documento.documento_uuid}/descargar`)
+            const headers: Record<string, string> = {
+                ...(authHeader.value as Record<string, string>)
+            };
+
+            const res = await fetch(path, { method: 'GET', headers });
+            if (!res.ok) {
+                throw new Error(`No se pudo obtener el archivo (${res.status})`);
+            }
+            const blob = await res.blob();
             const objectUrl = URL.createObjectURL(blob);
             const a = document.createElement('a');
+
             a.href = objectUrl;
-            a.download = getDocumentoNombre(documento);
+            a.download = getDocumentoNombre(documento.saved_filename);
             document.body.appendChild(a);
             a.click();
             a.remove();
@@ -164,15 +163,6 @@ export function useShowSolicitud() {
         }
     };
 
-    const vistaPreviaDocumento = async (documento: any) => {
-        try {
-            const blob = await fetchDocumentoBlob(`/api/documentos/${String(documento.id)}/preview/${solicitudId}`);
-            const objectUrl = URL.createObjectURL(blob);
-            window.open(objectUrl, '_blank');
-        } catch (error) {
-            console.error('Error al vista previa documento:', error);
-        }
-    };
 
     // Función principal de carga
     const cargarSolicitud = async () => {
@@ -305,7 +295,6 @@ export function useShowSolicitud() {
 
         // Funciones de documentos
         descargarDocumento,
-        vistaPreviaDocumento,
 
         // Funciones de navegación
         goBack,
