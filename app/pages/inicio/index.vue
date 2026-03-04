@@ -107,12 +107,7 @@
                 <h1 class="text-2xl font-semibold tracking-tight text-foreground">Bienvenido</h1>
                 <p class="mt-1 text-sm text-muted-foreground">
                   {{ nombreBienvenida || 'Usuario' }}
-                  <span v-if="(session.user?.roles || []).length" class="text-muted-foreground/60">·</span>
-                  <span v-if="(session.user?.roles || []).length" class="text-muted-foreground">
-                    {{ (session.user?.roles || []).join(', ') }}
-                  </span>
                 </p>
-                <p class="mt-3 text-sm text-muted-foreground">Selecciona una opción para comenzar.</p>
               </div>
 
               <div class="flex shrink-0 flex-wrap items-center gap-2">
@@ -131,69 +126,91 @@
         <!-- Solicitudes Card -->
         <Card class="mb-6 border-0 shadow-sm bg-white backdrop-blur">
           <CardContent class="p-6">
-            <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center justify-between gap-3 mb-6">
               <div class="flex items-start gap-3 flex-1">
                 <div
-                  class="flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-border bg-card p-2">
-                  <ClipboardDocumentListIcon class="h-full w-full text-foreground" />
+                  class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-blue-200 bg-gradient-to-br from-blue-500 to-blue-600 p-2 shadow-lg shadow-blue-500/20">
+                  <ClipboardDocumentListIcon class="h-full w-full text-white" />
                 </div>
                 <div class="flex-1">
-                  <div class="text-base font-semibold text-foreground">Mis solicitudes</div>
+                  <div class="text-base font-bold text-foreground">Mis solicitudes</div>
                   <div class="mt-1 text-sm text-muted-foreground">
                     Listado de tus solicitudes y estado actual.
                   </div>
                 </div>
               </div>
 
-              <Button variant="outline" @click="cargarSolicitudes" :disabled="loadingSolicitudes"
-                class="shrink-0 border-sky-200 bg-white/80 text-slate-700 shadow-sm hover:bg-sky-50 hover:border-sky-300">
+              <Button @click="cargarSolicitudes" :disabled="loadingSolicitudes"
+                class="shrink-0 bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 shadow-lg shadow-blue-500/20 hover:from-blue-600 hover:to-blue-700 hover:shadow-blue-600/30">
                 <ArrowPathIcon :class="['h-5 w-5 mr-2', loadingSolicitudes ? 'animate-spin' : '']" />
                 Actualizar
               </Button>
             </div>
 
             <div class="mt-4">
-              <div v-if="loadingSolicitudes" class="text-sm text-muted-foreground">
-                Cargando solicitudes...
+              <div v-if="loadingSolicitudes" class="flex items-center justify-center py-8">
+                <div class="flex items-center gap-2 text-blue-600">
+                  <ArrowPathIcon class="h-5 w-5 animate-spin" />
+                  <span class="text-sm font-medium">Cargando solicitudes...</span>
+                </div>
               </div>
-              <div v-else-if="solicitudesError" class="text-sm text-destructive">
-                {{ solicitudesError }}
+              <div v-else-if="solicitudesError"
+                class="rounded-xl border border-red-200/50 bg-gradient-to-br from-red-50 to-red-100 p-4 text-sm text-red-700">
+                <div class="flex items-center gap-2">
+                  <ExclamationTriangleIcon class="h-5 w-5 text-red-500" />
+                  {{ solicitudesError }}
+                </div>
               </div>
               <div v-else-if="solicitudes.length === 0"
-                class="rounded-md border border-border bg-muted/30 p-4 text-sm text-muted-foreground">
-                Aún no tienes solicitudes registradas.
+                class="rounded-xl border border-gray-200/50 bg-gradient-to-br from-gray-50 to-gray-100 p-8 text-center">
+                <div class="flex flex-col items-center gap-3">
+                  <div class="flex h-16 w-16 items-center justify-center rounded-full bg-gray-200/50">
+                    <DocumentIcon class="h-8 w-8 text-gray-400" />
+                  </div>
+                  <div class="text-sm font-medium text-gray-600">Aún no tienes solicitudes registradas.</div>
+                  <div class="text-xs text-gray-500">Cuando crees una solicitud, aparecerá aquí.</div>
+                </div>
               </div>
-              <div v-else class="overflow-hidden rounded-xl border border-sky-200/60 bg-white">
+              <div v-else
+                class="overflow-hidden rounded-xl border border-blue-200/50 bg-gradient-to-br from-white via-blue-50/20 to-white shadow-lg">
                 <table class="w-full text-left text-sm">
                   <thead
-                    class="bg-linear-to-r from-sky-100 via-violet-100 to-rose-100 text-xs font-semibold uppercase tracking-wide text-slate-700">
+                    class="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-xs font-bold uppercase tracking-wider text-white">
                     <tr>
-                      <th class="px-4 py-3">Modalidad</th>
-                      <th class="px-4 py-3">Monto</th>
-                      <th class="px-4 py-3">Estado</th>
-                      <th class="px-4 py-3">Creación</th>
-                      <th class="px-4 py-3">Acciones</th>
+                      <th class="px-4 py-4 text-center">Modalidad</th>
+                      <th class="px-4 py-4 text-center">Monto</th>
+                      <th class="px-4 py-4 text-center">Estado</th>
+                      <th class="px-4 py-4 text-center">Creación</th>
+                      <th class="px-4 py-4 text-center">Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="s in solicitudes" :key="s.numero_solicitud"
-                      class="border-t border-sky-200/40 hover:bg-sky-50/40">
-                      <td class="px-4 py-3 text-foreground">{{ s?.detalle_modalidad || '-' }}</td>
-                      <td class="px-4 py-3 text-foreground">{{ fmtMoney(s?.valor_solicitud || 0) }}
+                    <tr v-for="(s, index) in solicitudes" :key="s.numero_solicitud" :class="[
+                      'border-t border-blue-100/50 transition-all duration-200',
+                      index % 2 === 0 ? 'bg-white/50' : 'bg-blue-50/30',
+                      'hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 hover:shadow-md'
+                    ]">
+                      <td class="px-4 py-4 text-center">
+                        <div class="font-medium text-foreground">{{ s?.detalle_modalidad || '-' }}</div>
                       </td>
-                      <td class="px-4 py-3">
-                        <div class="flex flex-col gap-2">
+                      <td class="px-4 py-4 text-center">
+                        <div class="font-bold text-green-600 text-lg">{{ fmtMoney(s?.valor_solicitud || 0) }}</div>
+                      </td>
+                      <td class="px-4 py-4 text-center">
+                        <div class="flex flex-col items-center gap-2">
                           <Badge :class="`w-fit ${estadoBadgeClass(String(s.estado || ''))}`">
                             {{ getEstadoData(String(s.estado || ''))?.nombre || s.estado || '-' }}
                           </Badge>
-                          <Progress :model-value="estadoProgressPercent(String(s.estado || ''))" class="w-32 h-1.5" />
+                          <Progress :model-value="estadoProgressPercent(String(s.estado || ''))" class="w-32 h-2" />
                         </div>
                       </td>
-                      <td class="px-4 py-3 text-foreground">{{ fmtDate(s.created_at) }}</td>
-                      <td class="px-4 py-3">
+                      <td class="px-4 py-4 text-center">
+                        <div class="text-foreground">{{ fmtDate(s.created_at) }}</div>
+                      </td>
+                      <td class="px-4 py-4 text-center">
                         <NuxtLink :to="`/solicitudes/${s.numero_solicitud}`">
-                          <Button variant="outline" size="sm"
-                            class="gap-1 border-violet-200 bg-white/80 text-slate-700 shadow-sm hover:bg-violet-50 hover:border-violet-300">
+                          <Button size="sm"
+                            class="gap-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0 shadow-md hover:from-purple-600 hover:to-purple-700 hover:shadow-purple-600/30">
                             <EyeIcon class="h-4 w-4" />
                             Ver
                           </Button>
@@ -220,7 +237,7 @@
                   </p>
                 </div>
                 <Button variant="outline" size="sm" @click="cargarConvenioActivo" :disabled="loadingConvenio"
-                  class="border-sky-200 bg-white/80 text-slate-700 shadow-sm hover:bg-sky-50 hover:border-sky-300">
+                  class="border-sky-100 bg-white/80 text-slate-700 shadow-sm hover:bg-sky-50 hover:border-sky-300">
                   <ArrowPathIcon :class="['h-4 w-4 mr-2', loadingConvenio ? 'animate-spin' : '']" />
                   Actualizar
                 </Button>
@@ -231,20 +248,22 @@
               </div>
 
               <div v-else class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="rounded-xl border border-white/60 bg-linear-to-br from-sky-50 to-white p-4">
-                  <div class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Empresa</div>
-                  <div class="mt-1 text-sm text-foreground">
+                <div
+                  class="rounded-xl border border-blue-200/50 bg-linear-to-br from-blue-500 via-blue-400 to-cyan-300 p-4 shadow-lg shadow-blue-500/20">
+                  <div class="text-xs font-semibold uppercase tracking-wide text-white/90">Empresa</div>
+                  <div class="mt-1 text-sm font-medium text-white">
                     {{ convenioActivo?.razon_social || empresaTrabajador?.razon_social || '-' }}
                   </div>
-                  <div class="mt-2 text-xs text-muted-foreground">NIT: {{ String(convenioActivo?.nit ||
+                  <div class="mt-2 text-xs text-white/80">NIT: {{ String(convenioActivo?.nit ||
                     empresaTrabajador?.nit || '-') }}</div>
                 </div>
-                <div class="rounded-xl border border-white/60 bg-linear-to-br from-violet-50 to-white p-4">
-                  <div class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Vigencia</div>
-                  <div class="mt-1 text-sm text-foreground">
+                <div
+                  class="rounded-xl border border-purple-200/50 bg-linear-to-br from-purple-500 via-purple-400 to-pink-300 p-4 shadow-lg shadow-purple-500/20">
+                  <div class="text-xs font-semibold uppercase tracking-wide text-white/90">Vigencia</div>
+                  <div class="mt-1 text-sm font-medium text-white">
                     Estado: {{ convenioActivo?.estado || '-' }}
                   </div>
-                  <div class="mt-2 text-xs text-muted-foreground">
+                  <div class="mt-2 text-xs text-white/80">
                     Vence: {{ convenioActivo?.fecha_vencimiento ? fmtDate(convenioActivo.fecha_vencimiento) : '-' }}
                   </div>
                 </div>
@@ -255,51 +274,117 @@
           <!-- Parámetros relevantes -->
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Motivos de rechazo -->
-            <Card class="border-0 shadow-sm bg-white backdrop-blur">
+            <Card class="border-0 shadow-lg bg-gradient-to-br from-white via-rose-50/20 to-white backdrop-blur">
               <CardContent class="p-6">
-                <h3 class="text-base font-semibold text-foreground">Motivos de rechazo</h3>
-                <p class="mt-1 text-sm text-muted-foreground">Parámetros generales del crédito.</p>
+                <div class="flex items-center gap-3 mb-4">
+                  <div
+                    class="flex h-10 w-10 items-center justify-center rounded-xl border border-rose-200 bg-gradient-to-br from-rose-500 to-rose-600 p-2 shadow-lg shadow-rose-500/20">
+                    <ExclamationTriangleIcon class="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 class="text-base font-bold text-foreground">Motivos de rechazo</h3>
+                    <p class="text-sm text-muted-foreground">Parámetros generales del crédito.</p>
+                  </div>
+                </div>
 
-                <div v-if="loadingParametros" class="mt-4 text-sm text-muted-foreground">Cargando...</div>
-                <div v-else-if="errorParametros" class="mt-4 text-sm text-destructive">{{ errorParametros }}</div>
-                <div v-else class="mt-4 space-y-2 max-h-64 overflow-auto">
-                  <div v-for="m in motivosRechazo" :key="m.modrec"
-                    class="rounded-xl border border-white/60 bg-linear-to-br from-rose-50 to-white p-3">
-                    <div class="mt-1 text-sm text-foreground">{{ m.detalle }}</div>
+                <div v-if="loadingParametros" class="flex items-center justify-center py-8">
+                  <div class="flex items-center gap-2 text-rose-600">
+                    <ArrowPathIcon class="h-5 w-5 animate-spin" />
+                    <span class="text-sm font-medium">Cargando...</span>
+                  </div>
+                </div>
+                <div v-else-if="errorParametros"
+                  class="rounded-xl border border-red-200/50 bg-gradient-to-br from-red-50 to-red-100 p-4 text-sm text-red-700">
+                  <div class="flex items-center gap-2">
+                    <ExclamationTriangleIcon class="h-5 w-5 text-red-500" />
+                    {{ errorParametros }}
+                  </div>
+                </div>
+                <div v-else class="mt-4 space-y-3 max-h-80 overflow-auto pr-2">
+                  <div v-for="(m, index) in motivosRechazo" :key="m.modrec"
+                    class="group rounded-xl border border-rose-200/50 bg-gradient-to-br from-rose-50 via-pink-50 to-white p-4 shadow-md hover:shadow-lg hover:from-rose-100 hover:via-pink-100 hover:to-white transition-all duration-200">
+                    <div class="flex items-start gap-3">
+                      <div
+                        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-rose-500 to-pink-500 text-white text-sm font-bold shadow-md">
+                        {{ index + 1 }}
+                      </div>
+                      <div class="flex-1">
+                        <div class="text-sm font-medium text-gray-800 group-hover:text-gray-900">
+                          {{ m.detalle }}
+                        </div>
+                        <div class="mt-1 text-xs text-gray-500">
+                          Código: {{ m.modrec }}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             <!-- Oficinas de crédito -->
-            <Card class="border-0 shadow-sm bg-white backdrop-blur lg:col-span-2">
+            <Card
+              class="border-0 shadow-lg bg-gradient-to-br from-white via-violet-50/20 to-white backdrop-blur lg:col-span-2">
               <CardContent class="p-6">
-                <h3 class="text-base font-semibold text-foreground">Oficinas de crédito</h3>
-                <p class="mt-1 text-sm text-muted-foreground">Canales disponibles para atención.</p>
+                <div class="flex items-center gap-3 mb-4">
+                  <div
+                    class="flex h-10 w-10 items-center justify-center rounded-xl border border-violet-200 bg-gradient-to-br from-violet-500 to-violet-600 p-2 shadow-lg shadow-violet-500/20">
+                    <BuildingOfficeIcon class="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 class="text-base font-bold text-foreground">Oficinas de crédito</h3>
+                    <p class="text-sm text-muted-foreground">Canales disponibles para atención.</p>
+                  </div>
+                </div>
 
-                <div v-if="loadingParametros" class="mt-4 text-sm text-muted-foreground">Cargando...</div>
-                <div v-else-if="errorParametros" class="mt-4 text-sm text-destructive">{{ errorParametros }}</div>
-                <div v-else class="mt-4 overflow-hidden rounded-xl border border-violet-200/60 bg-white">
+                <div v-if="loadingParametros" class="flex items-center justify-center py-8">
+                  <div class="flex items-center gap-2 text-violet-600">
+                    <ArrowPathIcon class="h-5 w-5 animate-spin" />
+                    <span class="text-sm font-medium">Cargando...</span>
+                  </div>
+                </div>
+                <div v-else-if="errorParametros"
+                  class="rounded-xl border border-red-200/50 bg-gradient-to-br from-red-50 to-red-100 p-4 text-sm text-red-700">
+                  <div class="flex items-center gap-2">
+                    <ExclamationTriangleIcon class="h-5 w-5 text-red-500" />
+                    {{ errorParametros }}
+                  </div>
+                </div>
+                <div v-else
+                  class="mt-4 overflow-hidden rounded-xl border border-violet-200/50 bg-gradient-to-br from-white via-violet-50/20 to-white shadow-lg">
                   <table class="w-full text-left text-sm">
                     <thead
-                      class="bg-linear-to-r from-violet-100 via-sky-100 to-rose-100 text-xs font-semibold uppercase tracking-wide text-slate-700">
+                      class="bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-600 text-xs font-bold uppercase tracking-wider text-white">
                       <tr>
-                        <th class="px-4 py-3">Oficina</th>
-                        <th class="px-4 py-3">Dirección</th>
-                        <th class="px-4 py-3">Contacto</th>
+                        <th class="px-4 py-4 text-center">Oficina</th>
+                        <th class="px-4 py-4 text-center">Dirección</th>
+                        <th class="px-4 py-4 text-center">Contacto</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-for="o in oficinasCredito" :key="o.ofiafi"
-                        class="border-t border-violet-200/40 hover:bg-violet-50/40">
-                        <td class="px-4 py-3 text-foreground">
-                          <div class="font-medium">{{ o.detalle }}</div>
+                      <tr v-for="(o, index) in oficinasCredito" :key="o.ofiafi" :class="[
+                        'border-t border-violet-100/50 transition-all duration-200',
+                        index % 2 === 0 ? 'bg-white/50' : 'bg-violet-50/30',
+                        'hover:bg-gradient-to-r hover:from-violet-50/50 hover:to-blue-50/50 hover:shadow-md'
+                      ]">
+                        <td class="px-4 py-4 text-center">
+                          <div class="font-medium text-foreground">{{ o.detalle }}</div>
                           <div class="text-xs text-muted-foreground">Código: {{ o.ofiafi }}</div>
                         </td>
-                        <td class="px-4 py-3 text-foreground">{{ o.direccion || '-' }}</td>
-                        <td class="px-4 py-3 text-foreground">
-                          <div class="text-xs text-muted-foreground">Tel: {{ o.telefono || '-' }}</div>
-                          <div class="text-xs text-muted-foreground">Email: {{ o.email || '-' }}</div>
+                        <td class="px-4 py-4 text-center">
+                          <div class="text-foreground">{{ o.direccion || '-' }}</div>
+                        </td>
+                        <td class="px-4 py-4 text-center">
+                          <div class="space-y-1">
+                            <div class="flex items-center justify-center gap-1">
+                              <PhoneIcon class="h-3 w-3 text-violet-500" />
+                              <span class="text-xs text-muted-foreground">{{ o.telefono || '-' }}</span>
+                            </div>
+                            <div class="flex items-center justify-center gap-1">
+                              <EnvelopeIcon class="h-3 w-3 text-blue-500" />
+                              <span class="text-xs text-muted-foreground">{{ o.email || '-' }}</span>
+                            </div>
+                          </div>
                         </td>
                       </tr>
                     </tbody>
@@ -310,94 +395,101 @@
           </div>
 
           <!-- Datos generales del crédito -->
-          <Card class="border-0 shadow-sm bg-white backdrop-blur">
+          <Card class="border-0 shadow-lg bg-gradient-to-br from-white via-amber-50/20 to-white backdrop-blur">
             <CardContent class="p-6">
-              <h3 class="text-base font-semibold text-foreground">Datos generales de la oficina de créditos</h3>
-              <p class="mt-1 text-sm text-muted-foreground">Información administrativa.</p>
-
-              <div v-if="loadingParametros" class="mt-4 text-sm text-muted-foreground">Cargando...</div>
-              <div v-else-if="errorParametros" class="mt-4 text-sm text-destructive">{{ errorParametros }}</div>
-              <div v-else class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="rounded-xl border border-white/60 bg-linear-to-br from-amber-50 to-white p-4">
-                  <div class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Jefe crédito</div>
-                  <div class="mt-1 text-sm text-foreground">{{ datosGeneralesCredito?.jefcre || '-' }}</div>
+              <div class="flex items-center gap-3 mb-6">
+                <div
+                  class="flex h-10 w-10 items-center justify-center rounded-xl border border-amber-200 bg-gradient-to-br from-amber-500 to-amber-600 p-2 shadow-lg shadow-amber-500/20">
+                  <ChartBarIcon class="h-5 w-5 text-white" />
                 </div>
-                <div class="rounded-xl border border-white/60 bg-linear-to-br from-emerald-50 to-white p-4">
-                  <div class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Cargo</div>
-                  <div class="mt-1 text-sm text-foreground">{{ datosGeneralesCredito?.carjefcre || '-' }}</div>
-                </div>
-                <div class="rounded-xl border border-white/60 bg-linear-to-br from-sky-50 to-white p-4">
-                  <div class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Valor máximo</div>
-                  <div class="mt-1 text-2xl font-semibold tracking-tight text-foreground">
-                    {{ fmtMoney(Number(datosGeneralesCredito?.valmax || 7000000)) }}
-                  </div>
-                </div>
-                <div class="rounded-xl border border-white/60 bg-linear-to-br from-violet-50 to-white p-4">
-                  <div class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Máximo de cuotas
-                  </div>
-                  <div class="mt-1 text-2xl font-semibold tracking-tight text-foreground">
-                    {{ String(datosGeneralesCredito?.cuomax || 36) }}
-                  </div>
+                <div>
+                  <h3 class="text-base font-bold text-foreground">Datos generales de la oficina de créditos</h3>
+                  <p class="text-sm text-muted-foreground">Información administrativa.</p>
                 </div>
               </div>
 
-              <div v-if="!loadingParametros && !errorParametros" class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="rounded-xl border border-white/60 bg-linear-to-br from-rose-50 to-white p-4">
-                  <div class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Director</div>
-                  <div class="mt-1 text-sm text-foreground">{{ datosGeneralesCredito?.diradm || '-' }}</div>
+              <div v-if="loadingParametros" class="flex items-center justify-center py-8">
+                <div class="flex items-center gap-2 text-amber-600">
+                  <ArrowPathIcon class="h-5 w-5 animate-spin" />
+                  <span class="text-sm font-medium">Cargando...</span>
                 </div>
-                <div class="rounded-xl border border-white/60 bg-linear-to-br from-amber-50 to-white p-4">
-                  <div class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Cargo director</div>
-                  <div class="mt-1 text-sm text-foreground">{{ datosGeneralesCredito?.cardiradm || '-' }}</div>
+              </div>
+              <div v-else-if="errorParametros"
+                class="rounded-xl border border-red-200/50 bg-gradient-to-br from-red-50 to-red-100 p-4 text-sm text-red-700">
+                <div class="flex items-center gap-2">
+                  <ExclamationTriangleIcon class="h-5 w-5 text-red-500" />
+                  {{ errorParametros }}
+                </div>
+              </div>
+              <div v-else class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div
+                    class="group rounded-xl border border-amber-200/50 bg-gradient-to-br from-amber-50 via-orange-50 to-white p-4 shadow-md hover:shadow-lg hover:from-amber-100 hover:via-orange-100 hover:to-white transition-all duration-200">
+                    <div class="flex items-center gap-2 mb-2">
+                      <UserIcon class="h-4 w-4 text-amber-600" />
+                      <div class="text-xs font-bold uppercase tracking-wide text-amber-700">Jefe crédito</div>
+                    </div>
+                    <div class="mt-1 text-sm font-medium text-gray-800 group-hover:text-gray-900">
+                      {{ datosGeneralesCredito?.jefcre || '-' }}
+                    </div>
+                  </div>
+                  <div
+                    class="group rounded-xl border border-emerald-200/50 bg-gradient-to-br from-emerald-50 via-green-50 to-white p-4 shadow-md hover:shadow-lg hover:from-emerald-100 hover:via-green-100 hover:to-white transition-all duration-200">
+                    <div class="flex items-center gap-2 mb-2">
+                      <BriefcaseIcon class="h-4 w-4 text-emerald-600" />
+                      <div class="text-xs font-bold uppercase tracking-wide text-emerald-700">Cargo</div>
+                    </div>
+                    <div class="mt-1 text-sm font-medium text-gray-800 group-hover:text-gray-900">
+                      {{ datosGeneralesCredito?.carjefcre || '-' }}
+                    </div>
+                  </div>
+                  <div
+                    class="group rounded-xl border border-sky-200/50 bg-gradient-to-br from-sky-50 via-blue-50 to-white p-4 shadow-md hover:shadow-lg hover:from-sky-100 hover:via-blue-100 hover:to-white transition-all duration-200">
+                    <div class="flex items-center gap-2 mb-2">
+                      <CurrencyDollarIcon class="h-4 w-4 text-sky-600" />
+                      <div class="text-xs font-bold uppercase tracking-wide text-sky-700">Valor máximo</div>
+                    </div>
+                    <div class="mt-1 text-2xl font-bold text-green-600 group-hover:text-green-700">
+                      {{ fmtMoney(Number(datosGeneralesCredito?.valmax || 7000000)) }}
+                    </div>
+                  </div>
+                  <div
+                    class="group rounded-xl border border-violet-200/50 bg-gradient-to-br from-violet-50 via-purple-50 to-white p-4 shadow-md hover:shadow-lg hover:from-violet-100 hover:via-purple-100 hover:to-white transition-all duration-200">
+                    <div class="flex items-center gap-2 mb-2">
+                      <CalendarIcon class="h-4 w-4 text-violet-600" />
+                      <div class="text-xs font-bold uppercase tracking-wide text-violet-700">Máximo de cuotas</div>
+                    </div>
+                    <div class="mt-1 text-2xl font-bold text-violet-600 group-hover:text-violet-700">
+                      {{ String(datosGeneralesCredito?.cuomax || 36) }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div
+                    class="group rounded-xl border border-rose-200/50 bg-gradient-to-br from-rose-50 via-pink-50 to-white p-4 shadow-md hover:shadow-lg hover:from-rose-100 hover:via-pink-100 hover:to-white transition-all duration-200">
+                    <div class="flex items-center gap-2 mb-2">
+                      <AcademicCapIcon class="h-4 w-4 text-rose-600" />
+                      <div class="text-xs font-bold uppercase tracking-wide text-rose-700">Director</div>
+                    </div>
+                    <div class="mt-1 text-sm font-medium text-gray-800 group-hover:text-gray-900">
+                      {{ datosGeneralesCredito?.diradm || '-' }}
+                    </div>
+                  </div>
+                  <div
+                    class="group rounded-xl border border-amber-200/50 bg-gradient-to-br from-amber-50 via-orange-50 to-white p-4 shadow-md hover:shadow-lg hover:from-amber-100 hover:via-orange-100 hover:to-white transition-all duration-200">
+                    <div class="flex items-center gap-2 mb-2">
+                      <UserGroupIcon class="h-4 w-4 text-amber-600" />
+                      <div class="text-xs font-bold uppercase tracking-wide text-amber-700">Cargo director</div>
+                    </div>
+                    <div class="mt-1 text-sm font-medium text-gray-800 group-hover:text-gray-900">
+                      {{ datosGeneralesCredito?.cardiradm || '-' }}
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
-        </div>
-
-        <!-- Action Cards Grid -->
-        <div class="grid gap-4 sm:grid-cols-2">
-          <NuxtLink to="/simulador/lineas-credito"
-            class="group block rounded-xl border border-border bg-card p-5 shadow-sm transition-colors hover:border-primary/50 hover:bg-card/80">
-            <div class="flex items-start justify-between gap-3">
-              <div class="flex min-w-0 items-start gap-3">
-                <div
-                  class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-border bg-card p-2">
-                  <CalculatorIcon class="h-full w-full text-foreground" />
-                </div>
-                <div class="min-w-0">
-                  <div class="text-base font-semibold text-foreground group-hover:text-primary">
-                    Simulador de crédito
-                  </div>
-                  <div class="mt-1 text-sm text-muted-foreground">
-                    Cuota mensual, tasa efectiva y capacidad de endeudamiento
-                  </div>
-                </div>
-              </div>
-              <ChevronRightIcon class="h-5 w-5 shrink-0 text-muted-foreground group-hover:text-primary" />
-            </div>
-          </NuxtLink>
-
-          <NuxtLink to="/solicitud"
-            class="group block rounded-xl border border-border bg-card p-5 shadow-sm transition-colors hover:border-primary/50 hover:bg-card/80">
-            <div class="flex items-start justify-between gap-3">
-              <div class="flex min-w-0 items-start gap-3">
-                <div
-                  class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-border bg-card p-2">
-                  <DocumentPlusIcon class="h-full w-full text-foreground" />
-                </div>
-                <div class="min-w-0">
-                  <div class="text-base font-semibold text-foreground group-hover:text-primary">
-                    Solicitud de crédito
-                  </div>
-                  <div class="mt-1 text-sm text-muted-foreground">
-                    Captura secuencial por bloques y generación de XML
-                  </div>
-                </div>
-              </div>
-              <ChevronRightIcon class="h-5 w-5 shrink-0 text-muted-foreground group-hover:text-primary" />
-            </div>
-          </NuxtLink>
         </div>
       </div>
     </div>

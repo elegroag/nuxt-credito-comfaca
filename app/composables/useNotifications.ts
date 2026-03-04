@@ -33,7 +33,7 @@ export function useNotifications() {
 
     // Polling
     const pollingEnabled = ref(true);
-    const pollingInterval = ref(30000); // 30 segundos
+    const pollingInterval = ref(100000); // 30 segundos
     let pollingTimer: NodeJS.Timeout | null = null;
 
     /**
@@ -109,7 +109,7 @@ export function useNotifications() {
                 if (notification) {
                     notification.read_at = new Date().toISOString();
                 }
-                
+
                 // Decrementar contador
                 if (unreadCount.value > 0) {
                     unreadCount.value--;
@@ -143,7 +143,7 @@ export function useNotifications() {
                 notifications.value.forEach(n => {
                     n.read_at = new Date().toISOString();
                 });
-                
+
                 unreadCount.value = 0;
                 return true;
             }
@@ -173,7 +173,7 @@ export function useNotifications() {
                 if (index !== -1) {
                     const wasUnread = !notifications.value[index].read_at;
                     notifications.value.splice(index, 1);
-                    
+
                     if (wasUnread && unreadCount.value > 0) {
                         unreadCount.value--;
                     }
@@ -229,10 +229,10 @@ export function useNotifications() {
 
     // Computadas
     const hasUnread = computed(() => unreadCount.value > 0);
-    const unreadNotifications = computed(() => 
+    const unreadNotifications = computed(() =>
         notifications.value.filter(n => !n.read_at)
     );
-    const readNotifications = computed(() => 
+    const readNotifications = computed(() =>
         notifications.value.filter(n => n.read_at)
     );
 
@@ -243,7 +243,7 @@ export function useNotifications() {
         const now = new Date();
         const notificationDate = new Date(date);
         const diff = now.getTime() - notificationDate.getTime();
-        
+
         const seconds = Math.floor(diff / 1000);
         const minutes = Math.floor(seconds / 60);
         const hours = Math.floor(minutes / 60);
@@ -253,7 +253,7 @@ export function useNotifications() {
         if (minutes < 60) return `Hace ${minutes} minuto${minutes > 1 ? 's' : ''}`;
         if (hours < 24) return `Hace ${hours} hora${hours > 1 ? 's' : ''}`;
         if (days < 7) return `Hace ${days} día${days > 1 ? 's' : ''}`;
-        
+
         return notificationDate.toLocaleDateString('es-CO', {
             year: 'numeric',
             month: 'short',

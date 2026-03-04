@@ -1,5 +1,5 @@
 // frontend/composables/simulador/useSimuladorWithLinea.ts
-import { computed, ref, watch, type Ref } from 'vue';
+import { computed, ref, watch, nextTick, type Ref } from 'vue';
 import { useSimuladorCore } from './useSimuladorCore';
 
 export interface LineaCreditoData {
@@ -9,6 +9,7 @@ export interface LineaCreditoData {
     numcuo: number;
     estcre: number;
     pagseg: string;
+    valmax: number;
     // ... otras propiedades de la línea
 }
 
@@ -47,12 +48,27 @@ export function useSimuladorWithLinea(lineaCredito?: Ref<LineaCreditoData | null
     // Watch para actualizar plazo cuando cambia la línea de crédito
     if (lineaCredito) {
         watch(lineaCredito, (nuevaLinea) => {
-            if (nuevaLinea && nuevaLinea.numcuo) {
+            if (nuevaLinea) {
                 // Aplicar el número de cuotas de la línea de crédito
-                plazoMeses.value = nuevaLinea.numcuo;
+                if (nuevaLinea.numcuo) {
+                    plazoMeses.value = nuevaLinea.numcuo;
+                }
+
+                // Ajustar monto al valor máximo si excede el valmax
+                if (nuevaLinea.valmax && monto.value > nuevaLinea.valmax) {
+                    monto.value = nuevaLinea.valmax;
+                }
             }
         }, { immediate: true });
     }
+
+    // WatchEffect para asegurar que el monto nunca exceda el valor máximo
+    watchEffect(() => {
+        const valorMaximo = lineaCredito?.value?.valmax;
+        if (valorMaximo && monto.value > valorMaximo) {
+            monto.value = valorMaximo;
+        }
+    });
 
     // Computed properties usando las funciones core
     const montoSan = computed(() => calcularMontoSan(monto.value));

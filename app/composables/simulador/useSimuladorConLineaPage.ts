@@ -65,6 +65,13 @@ export const useSimuladorConLineaPage = () => {
     navigateTo('/simulador/lineas-credito')
   }
 
+  // Validar que el monto no exceda el valor máximo
+  const validarMontoMaximo = () => {
+    if (lineaSeleccionada.value?.valmax && monto.value > lineaSeleccionada.value.valmax) {
+      monto.value = lineaSeleccionada.value.valmax
+    }
+  }
+
   // Cargar datos de la línea de crédito
   const cargarLineaCredito = async () => {
     try {
@@ -253,6 +260,7 @@ export const useSimuladorConLineaPage = () => {
     tasaInput,
     navigateToLineas,
     cargarLineaCredito,
-    saveData
+    saveData,
+    validarMontoMaximo
   }
 }
