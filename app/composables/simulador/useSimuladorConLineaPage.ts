@@ -1,4 +1,4 @@
-import { onMounted, watch } from 'vue'
+import { onMounted, watch, reactive, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useSimuladorWithLinea } from './useSimuladorWithLinea'
 import { useTrabajador } from '~/composables/useTrabajador'
@@ -29,6 +29,17 @@ export const useSimuladorConLineaPage = () => {
 
   // Cache para líneas de crédito
   const lineasCache = ref<Map<string, any>>(new Map())
+
+  // Objeto reactive para el input de monto con validación
+  const montoInput = reactive({
+    val: '',
+    valid: false,
+    cls: '',
+    hint: 'Ingresa un monto entre 200.000 y el máximo permitido',
+    hintClass: '',
+    pct: 0,
+    pctColor: '#d1d5db'
+  })
 
   // Usar el hook especializado para líneas de crédito
   const {
@@ -80,6 +91,53 @@ export const useSimuladorConLineaPage = () => {
       if (montoActual.toString().length > valmax.toString().length) {
         monto.value = valmax
       }
+    }
+  }
+
+  // Validación del input de monto
+  const validarMonto = () => {
+    // Asegurar que montoInput esté definido
+    if (!montoInput) return
+
+    // Eliminar todo excepto números y puntos
+    montoInput.val = montoInput.val.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')
+
+    const valmax = lineaSeleccionada.value?.valmax || 999999999
+    const minimo = 200000
+    const v = parseFloat(montoInput.val)
+
+    if (!montoInput.val) {
+      montoInput.cls = ''
+      montoInput.valid = false
+      montoInput.hint = 'Ingresa un monto entre 200.000 y el máximo permitido'
+      montoInput.hintClass = ''
+      montoInput.pct = 0
+      montoInput.pctColor = '#d1d5db'
+      monto.value = 0
+    } else if (isNaN(v) || v < minimo) {
+      montoInput.cls = 'invalid'
+      montoInput.valid = false
+      montoInput.hint = `✗ Mínimo permitido: ${fmt(minimo)}`
+      montoInput.hintClass = 'error'
+      montoInput.pct = 1
+      montoInput.pctColor = '#ef4444'
+      monto.value = 0
+    } else if (v > valmax) {
+      montoInput.cls = 'invalid'
+      montoInput.valid = false
+      montoInput.hint = `✗ Máximo permitido: ${fmt(valmax)}`
+      montoInput.hintClass = 'error'
+      montoInput.pct = 100
+      montoInput.pctColor = '#ef4444'
+      monto.value = valmax
+    } else {
+      montoInput.cls = 'valid'
+      montoInput.valid = true
+      montoInput.hint = '✓ Monto válido'
+      montoInput.hintClass = 'success'
+      montoInput.pct = Math.round(v / valmax * 100)
+      montoInput.pctColor = v < valmax * 0.33 ? '#10b981' : v < valmax * 0.66 ? '#f59e0b' : '#3b82f6'
+      monto.value = v
     }
   }
 
@@ -153,6 +211,17 @@ export const useSimuladorConLineaPage = () => {
     }
   }
 
+  // Computed para manejar el v-model del input de monto de forma segura
+  const montoInputModel = computed({
+    get: () => montoInput?.val || '',
+    set: (value) => {
+      if (montoInput) {
+        montoInput.val = value
+        validarMonto()
+      }
+    }
+  })
+
   // Computed para manejar el v-model del input de tasa
   const tasaInput = computed({
     get: () => tipoTasa.value === 'anual' ? tasaEfectivaAnual.value : tasaMensualInput.value,
@@ -198,6 +267,18 @@ export const useSimuladorConLineaPage = () => {
       }
     }, 500) // 500ms de debounce
   }
+
+  // Watch para sincronizar montoInput con monto existente
+  watch(
+    () => monto.value,
+    (newValue) => {
+      if (newValue && newValue > 0) {
+        montoInput.val = newValue.toString()
+        validarMonto()
+      }
+    },
+    { immediate: true }
+  )
 
   // Watch para guardar datos cuando cambien
   watch(
@@ -270,6 +351,9 @@ export const useSimuladorConLineaPage = () => {
 
     // Computed y funciones específicas
     tasaInput,
+    montoInput,
+    montoInputModel,
+    validarMonto,
     navigateToLineas,
     cargarLineaCredito,
     saveData,

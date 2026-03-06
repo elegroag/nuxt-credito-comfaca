@@ -93,11 +93,24 @@
         <CardContent class="space-y-6">
           <div class="space-y-2">
             <Label for="monto">Monto (COP)</Label>
-            <Input id="monto" type="number" v-model.number="monto" class="text-base" step="10000" min="200000"
-              :max="lineaSeleccionada?.valmax || undefined"
-              :maxlength="lineaSeleccionada?.valmax?.toString().length || undefined"
-              :disabled="lineaSeleccionada?.estado !== 'A'" @input="validarMontoMaximo" @blur="validarMontoMaximo" />
-            <p v-if="lineaSeleccionada?.valmax" class="text-xs text-muted-foreground">
+            <div class="input-wrap">
+              <input id="monto" type="text" inputmode="numeric" placeholder="ej. 1.000.000"
+                :maxlength="lineaSeleccionada.valmax.toString().length" :minlength="'200000'.toString().length"
+                :class="montoInput?.cls || ''" v-model="montoInputModel" @keyup="validarMonto" @blur="validarMonto"
+                :disabled="lineaSeleccionada?.estado !== 'A'" />
+              <span class="suffix" v-if="montoInput?.val">COP</span>
+            </div>
+            <div class="field-hint" :class="montoInput?.hintClass || ''">
+              {{ montoInput?.hint || 'Ingresa un monto entre 200.000 y el máximo permitido' }}
+            </div>
+            <div class="progress-bar">
+              <div class="progress-bar-fill" :style="{
+                width: (montoInput?.pct || 0) + '%',
+                background: montoInput?.pctColor || '#d1d5db'
+              }">
+              </div>
+            </div>
+            <p v-if="lineaSeleccionada?.valmax" class="text-xs text-muted-foreground mt-2">
               Monto máximo: {{ fmt(lineaSeleccionada.valmax) }}
             </p>
           </div>
@@ -361,8 +374,109 @@ const {
 
   // Computed y funciones específicas
   tasaInput,
+  montoInput,
+  montoInputModel,
+  validarMonto,
   navigateToLineas,
   cargarLineaCredito,
   validarMontoMaximo
 } = useSimuladorConLineaPage()
 </script>
+
+<style scoped>
+/* Estilos para el input personalizado */
+.input-wrap {
+  position: relative;
+}
+
+.input-wrap .suffix {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 11px;
+  color: #6b7280;
+  pointer-events: none;
+}
+
+.input-wrap input {
+  width: 100%;
+  background: #ffffff;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  color: #111827;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 14px;
+  padding: 12px 16px;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s, background .2s;
+  appearance: none;
+}
+
+.input-wrap input:hover {
+  border-color: #9ca3af;
+}
+
+.input-wrap input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, .15);
+  background: #f9fafb;
+}
+
+.input-wrap input.has-suffix {
+  padding-right: 56px;
+}
+
+.input-wrap input.valid {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, .1);
+}
+
+.input-wrap input.invalid {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, .1);
+}
+
+.input-wrap input.warning {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, .1);
+}
+
+.field-hint {
+  margin-top: 6px;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 11px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 18px;
+}
+
+.field-hint.error {
+  color: #ef4444;
+}
+
+.field-hint.success {
+  color: #10b981;
+}
+
+.field-hint.warn {
+  color: #f59e0b;
+}
+
+.progress-bar {
+  height: 3px;
+  background: #d1d5db;
+  border-radius: 3px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width .3s, background .3s;
+}
+</style>
