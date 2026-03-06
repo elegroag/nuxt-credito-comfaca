@@ -53,22 +53,10 @@ export function useSimuladorWithLinea(lineaCredito?: Ref<LineaCreditoData | null
                 if (nuevaLinea.numcuo) {
                     plazoMeses.value = nuevaLinea.numcuo;
                 }
-
-                // Ajustar monto al valor máximo si excede el valmax
-                if (nuevaLinea.valmax && monto.value > nuevaLinea.valmax) {
-                    monto.value = nuevaLinea.valmax;
-                }
             }
         }, { immediate: true });
     }
 
-    // WatchEffect para asegurar que el monto nunca exceda el valor máximo
-    watchEffect(() => {
-        const valorMaximo = lineaCredito?.value?.valmax;
-        if (valorMaximo && monto.value > valorMaximo) {
-            monto.value = valorMaximo;
-        }
-    });
 
     // Computed properties usando las funciones core
     const montoSan = computed(() => calcularMontoSan(monto.value));

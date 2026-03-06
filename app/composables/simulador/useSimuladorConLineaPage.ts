@@ -65,12 +65,24 @@ export const useSimuladorConLineaPage = () => {
     navigateTo('/simulador/lineas-credito')
   }
 
-  // Validar que el monto no exceda el valor máximo
+  // Validar que el monto no exceda el valor máximo y la cantidad de dígitos
   const validarMontoMaximo = () => {
-    if (lineaSeleccionada.value?.valmax && monto.value > lineaSeleccionada.value.valmax) {
-      monto.value = lineaSeleccionada.value.valmax
+    if (lineaSeleccionada.value.valmax) {
+      const valmax = Number(lineaSeleccionada.value.valmax)
+      const montoActual = Number(monto.value)
+
+      // Validar que el monto no exceda el valor máximo
+      if (montoActual > valmax) {
+        monto.value = valmax
+      }
+
+      // Validar que la cantidad de dígitos no sea superior a la del valmax
+      if (montoActual.toString().length > valmax.toString().length) {
+        monto.value = valmax
+      }
     }
   }
+
 
   // Cargar datos de la línea de crédito
   const cargarLineaCredito = async () => {

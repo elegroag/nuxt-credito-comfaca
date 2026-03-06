@@ -93,8 +93,13 @@
         <CardContent class="space-y-6">
           <div class="space-y-2">
             <Label for="monto">Monto (COP)</Label>
-            <Input id="monto" type="number" v-model.number="monto" class="text-base" step="10000" min="0"
-              :disabled="lineaSeleccionada?.estado !== 'A'" />
+            <Input id="monto" type="number" v-model.number="monto" class="text-base" step="10000" min="200000"
+              :max="lineaSeleccionada?.valmax || undefined"
+              :maxlength="lineaSeleccionada?.valmax?.toString().length || undefined"
+              :disabled="lineaSeleccionada?.estado !== 'A'" @input="validarMontoMaximo" @blur="validarMontoMaximo" />
+            <p v-if="lineaSeleccionada?.valmax" class="text-xs text-muted-foreground">
+              Monto máximo: {{ fmt(lineaSeleccionada.valmax) }}
+            </p>
           </div>
 
           <div class="grid gap-4 sm:grid-cols-2">
@@ -357,6 +362,7 @@ const {
   // Computed y funciones específicas
   tasaInput,
   navigateToLineas,
-  cargarLineaCredito
+  cargarLineaCredito,
+  validarMontoMaximo
 } = useSimuladorConLineaPage()
 </script>
