@@ -410,7 +410,6 @@ export interface ConyugeProps {
 
 export interface WizardProps {
   parametros?: any;
-  fechaRadicado: string;
 }
 
 export interface InEstadoSolicitud {

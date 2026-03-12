@@ -35,28 +35,19 @@
       <FormField label="Linea de crédito">
         <Input v-model="form.solicitud.detalle_modalidad" :disabled="true" placeholder="Seleccionar linea" />
       </FormField>
-
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2 mt-4">
       <FormField label="¿Ha tenido crédito con Comfaca?">
         <div class="flex gap-4">
           <label class="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              :value="true"
-              v-model="form.solicitud.ha_tenido_credito"
-              class="text-primary focus:ring-primary"
-            />
+            <input type="radio" :value="true" v-model="form.solicitud.ha_tenido_credito"
+              class="text-primary focus:ring-primary" />
             <span>SI</span>
           </label>
           <label class="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              :value="false"
-              v-model="form.solicitud.ha_tenido_credito"
-              class="text-primary focus:ring-primary"
-            />
+            <input type="radio" :value="false" v-model="form.solicitud.ha_tenido_credito"
+              class="text-primary focus:ring-primary" />
             <span>NO</span>
           </label>
         </div>
@@ -71,9 +62,7 @@ import Input from '@/components/ui/Input.vue'
 import CustomSelect from '~/components/ui/CustomSelect.vue'
 import type { SelectOption, SolicitudProps } from '~/shared/types/solicitud-credito'
 
-interface Props extends SolicitudProps { }
-
-const props = defineProps<Props>()
+const props = defineProps<SolicitudProps>()
 
 // Opciones para roles en solicitud
 const rolesOptions: SelectOption[] = [

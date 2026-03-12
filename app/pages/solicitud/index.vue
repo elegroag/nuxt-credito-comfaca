@@ -1,75 +1,26 @@
 <template>
-  <div class="mx-auto max-w-5xl p-4 sm:p-8">
-    <div class="mb-8">
-      <div>
-        <h1 class="text-3xl font-bold tracking-tight text-foreground">Solicitud de crédito</h1>
-        <p class="text-muted-foreground mt-1">Captura secuencial por bloques y generación de XML</p>
-      </div>
-    </div>
-
-    <!-- Estado de carga -->
-    <div v-if="loadingParametros" class="flex justify-center items-center min-h-[400px]">
-      <div class="text-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-        <p class="text-muted-foreground">Cargando parámetros del sistema...</p>
-      </div>
-    </div>
-
-    <!-- Mensaje de error -->
-    <div v-else-if="errorParametros" class="flex justify-center items-center min-h-[400px]">
-      <Card class="border-destructive/50 bg-destructive/5 max-w-md">
-        <CardContent class="p-6 text-center">
-          <AlertCircle class="h-12 w-12 text-destructive mx-auto mb-4" />
-          <h3 class="text-lg font-semibold mb-2">Error al cargar parámetros</h3>
-          <p class="text-muted-foreground">{{ errorParametros }}</p>
-          <div class="flex gap-3 mt-4">
-            <Button @click="cargarParametros" variant="outline">
-              Reintentar
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-
-    <!-- Contenido principal -->
-    <div v-else>
-      <WizardSolicitudCredito :parametros="parametrosCache" :fecha-radicado="fechaRadicado" />
+  <div class="flex min-h-[400px] items-center justify-center">
+    <div class="text-center">
+      <div class="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-primary"></div>
+      <p class="text-muted-foreground">Preparando solicitud...</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { AlertCircle } from 'lucide-vue-next'
-import Button from '@/components/ui/Button.vue'
-import Card from '@/components/ui/Card.vue'
-import CardContent from '@/components/ui/CardContent.vue'
-import WizardSolicitudCredito from '~/components/wizard/WizardSolicitudCredito.vue'
-import { useParametros } from '~/composables/useParametros'
-import '~/assets/css/vue-select-custom.css';
+import { DEFAULT_WIZARD_STEP_KEY, getStoredWizardStepKey } from '~/composables/solicitud/useWizardSolicitud'
+import '~/assets/css/vue-select-custom.css'
 
 definePageMeta({
   layout: 'dashboard',
-  middleware: ['auth']
+  middleware: ['auth'],
 })
 
-// Generar fecha de radicado (formato YYYY-MM-DD)
-const fechaRadicado = new Date().toISOString().split('T')[0] || ''
+const router = useRouter()
 
-// Usar composable de parámetros
-const {
-  loading: loadingParametros,
-  error: errorParametros,
-  parametrosCache,
-  cargarParametros
-} = useParametros()
-
-// Cargar parámetros al montar el componente
 onMounted(async () => {
-  try {
-    await cargarParametros()
-  } catch (error) {
-    console.error('Error inicializando parámetros:', error)
-  }
+  const stepKey = process.client ? getStoredWizardStepKey() : DEFAULT_WIZARD_STEP_KEY
+  await router.replace(`/solicitud/${stepKey}`)
 })
 </script>
