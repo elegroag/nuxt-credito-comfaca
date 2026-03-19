@@ -5,8 +5,7 @@
             ← Volver a inicio
         </Button>
     </div>
-    <div
-        class="bg-gradient-to-r from-sky-400 to-blue-500 dark:from-sky-600 dark:to-blue-700 rounded-2xl shadow-lg p-6 mb-6">
+    <div class="rounded-2xl shadow-lg p-6 mb-6 bg-gradient-primary">
 
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
@@ -18,7 +17,7 @@
                 </p>
             </div>
             <div class="flex items-center gap-3">
-                <Badge :class="badgeClass" class="text-sm px-4 py-2">
+                <Badge :class="badgeClass" class="text-sm px-4 py-2 bg-gradient-accent border-0">
                     {{ estadoNombre }}
                 </Badge>
             </div>

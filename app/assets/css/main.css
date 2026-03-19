@@ -45,6 +45,14 @@
     --sidebar-accent-foreground: oklch(1 0 0);
     --sidebar-border: oklch(0.68 0.09 185);
     --sidebar-ring: oklch(0.7 0.12 135);
+
+    --gradient-primary: linear-gradient(90deg, var(--primary), var(--secondary));
+    --gradient-inverso: linear-gradient(90deg, var(--secondary), var(--primary));
+    --gradient-accent: linear-gradient(90deg, var(--accent), var(--primary));
+    --gradient-sidebar: linear-gradient(180deg, var(--sidebar), var(--sidebar-accent));
+    --gradient-surface: linear-gradient(180deg,
+            color-mix(in oklch, var(--card) 92%, var(--primary)),
+            color-mix(in oklch, var(--card) 92%, var(--secondary)));
 }
 
 .dark {
@@ -128,5 +136,27 @@
 
     body {
         @apply bg-background text-foreground;
+    }
+}
+
+@layer utilities {
+    .bg-gradient-primary {
+        background-image: var(--gradient-primary);
+    }
+
+    .bg-gradient-secundary {
+        background-image: var(--gradient-inverso);
+    }
+
+    .bg-gradient-accent {
+        background-image: var(--gradient-accent);
+    }
+
+    .bg-gradient-sidebar {
+        background-image: var(--gradient-sidebar);
+    }
+
+    .bg-gradient-surface {
+        background-image: var(--gradient-surface);
     }
 }

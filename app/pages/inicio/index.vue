@@ -23,7 +23,7 @@
                 Actualizar
               </Button>
               <Button @click="router.push('/admin/solicitudes')"
-                class="bg-linear-to-r from-violet-500 to-sky-500 text-white shadow-sm hover:from-violet-600 hover:to-sky-600">
+                class="bg-gradient-primary text-white shadow-sm hover:opacity-90">
                 <Cog6ToothIcon class="h-5 w-5 mr-2" />
                 Administración
               </Button>
@@ -100,7 +100,7 @@
       <!-- Vista para Usuarios No Administradores (vista original) -->
       <div v-else>
         <!-- Header Card -->
-        <Card class="mb-6 border-0 shadow-sm bg-white backdrop-blur">
+        <Card class="mb-8 border-0 shadow-sm bg-white backdrop-blur">
           <CardContent class="p-6">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div class="min-w-0">
@@ -112,8 +112,7 @@
 
               <div class="flex shrink-0 flex-wrap items-center gap-2">
                 <NuxtLink to="/simulador/lineas-credito">
-                  <Button
-                    class="bg-linear-to-r from-emerald-500 to-sky-500 text-white shadow-sm hover:from-emerald-600 hover:to-sky-600">
+                  <Button class="bg-gradient-primary text-white shadow-sm hover:opacity-90">
                     <DocumentPlusIcon class="h-5 w-5 mr-2" />
                     Nueva solicitud
                   </Button>
@@ -124,12 +123,12 @@
         </Card>
 
         <!-- Solicitudes Card -->
-        <Card class="mb-6 border-0 shadow-sm bg-white backdrop-blur">
+        <Card class="mb-8 border-0 shadow-sm bg-white backdrop-blur">
           <CardContent class="p-6">
             <div class="flex items-center justify-between gap-3 mb-6">
               <div class="flex items-start gap-3 flex-1">
                 <div
-                  class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-blue-200 bg-gradient-to-br from-blue-500 to-blue-600 p-2 shadow-lg shadow-blue-500/20">
+                  class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-blue-200 bg-gradient-primary p-2 shadow-lg shadow-blue-500/20">
                   <ClipboardDocumentListIcon class="h-full w-full text-white" />
                 </div>
                 <div class="flex-1">
@@ -140,8 +139,8 @@
                 </div>
               </div>
 
-              <Button @click="cargarSolicitudes" :disabled="loadingSolicitudes"
-                class="shrink-0 bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 shadow-lg shadow-blue-500/20 hover:from-blue-600 hover:to-blue-700 hover:shadow-blue-600/30">
+              <Button variant="outline" size="sm" @click="cargarSolicitudes" :disabled="loadingSolicitudes"
+                class="border-sky-100 bg-white/80 text-slate-700 shadow-sm hover:bg-sky-50 hover:border-sky-300">
                 <ArrowPathIcon :class="['h-5 w-5 mr-2', loadingSolicitudes ? 'animate-spin' : '']" />
                 Actualizar
               </Button>
@@ -155,14 +154,14 @@
                 </div>
               </div>
               <div v-else-if="solicitudesError"
-                class="rounded-xl border border-red-200/50 bg-gradient-to-br from-red-50 to-red-100 p-4 text-sm text-red-700">
+                class="rounded-xl border border-red-200/50 bg-gradient-surface p-4 text-sm text-red-700">
                 <div class="flex items-center gap-2">
                   <ExclamationTriangleIcon class="h-5 w-5 text-red-500" />
                   {{ solicitudesError }}
                 </div>
               </div>
               <div v-else-if="solicitudes.length === 0"
-                class="rounded-xl border border-gray-200/50 bg-gradient-to-br from-gray-50 to-gray-100 p-8 text-center">
+                class="rounded-xl border border-gray-200/50 bg-gradient-surface p-8 text-center">
                 <div class="flex flex-col items-center gap-3">
                   <div class="flex h-16 w-16 items-center justify-center rounded-full bg-gray-200/50">
                     <DocumentIcon class="h-8 w-8 text-gray-400" />
@@ -171,11 +170,9 @@
                   <div class="text-xs text-gray-500">Cuando crees una solicitud, aparecerá aquí.</div>
                 </div>
               </div>
-              <div v-else
-                class="overflow-hidden rounded-xl border border-blue-200/50 bg-gradient-to-br from-white via-blue-50/20 to-white shadow-lg">
+              <div v-else class="overflow-hidden rounded-xl border border-blue-200/50 bg-gradient-surface shadow-lg">
                 <table class="w-full text-left text-sm">
-                  <thead
-                    class="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-xs font-bold uppercase tracking-wider text-white">
+                  <thead class="bg-gradient-primary text-xs font-bold uppercase tracking-wider text-white">
                     <tr>
                       <th class="px-4 py-4 text-center">Modalidad</th>
                       <th class="px-4 py-4 text-center">Monto</th>
@@ -188,7 +185,7 @@
                     <tr v-for="(s, index) in solicitudes" :key="s.numero_solicitud" :class="[
                       'border-t border-blue-100/50 transition-all duration-200',
                       index % 2 === 0 ? 'bg-white/50' : 'bg-blue-50/30',
-                      'hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 hover:shadow-md'
+                      'hover:bg-gradient-surface hover:shadow-md'
                     ]">
                       <td class="px-4 py-4 text-center">
                         <div class="font-medium text-foreground">{{ s?.detalle_modalidad || '-' }}</div>
@@ -210,7 +207,7 @@
                       <td class="px-4 py-4 text-center">
                         <NuxtLink :to="`/solicitudes/${s.numero_solicitud}`">
                           <Button size="sm"
-                            class="gap-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0 shadow-md hover:from-purple-600 hover:to-purple-700 hover:shadow-purple-600/30">
+                            class="gap-2 bg-gradient-primary text-white border-0 shadow-md hover:opacity-90 hover:shadow-purple-600/30">
                             <EyeIcon class="h-4 w-4" />
                             Ver
                           </Button>
@@ -225,7 +222,7 @@
         </Card>
 
         <!-- Vista específica para Trabajadores -->
-        <div v-if="isTrabajador" class="mb-6 space-y-6">
+        <div v-if="isTrabajador" class="mb-8 space-y-6">
           <!-- Convenio activo -->
           <Card class="border-0 shadow-sm bg-white backdrop-blur">
             <CardContent class="p-6">
@@ -248,8 +245,7 @@
               </div>
 
               <div v-else class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div
-                  class="rounded-xl border border-blue-200/50 bg-linear-to-br from-blue-500 via-blue-400 to-cyan-300 p-4 shadow-lg shadow-blue-500/20">
+                <div class="rounded-xl border border-blue-200/50 bg-gradient-primary p-4 shadow-lg shadow-blue-500/20">
                   <div class="text-xs font-semibold uppercase tracking-wide text-white/90">Empresa</div>
                   <div class="mt-1 text-sm font-medium text-white">
                     {{ convenioActivo?.razon_social || empresaTrabajador?.razon_social || '-' }}
@@ -257,8 +253,7 @@
                   <div class="mt-2 text-xs text-white/80">NIT: {{ String(convenioActivo?.nit ||
                     empresaTrabajador?.nit || '-') }}</div>
                 </div>
-                <div
-                  class="rounded-xl border border-purple-200/50 bg-linear-to-br from-purple-500 via-purple-400 to-pink-300 p-4 shadow-lg shadow-purple-500/20">
+                <div class="rounded-xl border bg-gradient-secundary p-4 shadow-lg">
                   <div class="text-xs font-semibold uppercase tracking-wide text-white/90">Vigencia</div>
                   <div class="mt-1 text-sm font-medium text-white">
                     Estado: {{ convenioActivo?.estado || '-' }}
@@ -274,11 +269,11 @@
           <!-- Parámetros relevantes -->
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Motivos de rechazo -->
-            <Card class="border-0 shadow-lg bg-gradient-to-br from-white via-rose-50/20 to-white backdrop-blur">
+            <Card class="border border-slate-200 shadow-md bg-gradient-surface backdrop-blur">
               <CardContent class="p-6">
                 <div class="flex items-center gap-3 mb-4">
                   <div
-                    class="flex h-10 w-10 items-center justify-center rounded-xl border border-rose-200 bg-gradient-to-br from-rose-500 to-rose-600 p-2 shadow-lg shadow-rose-500/20">
+                    class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-gradient-secundary p-2 shadow-md">
                     <ExclamationTriangleIcon class="h-5 w-5 text-white" />
                   </div>
                   <div>
@@ -294,7 +289,7 @@
                   </div>
                 </div>
                 <div v-else-if="errorParametros"
-                  class="rounded-xl border border-red-200/50 bg-gradient-to-br from-red-50 to-red-100 p-4 text-sm text-red-700">
+                  class="rounded-xl border border-red-200/50 bg-gradient-surface p-4 text-sm text-red-700">
                   <div class="flex items-center gap-2">
                     <ExclamationTriangleIcon class="h-5 w-5 text-red-500" />
                     {{ errorParametros }}
@@ -302,10 +297,10 @@
                 </div>
                 <div v-else class="mt-4 space-y-3 max-h-80 overflow-auto pr-2">
                   <div v-for="(m, index) in motivosRechazo" :key="m.modrec"
-                    class="group rounded-xl border border-rose-200/50 bg-gradient-to-br from-rose-50 via-pink-50 to-white p-4 shadow-md hover:shadow-lg hover:from-rose-100 hover:via-pink-100 hover:to-white transition-all duration-200">
+                    class="group rounded-xl border border-rose-200/50 bg-gradient-surface p-4 shadow-md hover:shadow-lg transition-all duration-200">
                     <div class="flex items-start gap-3">
                       <div
-                        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-rose-500 to-pink-500 text-white text-sm font-bold shadow-md">
+                        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-primary text-white text-sm font-bold shadow-md">
                         {{ index + 1 }}
                       </div>
                       <div class="flex-1">
@@ -323,12 +318,11 @@
             </Card>
 
             <!-- Oficinas de crédito -->
-            <Card
-              class="border-0 shadow-lg bg-gradient-to-br from-white via-violet-50/20 to-white backdrop-blur lg:col-span-2">
+            <Card class="border border-slate-200 shadow-md bg-gradient-surface backdrop-blur lg:col-span-2">
               <CardContent class="p-6">
                 <div class="flex items-center gap-3 mb-4">
                   <div
-                    class="flex h-10 w-10 items-center justify-center rounded-xl border border-violet-200 bg-gradient-to-br from-violet-500 to-violet-600 p-2 shadow-lg shadow-violet-500/20">
+                    class="flex h-10 w-10 items-center justify-center rounded-xl border border-violet-200 bg-gradient-primary p-2 shadow-lg shadow-violet-500/20">
                     <BuildingOfficeIcon class="h-5 w-5 text-white" />
                   </div>
                   <div>
@@ -344,17 +338,16 @@
                   </div>
                 </div>
                 <div v-else-if="errorParametros"
-                  class="rounded-xl border border-red-200/50 bg-gradient-to-br from-red-50 to-red-100 p-4 text-sm text-red-700">
+                  class="rounded-xl border border-red-200/50 bg-gradient-surface p-4 text-sm text-red-700">
                   <div class="flex items-center gap-2">
                     <ExclamationTriangleIcon class="h-5 w-5 text-red-500" />
                     {{ errorParametros }}
                   </div>
                 </div>
                 <div v-else
-                  class="mt-4 overflow-hidden rounded-xl border border-violet-200/50 bg-gradient-to-br from-white via-violet-50/20 to-white shadow-lg">
+                  class="mt-4 overflow-hidden rounded-xl border border-violet-200/50 bg-gradient-surface shadow-lg">
                   <table class="w-full text-left text-sm">
-                    <thead
-                      class="bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-600 text-xs font-bold uppercase tracking-wider text-white">
+                    <thead class="bg-gradient-primary text-xs font-bold uppercase tracking-wider text-white">
                       <tr>
                         <th class="px-4 py-4 text-center">Oficina</th>
                         <th class="px-4 py-4 text-center">Dirección</th>
@@ -365,7 +358,7 @@
                       <tr v-for="(o, index) in oficinasCredito" :key="o.ofiafi" :class="[
                         'border-t border-violet-100/50 transition-all duration-200',
                         index % 2 === 0 ? 'bg-white/50' : 'bg-violet-50/30',
-                        'hover:bg-gradient-to-r hover:from-violet-50/50 hover:to-blue-50/50 hover:shadow-md'
+                        'hover:bg-gradient-surface hover:shadow-md'
                       ]">
                         <td class="px-4 py-4 text-center">
                           <div class="font-medium text-foreground">{{ o.detalle }}</div>
@@ -395,11 +388,11 @@
           </div>
 
           <!-- Datos generales del crédito -->
-          <Card class="border-0 shadow-lg bg-gradient-to-br from-white via-amber-50/20 to-white backdrop-blur">
+          <Card class="border border-slate-200 shadow-md bg-gradient-surface backdrop-blur">
             <CardContent class="p-6">
               <div class="flex items-center gap-3 mb-6">
                 <div
-                  class="flex h-10 w-10 items-center justify-center rounded-xl border border-amber-200 bg-gradient-to-br from-amber-500 to-amber-600 p-2 shadow-lg shadow-amber-500/20">
+                  class="flex h-10 w-10 items-center justify-center rounded-xl border border-amber-200 bg-gradient-primary p-2 shadow-lg shadow-amber-500/20">
                   <ChartBarIcon class="h-5 w-5 text-white" />
                 </div>
                 <div>
@@ -415,7 +408,7 @@
                 </div>
               </div>
               <div v-else-if="errorParametros"
-                class="rounded-xl border border-red-200/50 bg-gradient-to-br from-red-50 to-red-100 p-4 text-sm text-red-700">
+                class="rounded-xl border border-red-200/50 bg-gradient-surface p-4 text-sm text-red-700">
                 <div class="flex items-center gap-2">
                   <ExclamationTriangleIcon class="h-5 w-5 text-red-500" />
                   {{ errorParametros }}
@@ -424,7 +417,7 @@
               <div v-else class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div
-                    class="group rounded-xl border border-amber-200/50 bg-gradient-to-br from-amber-50 via-orange-50 to-white p-4 shadow-md hover:shadow-lg hover:from-amber-100 hover:via-orange-100 hover:to-white transition-all duration-200">
+                    class="group rounded-xl border border-amber-200/50 bg-gradient-surface p-4 shadow-md hover:shadow-lg transition-all duration-200">
                     <div class="flex items-center gap-2 mb-2">
                       <UserIcon class="h-4 w-4 text-amber-600" />
                       <div class="text-xs font-bold uppercase tracking-wide text-amber-700">Jefe crédito</div>
@@ -434,7 +427,7 @@
                     </div>
                   </div>
                   <div
-                    class="group rounded-xl border border-emerald-200/50 bg-gradient-to-br from-emerald-50 via-green-50 to-white p-4 shadow-md hover:shadow-lg hover:from-emerald-100 hover:via-green-100 hover:to-white transition-all duration-200">
+                    class="group rounded-xl border border-emerald-200/50 bg-gradient-surface p-4 shadow-md hover:shadow-lg transition-all duration-200">
                     <div class="flex items-center gap-2 mb-2">
                       <BriefcaseIcon class="h-4 w-4 text-emerald-600" />
                       <div class="text-xs font-bold uppercase tracking-wide text-emerald-700">Cargo</div>
@@ -444,7 +437,7 @@
                     </div>
                   </div>
                   <div
-                    class="group rounded-xl border border-sky-200/50 bg-gradient-to-br from-sky-50 via-blue-50 to-white p-4 shadow-md hover:shadow-lg hover:from-sky-100 hover:via-blue-100 hover:to-white transition-all duration-200">
+                    class="group rounded-xl border border-sky-200/50 bg-gradient-surface p-4 shadow-md hover:shadow-lg transition-all duration-200">
                     <div class="flex items-center gap-2 mb-2">
                       <CurrencyDollarIcon class="h-4 w-4 text-sky-600" />
                       <div class="text-xs font-bold uppercase tracking-wide text-sky-700">Valor máximo</div>
@@ -454,7 +447,7 @@
                     </div>
                   </div>
                   <div
-                    class="group rounded-xl border border-violet-200/50 bg-gradient-to-br from-violet-50 via-purple-50 to-white p-4 shadow-md hover:shadow-lg hover:from-violet-100 hover:via-purple-100 hover:to-white transition-all duration-200">
+                    class="group rounded-xl border border-violet-200/50 bg-gradient-surface p-4 shadow-md hover:shadow-lg transition-all duration-200">
                     <div class="flex items-center gap-2 mb-2">
                       <CalendarIcon class="h-4 w-4 text-violet-600" />
                       <div class="text-xs font-bold uppercase tracking-wide text-violet-700">Máximo de cuotas</div>
@@ -467,7 +460,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div
-                    class="group rounded-xl border border-rose-200/50 bg-gradient-to-br from-rose-50 via-pink-50 to-white p-4 shadow-md hover:shadow-lg hover:from-rose-100 hover:via-pink-100 hover:to-white transition-all duration-200">
+                    class="group rounded-xl border border-rose-200/50 bg-gradient-surface p-4 shadow-md hover:shadow-lg transition-all duration-200">
                     <div class="flex items-center gap-2 mb-2">
                       <AcademicCapIcon class="h-4 w-4 text-rose-600" />
                       <div class="text-xs font-bold uppercase tracking-wide text-rose-700">Director</div>
@@ -477,7 +470,7 @@
                     </div>
                   </div>
                   <div
-                    class="group rounded-xl border border-amber-200/50 bg-gradient-to-br from-amber-50 via-orange-50 to-white p-4 shadow-md hover:shadow-lg hover:from-amber-100 hover:via-orange-100 hover:to-white transition-all duration-200">
+                    class="group rounded-xl border border-amber-200/50 bg-gradient-surface p-4 shadow-md hover:shadow-lg transition-all duration-200">
                     <div class="flex items-center gap-2 mb-2">
                       <UserGroupIcon class="h-4 w-4 text-amber-600" />
                       <div class="text-xs font-bold uppercase tracking-wide text-amber-700">Cargo director</div>
@@ -511,6 +504,8 @@ import {
   Cog6ToothIcon,
   DocumentPlusIcon,
   ExclamationTriangleIcon,
+  BuildingOfficeIcon,
+  ChartBarIcon,
   EyeIcon,
   UsersIcon
 } from '@heroicons/vue/24/outline'
