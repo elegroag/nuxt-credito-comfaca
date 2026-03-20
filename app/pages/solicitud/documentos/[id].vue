@@ -49,7 +49,7 @@
       <!-- Main Content -->
       <div v-else-if="solicitud" class="space-y-8">
         <!-- Info Card -->
-        <div class="bg-linear-to-r from-blue-500 to-indigo-600 rounded-2xl p-8 text-white shadow-xl">
+        <div class="bg-gradient-primary rounded-2xl p-8 text-white shadow-xl">
           <div class="flex items-start gap-6">
             <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
               <InformationCircleIcon class="w-6 h-6" />
@@ -84,7 +84,7 @@
             </span>
           </div>
           <div class="w-full bg-gray-200 rounded-full h-3">
-            <div class="bg-linear-to-r from-blue-500 to-indigo-600 h-3 rounded-full transition-all duration-500"
+            <div class="bg-linear-to-r from-blue-500 to-lime-600 h-3 rounded-full transition-all duration-500"
               :style="{ width: `${progresoDocumentos}%` }"></div>
           </div>
           <p class="text-sm text-gray-600 mt-2">
@@ -95,9 +95,9 @@
         <!-- Documents List -->
         <div class="grid gap-6">
           <div v-for="(docReq, index) in documentosRequeridos" :key="docReq.id"
-            class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl"
+            class="bg-white rounded-2xl shadow-md border overflow-hidden transition-all duration-300 hover:shadow-xl"
             :class="{
-              'ring-2 ring-green-500 border-green-200': getDocumentoCargado(docReq.id),
+              'ring-2 ring-green-100 border-lime-500': getDocumentoCargado(docReq.id),
               'ring-2 ring-orange-500 border-orange-200': !getDocumentoCargado(docReq.id) && docReq.obligatorio
             }">
             <!-- Document Header -->

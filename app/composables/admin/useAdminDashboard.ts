@@ -1,29 +1,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useApi } from '~/composables/useApi';
 import { useSession } from '~/composables/useSession';
-
-export interface AdminStats {
-  totalSolicitudes: number;
-  solicitudesActivas: number;
-  conveniosActivos: number;
-  trabajadoresRegistrados: number;
-  solicitudesPendientesFirma: number;
-  tasaAprobacion: number;
-  montoTotalAprobado: number;
-  solicitudesPorEstado: Array<{ estado: string; count: number; color: string }>;
-  actividadReciente: Array<{
-    id: string;
-    tipo: string;
-    descripcion: string;
-    fecha: string;
-  }>;
-  usuariosPorRol: Array<{ rol: string; count: number }>;
-  topEmpresas: Array<{
-    nombre: string;
-    trabajadores: number;
-    convenio: string;
-  }>;
-}
+import type { AdminStats } from '~/shared/types/admin-usuarios';
 
 export function useAdminDashboard() {
   const { authHeader } = useSession();

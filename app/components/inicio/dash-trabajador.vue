@@ -22,7 +22,7 @@
         </CardContent>
     </Card>
 
-    <!-- Solicitudes Card -->
+    <!-- Listar Solicitudes Activas por el Trabajador -->
     <Card class="mb-8 border-0 shadow-sm bg-white backdrop-blur">
         <CardContent class="p-6">
             <div class="flex items-center justify-between gap-3 mb-6">
@@ -70,54 +70,94 @@
                         <div class="text-xs text-gray-500">Cuando crees una solicitud, aparecerá aquí.</div>
                     </div>
                 </div>
-                <div v-else class="overflow-hidden rounded-xl border border-blue-200/50 bg-gradient-surface shadow-lg">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-gradient-primary text-xs font-bold uppercase tracking-wider text-white">
-                            <tr>
-                                <th class="px-4 py-4 text-center">Modalidad</th>
-                                <th class="px-4 py-4 text-center">Monto</th>
-                                <th class="px-4 py-4 text-center">Estado</th>
-                                <th class="px-4 py-4 text-center">Creación</th>
-                                <th class="px-4 py-4 text-center">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(s, index) in solicitudes" :key="s.numero_solicitud" :class="[
-                                'border-t border-blue-100/50 transition-all duration-200',
-                                index % 2 === 0 ? 'bg-white/50' : 'bg-blue-50/30',
-                                'hover:bg-gradient-surface hover:shadow-md'
-                            ]">
-                                <td class="px-4 py-4 text-center">
-                                    <div class="font-medium text-foreground">{{ s?.detalle_modalidad || '-' }}</div>
-                                </td>
-                                <td class="px-4 py-4 text-center">
-                                    <div class="font-bold text-green-600 text-lg">{{ fmtMoney(s?.valor_solicitud || 0)
-                                    }}</div>
-                                </td>
-                                <td class="px-4 py-4 text-center">
-                                    <div class="flex flex-col items-center gap-2">
-                                        <Badge :class="`w-fit ${estadoBadgeClass(String(s.estado || ''))}`">
+                <div v-else class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                    <Card v-for="s in solicitudes" :key="s.numero_solicitud"
+                        class="overflow-hidden border border-blue-200/50 bg-white/90 shadow-md transition-all duration-200 hover:-translate-y-1 hover:shadow-xl">
+                        <CardContent class="p-5">
+                            <div class="flex items-start gap-4">
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex flex-wrap items-start justify-between gap-2">
+                                        <div class="min-w-0">
+                                            <h3 class="truncate text-base font-semibold text-foreground">
+                                                {{ s.detalle_modalidad || 'Solicitud de crédito' }}
+                                            </h3>
+                                            <p class="mt-1 text-sm text-muted-foreground">
+                                                #{{ s.numero_solicitud }}
+                                            </p>
+                                        </div>
+                                        <Badge :class="estadoBadgeClass(String(s.estado || ''))">
                                             {{ getEstadoData(String(s.estado || ''))?.nombre || s.estado || '-' }}
                                         </Badge>
-                                        <Progress :model-value="estadoProgressPercent(String(s.estado || ''))"
-                                            class="w-32 h-2" />
                                     </div>
-                                </td>
-                                <td class="px-4 py-4 text-center">
-                                    <div class="text-foreground">{{ fmtDate(s.created_at) }}</div>
-                                </td>
-                                <td class="px-4 py-4 text-center">
-                                    <NuxtLink :to="`/solicitudes/${s.numero_solicitud}`">
-                                        <Button size="sm"
-                                            class="gap-2 bg-gradient-primary text-white border-0 shadow-md hover:opacity-90 hover:shadow-purple-600/30">
-                                            <EyeIcon class="h-4 w-4" />
-                                            Ver
-                                        </Button>
-                                    </NuxtLink>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+
+                                    <p class="mt-3 text-sm text-muted-foreground">
+                                        Solicitud registrada el {{ fmtDate(s.created_at) }}.
+                                    </p>
+
+                                    <div class="mt-4 space-y-3 rounded-2xl bg-slate-50/80 p-4">
+                                        <div class="flex items-start gap-3">
+                                            <div class="mt-0.5 h-2.5 w-2.5 rounded-full bg-primary" />
+                                            <div>
+                                                <p class="text-xs uppercase tracking-wide text-muted-foreground">
+                                                    Valor solicitado
+                                                </p>
+                                                <p class="text-sm font-semibold text-foreground">
+                                                    {{ fmtMoney(s.valor_solicitud || 0) }}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-start gap-3">
+                                            <div class="mt-0.5 h-2.5 w-2.5 rounded-full bg-secondary" />
+                                            <div>
+                                                <p class="text-xs uppercase tracking-wide text-muted-foreground">
+                                                    Estado del proceso
+                                                </p>
+                                                <p class="text-sm font-semibold text-foreground">
+                                                    {{ descripcionEstadoSolicitud(s) }}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-2">
+                                            <div class="flex items-center justify-between gap-3">
+                                                <p class="text-xs uppercase tracking-wide text-muted-foreground">
+                                                    Progreso del proceso
+                                                </p>
+                                                <span class="text-xs font-semibold text-foreground">
+                                                    {{ estadoProgressPercent(String(s.estado || '')) }}%
+                                                </span>
+                                            </div>
+                                            <Progress :model-value="estadoProgressPercent(String(s.estado || ''))"
+                                                class="h-2" />
+                                        </div>
+
+                                        <div class="flex items-start gap-3">
+                                            <div class="mt-0.5 h-2.5 w-2.5 rounded-full bg-accent" />
+                                            <div>
+                                                <p class="text-xs uppercase tracking-wide text-muted-foreground">
+                                                    Fecha de creación
+                                                </p>
+                                                <p class="text-sm font-semibold text-foreground">
+                                                    {{ fmtDate(s.created_at) }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4 flex justify-end">
+                                        <NuxtLink :to="`/solicitudes/${s.numero_solicitud}`">
+                                            <Button size="sm"
+                                                class="gap-2 bg-gradient-primary text-white border-0 shadow-md hover:opacity-90">
+                                                <EyeIcon class="h-4 w-4" />
+                                                Ver detalle
+                                            </Button>
+                                        </NuxtLink>
+                                    </div>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
         </CardContent>
@@ -168,227 +208,6 @@
                 </div>
             </CardContent>
         </Card>
-
-        <!-- Parámetros relevantes -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Motivos de rechazo -->
-            <Card class="border border-slate-200 shadow-md bg-gradient-surface backdrop-blur">
-                <CardContent class="p-6">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div
-                            class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-gradient-secundary p-2 shadow-md">
-                            <ExclamationTriangleIcon class="h-5 w-5 text-white" />
-                        </div>
-                        <div>
-                            <h3 class="text-base font-bold text-foreground">Motivos de rechazo</h3>
-                            <p class="text-sm text-muted-foreground">Parámetros generales del crédito.</p>
-                        </div>
-                    </div>
-
-                    <div v-if="loadingParametros" class="flex items-center justify-center py-8">
-                        <div class="flex items-center gap-2 text-rose-600">
-                            <ArrowPathIcon class="h-5 w-5 animate-spin" />
-                            <span class="text-sm font-medium">Cargando...</span>
-                        </div>
-                    </div>
-                    <div v-else-if="errorParametros"
-                        class="rounded-xl border border-red-200/50 bg-gradient-surface p-4 text-sm text-red-700">
-                        <div class="flex items-center gap-2">
-                            <ExclamationTriangleIcon class="h-5 w-5 text-red-500" />
-                            {{ errorParametros }}
-                        </div>
-                    </div>
-                    <div v-else class="mt-4 space-y-3 max-h-80 overflow-auto pr-2">
-                        <div v-for="(m, index) in motivosRechazo" :key="m.modrec"
-                            class="group rounded-xl border border-rose-200/50 bg-gradient-surface p-4 shadow-md hover:shadow-lg transition-all duration-200">
-                            <div class="flex items-start gap-3">
-                                <div
-                                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-primary text-white text-sm font-bold shadow-md">
-                                    {{ index + 1 }}
-                                </div>
-                                <div class="flex-1">
-                                    <div class="text-sm font-medium text-gray-800 group-hover:text-gray-900">
-                                        {{ m.detalle }}
-                                    </div>
-                                    <div class="mt-1 text-xs text-gray-500">
-                                        Código: {{ m.modrec }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-
-            <!-- Oficinas de crédito -->
-            <Card class="border border-slate-200 shadow-md bg-gradient-surface backdrop-blur lg:col-span-2">
-                <CardContent class="p-6">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div
-                            class="flex h-10 w-10 items-center justify-center rounded-xl border border-violet-200 bg-gradient-primary p-2 shadow-lg shadow-violet-500/20">
-                            <BuildingOfficeIcon class="h-5 w-5 text-white" />
-                        </div>
-                        <div>
-                            <h3 class="text-base font-bold text-foreground">Oficinas de crédito</h3>
-                            <p class="text-sm text-muted-foreground">Canales disponibles para atención.</p>
-                        </div>
-                    </div>
-
-                    <div v-if="loadingParametros" class="flex items-center justify-center py-8">
-                        <div class="flex items-center gap-2 text-violet-600">
-                            <ArrowPathIcon class="h-5 w-5 animate-spin" />
-                            <span class="text-sm font-medium">Cargando...</span>
-                        </div>
-                    </div>
-                    <div v-else-if="errorParametros"
-                        class="rounded-xl border border-red-200/50 bg-gradient-surface p-4 text-sm text-red-700">
-                        <div class="flex items-center gap-2">
-                            <ExclamationTriangleIcon class="h-5 w-5 text-red-500" />
-                            {{ errorParametros }}
-                        </div>
-                    </div>
-                    <div v-else
-                        class="mt-4 overflow-hidden rounded-xl border border-violet-200/50 bg-gradient-surface shadow-lg">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-gradient-primary text-xs font-bold uppercase tracking-wider text-white">
-                                <tr>
-                                    <th class="px-4 py-4 text-center">Oficina</th>
-                                    <th class="px-4 py-4 text-center">Dirección</th>
-                                    <th class="px-4 py-4 text-center">Contacto</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="(o, index) in oficinasCredito" :key="o.ofiafi" :class="[
-                                    'border-t border-violet-100/50 transition-all duration-200',
-                                    index % 2 === 0 ? 'bg-white/50' : 'bg-violet-50/30',
-                                    'hover:bg-gradient-surface hover:shadow-md'
-                                ]">
-                                    <td class="px-4 py-4 text-center">
-                                        <div class="font-medium text-foreground">{{ o.detalle }}</div>
-                                        <div class="text-xs text-muted-foreground">Código: {{ o.ofiafi }}</div>
-                                    </td>
-                                    <td class="px-4 py-4 text-center">
-                                        <div class="text-foreground">{{ o.direccion || '-' }}</div>
-                                    </td>
-                                    <td class="px-4 py-4 text-center">
-                                        <div class="space-y-1">
-                                            <div class="flex items-center justify-center gap-1">
-                                                <PhoneIcon class="h-3 w-3 text-violet-500" />
-                                                <span class="text-xs text-muted-foreground">{{ o.telefono || '-'
-                                                }}</span>
-                                            </div>
-                                            <div class="flex items-center justify-center gap-1">
-                                                <EnvelopeIcon class="h-3 w-3 text-blue-500" />
-                                                <span class="text-xs text-muted-foreground">{{ o.email || '-' }}</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </CardContent>
-            </Card>
-        </div>
-
-        <!-- Datos generales del crédito -->
-        <Card class="border border-slate-200 shadow-md bg-gradient-surface backdrop-blur">
-            <CardContent class="p-6">
-                <div class="flex items-center gap-3 mb-6">
-                    <div
-                        class="flex h-10 w-10 items-center justify-center rounded-xl border border-amber-200 bg-gradient-primary p-2 shadow-lg shadow-amber-500/20">
-                        <ChartBarIcon class="h-5 w-5 text-white" />
-                    </div>
-                    <div>
-                        <h3 class="text-base font-bold text-foreground">Datos generales de la oficina de créditos</h3>
-                        <p class="text-sm text-muted-foreground">Información administrativa.</p>
-                    </div>
-                </div>
-
-                <div v-if="loadingParametros" class="flex items-center justify-center py-8">
-                    <div class="flex items-center gap-2 text-amber-600">
-                        <ArrowPathIcon class="h-5 w-5 animate-spin" />
-                        <span class="text-sm font-medium">Cargando...</span>
-                    </div>
-                </div>
-                <div v-else-if="errorParametros"
-                    class="rounded-xl border border-red-200/50 bg-gradient-surface p-4 text-sm text-red-700">
-                    <div class="flex items-center gap-2">
-                        <ExclamationTriangleIcon class="h-5 w-5 text-red-500" />
-                        {{ errorParametros }}
-                    </div>
-                </div>
-                <div v-else class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div
-                            class="group rounded-xl border border-amber-200/50 bg-gradient-surface p-4 shadow-md hover:shadow-lg transition-all duration-200">
-                            <div class="flex items-center gap-2 mb-2">
-                                <UserIcon class="h-4 w-4 text-amber-600" />
-                                <div class="text-xs font-bold uppercase tracking-wide text-amber-700">Jefe crédito</div>
-                            </div>
-                            <div class="mt-1 text-sm font-medium text-gray-800 group-hover:text-gray-900">
-                                {{ datosGeneralesCredito?.jefcre || '-' }}
-                            </div>
-                        </div>
-                        <div
-                            class="group rounded-xl border border-emerald-200/50 bg-gradient-surface p-4 shadow-md hover:shadow-lg transition-all duration-200">
-                            <div class="flex items-center gap-2 mb-2">
-                                <BriefcaseIcon class="h-4 w-4 text-emerald-600" />
-                                <div class="text-xs font-bold uppercase tracking-wide text-emerald-700">Cargo</div>
-                            </div>
-                            <div class="mt-1 text-sm font-medium text-gray-800 group-hover:text-gray-900">
-                                {{ datosGeneralesCredito?.carjefcre || '-' }}
-                            </div>
-                        </div>
-                        <div
-                            class="group rounded-xl border border-sky-200/50 bg-gradient-surface p-4 shadow-md hover:shadow-lg transition-all duration-200">
-                            <div class="flex items-center gap-2 mb-2">
-                                <CurrencyDollarIcon class="h-4 w-4 text-sky-600" />
-                                <div class="text-xs font-bold uppercase tracking-wide text-sky-700">Valor máximo</div>
-                            </div>
-                            <div class="mt-1 text-2xl font-bold text-green-600 group-hover:text-green-700">
-                                {{ fmtMoney(Number(datosGeneralesCredito?.valmax || 7000000)) }}
-                            </div>
-                        </div>
-                        <div
-                            class="group rounded-xl border border-violet-200/50 bg-gradient-surface p-4 shadow-md hover:shadow-lg transition-all duration-200">
-                            <div class="flex items-center gap-2 mb-2">
-                                <CalendarIcon class="h-4 w-4 text-violet-600" />
-                                <div class="text-xs font-bold uppercase tracking-wide text-violet-700">Máximo de cuotas
-                                </div>
-                            </div>
-                            <div class="mt-1 text-2xl font-bold text-violet-600 group-hover:text-violet-700">
-                                {{ String(datosGeneralesCredito?.cuomax || 36) }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div
-                            class="group rounded-xl border border-rose-200/50 bg-gradient-surface p-4 shadow-md hover:shadow-lg transition-all duration-200">
-                            <div class="flex items-center gap-2 mb-2">
-                                <AcademicCapIcon class="h-4 w-4 text-rose-600" />
-                                <div class="text-xs font-bold uppercase tracking-wide text-rose-700">Director</div>
-                            </div>
-                            <div class="mt-1 text-sm font-medium text-gray-800 group-hover:text-gray-900">
-                                {{ datosGeneralesCredito?.diradm || '-' }}
-                            </div>
-                        </div>
-                        <div
-                            class="group rounded-xl border border-amber-200/50 bg-gradient-surface p-4 shadow-md hover:shadow-lg transition-all duration-200">
-                            <div class="flex items-center gap-2 mb-2">
-                                <UserGroupIcon class="h-4 w-4 text-amber-600" />
-                                <div class="text-xs font-bold uppercase tracking-wide text-amber-700">Cargo director
-                                </div>
-                            </div>
-                            <div class="mt-1 text-sm font-medium text-gray-800 group-hover:text-gray-900">
-                                {{ datosGeneralesCredito?.cardiradm || '-' }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
     </div>
 </template>
 
@@ -407,8 +226,6 @@ import {
     ClipboardDocumentListIcon,
     DocumentPlusIcon,
     ExclamationTriangleIcon,
-    BuildingOfficeIcon,
-    ChartBarIcon,
     EyeIcon,
 } from '@heroicons/vue/24/outline'
 
@@ -423,18 +240,16 @@ const {
 } = useInicio()
 
 const {
-    loadingParametros,
-    errorParametros,
     loadingConvenio,
     errorConvenio,
     convenioActivo,
     empresaTrabajador,
-    motivosRechazo,
-    oficinasCredito,
-    datosGeneralesCredito,
     cargarConvenioActivo,
     nombreBienvenida,
 } = useInicioTrabajador()
 
+const descripcionEstadoSolicitud = (s: { estado?: string }): string => {
+    return getEstadoData(String(s.estado || ''))?.descripcion || 'Consulta el seguimiento de tu solicitud'
+}
 
 </script>

@@ -48,7 +48,7 @@
       <!-- Main Content -->
       <div v-else-if="solicitud" class="space-y-8">
         <!-- Alerta de confirmación -->
-        <div class="bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl p-8 text-white shadow-xl">
+        <div class="bg-gradient-primary rounded-2xl p-8 text-white shadow-xl">
           <div class="flex items-start gap-6">
             <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
               <Icon name="lucide:alert-triangle" class="w-6 h-6" />

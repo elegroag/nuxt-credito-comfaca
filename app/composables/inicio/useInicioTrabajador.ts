@@ -2,25 +2,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useApi } from '~/composables/useApi';
 import { useParametros } from '~/composables/useParametros';
 import { useSession } from '~/composables/useSession';
-import type { Trabajador } from '~/shared/types/trabajador';
-
-export type ConvenioActivo = {
-  id: string | number;
-  nit: string | number;
-  razon_social: string;
-  fecha_convenio?: string | null;
-  fecha_vencimiento?: string | null;
-  estado?: string | null;
-  representante_nombre?: string | null;
-  representante_documento?: string | null;
-  correo?: string | null;
-  telefono?: string | null;
-  direccion?: string | null;
-  ciudad?: string | null;
-  departamento?: string | null;
-  sector_economico?: string | null;
-  tipo_empresa?: string | null;
-};
+import type { Trabajador, ConvenioActivo } from '~/shared/types/trabajador';
 
 export function useInicioTrabajador() {
   const { session } = useSession();
@@ -30,9 +12,6 @@ export function useInicioTrabajador() {
     cargarParametros,
     loading: loadingParametros,
     error: errorParametros,
-    getMotivosRechazo,
-    getOficinasCredito,
-    getDatosGeneralesCredito,
   } = useParametros();
 
   const loadingConvenio = ref(false);
@@ -116,10 +95,6 @@ export function useInicioTrabajador() {
     convenioActivo,
     trabajadorEnSesion,
     empresaTrabajador,
-
-    motivosRechazo: getMotivosRechazo,
-    oficinasCredito: getOficinasCredito,
-    datosGeneralesCredito: getDatosGeneralesCredito,
 
     cargarInicioTrabajador,
     cargarConvenioActivo,

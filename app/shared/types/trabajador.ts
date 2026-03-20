@@ -34,3 +34,21 @@ export type Trabajador = {
   personas_a_cargo?: number;
   antiguedad_meses?: number;
 };
+
+export type ConvenioActivo = {
+  id: string | number;
+  nit: string | number;
+  razon_social: string;
+  fecha_convenio?: string | null;
+  fecha_vencimiento?: string | null;
+  estado?: string | null;
+  representante_nombre?: string | null;
+  representante_documento?: string | null;
+  correo?: string | null;
+  telefono?: string | null;
+  direccion?: string | null;
+  ciudad?: string | null;
+  departamento?: string | null;
+  sector_economico?: string | null;
+  tipo_empresa?: string | null;
+};
