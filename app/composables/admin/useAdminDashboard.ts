@@ -11,9 +11,18 @@ export interface AdminStats {
   tasaAprobacion: number;
   montoTotalAprobado: number;
   solicitudesPorEstado: Array<{ estado: string; count: number; color: string }>;
-  actividadReciente: Array<{ id: string; tipo: string; descripcion: string; fecha: string }>;
+  actividadReciente: Array<{
+    id: string;
+    tipo: string;
+    descripcion: string;
+    fecha: string;
+  }>;
   usuariosPorRol: Array<{ rol: string; count: number }>;
-  topEmpresas: Array<{ nombre: string; trabajadores: number; convenio: string }>;
+  topEmpresas: Array<{
+    nombre: string;
+    trabajadores: number;
+    convenio: string;
+  }>;
 }
 
 export function useAdminDashboard() {
@@ -34,40 +43,11 @@ export function useAdminDashboard() {
     solicitudesPorEstado: [],
     actividadReciente: [],
     usuariosPorRol: [],
-    topEmpresas: []
+    topEmpresas: [],
   });
 
   // Última actualización
   const lastUpdated = ref<Date | null>(null);
-
-  // Utilidades de formateo
-  const fmtMoney = (value: number) => {
-    return new Intl.NumberFormat('es-CO', {
-      style: 'currency',
-      currency: 'COP',
-      maximumFractionDigits: 0
-    }).format(value);
-  };
-
-  const fmtPercent = (value: number) => {
-    return new Intl.NumberFormat('es-CO', {
-      style: 'percent',
-      minimumFractionDigits: 1,
-      maximumFractionDigits: 1
-    }).format(value / 100);
-  };
-
-  const fmtNumber = (value: number) => {
-    return new Intl.NumberFormat('es-CO').format(value);
-  };
-
-  const fmtDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('es-CO', {
-      dateStyle: 'short',
-      timeStyle: 'short'
-    }).format(date);
-  };
 
   // Función para cargar estadísticas de usuarios
   const cargarEstadisticasUsuarios = async () => {
@@ -79,7 +59,10 @@ export function useAdminDashboard() {
         };
       };
 
-      const response = await getJson<UsuariosStatsResponse>('/api/admin/users/estadisticas', { auth: true });
+      const response = await getJson<UsuariosStatsResponse>(
+        '/api/admin/users/estadisticas',
+        { auth: true },
+      );
       const data = response.data;
 
       stats.value.trabajadoresRegistrados = data?.trabajadores ?? 0;
@@ -92,7 +75,10 @@ export function useAdminDashboard() {
   // Función para cargar estadísticas de convenios
   const cargarEstadisticasConvenios = async () => {
     try {
-      const response = await getJson<{ data: unknown }>('/api/admin/empresas-convenios', { auth: true });
+      const response = await getJson<{ data: unknown }>(
+        '/api/admin/empresas-convenios',
+        { auth: true },
+      );
       void response;
     } catch (e: unknown) {
       console.error('Error cargando estadísticas de convenios:', e);
@@ -114,23 +100,36 @@ export function useAdminDashboard() {
           };
           convenios?: {
             activos?: number;
-            topEmpresas?: Array<{ nombre: string; convenio: string; trabajadores: number }>;
+            topEmpresas?: Array<{
+              nombre: string;
+              convenio: string;
+              trabajadores: number;
+            }>;
           };
           usuarios?: {
             trabajadores?: number;
             porRol?: Array<{ rol: string; count: number }>;
           };
-          actividadReciente?: Array<{ id: string; tipo: string; descripcion: string; fecha: string }>;
+          actividadReciente?: Array<{
+            id: string;
+            tipo: string;
+            descripcion: string;
+            fecha: string;
+          }>;
         };
       };
 
-      const response = await getJson<DashboardResponse>('/api/admin/dashboard/estadisticas', { auth: true });
+      const response = await getJson<DashboardResponse>(
+        '/api/admin/dashboard/estadisticas',
+        { auth: true },
+      );
       const data = response.data;
 
       const solicitudes = data?.solicitudes;
       stats.value.totalSolicitudes = solicitudes?.total ?? 0;
       stats.value.solicitudesActivas = solicitudes?.activas ?? 0;
-      stats.value.solicitudesPendientesFirma = solicitudes?.pendientesFirma ?? 0;
+      stats.value.solicitudesPendientesFirma =
+        solicitudes?.pendientesFirma ?? 0;
       stats.value.tasaAprobacion = solicitudes?.tasaAprobacion ?? 0;
       stats.value.montoTotalAprobado = solicitudes?.montoTotalAprobado ?? 0;
       stats.value.solicitudesPorEstado = solicitudes?.porEstado ?? [];
@@ -141,8 +140,10 @@ export function useAdminDashboard() {
 
       const usuarios = data?.usuarios;
       if (usuarios) {
-        stats.value.trabajadoresRegistrados = usuarios.trabajadores ?? stats.value.trabajadoresRegistrados;
-        stats.value.usuariosPorRol = usuarios.porRol ?? stats.value.usuariosPorRol;
+        stats.value.trabajadoresRegistrados =
+          usuarios.trabajadores ?? stats.value.trabajadoresRegistrados;
+        stats.value.usuariosPorRol =
+          usuarios.porRol ?? stats.value.usuariosPorRol;
       }
 
       stats.value.actividadReciente = data?.actividadReciente ?? [];
@@ -164,7 +165,8 @@ export function useAdminDashboard() {
 
       lastUpdated.value = new Date();
     } catch (e: unknown) {
-      error.value = e instanceof Error ? e.message : 'Error al cargar las estadísticas';
+      error.value =
+        e instanceof Error ? e.message : 'Error al cargar las estadísticas';
       console.error('Error en cargarEstadisticas:', e);
     } finally {
       loading.value = false;
@@ -177,16 +179,19 @@ export function useAdminDashboard() {
   };
 
   // Computed properties para facilitar el uso
-  const tieneDatos = computed(() =>
-    stats.value.totalSolicitudes > 0 ||
-    stats.value.conveniosActivos > 0 ||
-    stats.value.trabajadoresRegistrados > 0
+  const tieneDatos = computed(
+    () =>
+      stats.value.totalSolicitudes > 0 ||
+      stats.value.conveniosActivos > 0 ||
+      stats.value.trabajadoresRegistrados > 0,
   );
 
   const tiempoSinActualizar = computed(() => {
     if (!lastUpdated.value) return null;
     const ahora = new Date();
-    const diffMinutos = Math.floor((ahora.getTime() - lastUpdated.value.getTime()) / (1000 * 60));
+    const diffMinutos = Math.floor(
+      (ahora.getTime() - lastUpdated.value.getTime()) / (1000 * 60),
+    );
 
     if (diffMinutos < 1) return 'Actualizado ahora';
     if (diffMinutos < 60) return `Actualizado hace ${diffMinutos} min`;
@@ -196,6 +201,11 @@ export function useAdminDashboard() {
 
     const diffDias = Math.floor(diffHoras / 24);
     return `Actualizado hace ${diffDias} días`;
+  });
+
+  // Total de usuarios para la gráfica
+  const totalUsuarios = computed(() => {
+    return stats.value.usuariosPorRol.reduce((sum, rol) => sum + rol.count, 0);
   });
 
   // Inicializar
@@ -212,14 +222,11 @@ export function useAdminDashboard() {
     tieneDatos,
     tiempoSinActualizar,
 
-    // Utilidades
-    fmtMoney,
-    fmtPercent,
-    fmtNumber,
-    fmtDate,
-
     // Acciones
     cargarEstadisticas,
-    refrescarEstadisticas
+    refrescarEstadisticas,
+    totalUsuarios,
+    cargarEstadisticasUsuarios,
+    cargarEstadisticasConvenios,
   };
 }
